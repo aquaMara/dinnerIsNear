@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "dinnerIsNear",
+    "slug": "dinnerIsNear",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "dinnerIsNear"
+}

@@ -8,17 +8,21 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { colors } from '../../styles/colors';
 import SwitchSelector from "react-native-switch-selector";
 import RestaurantScreen from './RestaurantScreen';
+import { useNavigation } from '@react-navigation/native';
 
 const { height } = Dimensions.get('screen');
 
 export default function ScreenChoice() {
 
+    const navigation = useNavigation();
+
     const [address, setAddress] = useState('проспект Толстова, 237');
     const [isHomeScreen, setIsHomeScreen] = useState(true);
 
     const setScreen = (val) => {
-        console.log(val);
+        console.log('hhhhhh', val);
         setIsHomeScreen(val)
+        //val ? navigation.navigate('Map') : navigation.navigate('Choice')
     }
 
 

@@ -25,7 +25,7 @@ export const countMeals = (numberOfMeals, calorieIntake) => {
             break;
         case 4: 
             caloriesForEachMeal = parseInt(calorieIntake / 4, 10);
-            mealsArray = [{id: 1, name: 'Завтрак', calories: caloriesForEachMeal, visible: true},
+            mealsArray = [{id: 1, name: 'Завтрак', calories: caloriesForEachMeal, visible: false},
                         {id: 2, name: 'Обед', calories: caloriesForEachMeal, visible: true},
                         {id: 3, name: 'Ужин', calories: caloriesForEachMeal, visible: true},
                         {id: 4, name: 'Перекус', calories: caloriesForEachMeal, visible: true}];

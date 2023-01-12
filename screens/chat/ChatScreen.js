@@ -18,15 +18,15 @@ const { height } = Dimensions.get('screen');
 
 export default function ChatScreen() {
 
-    const [fontsLoaded] = useFonts({
-        'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
-        'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
-        'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),
-      });
+  const [fontsLoaded] = useFonts({
+    'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
+    'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
+    'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),
+  });
       
-      if (!fontsLoaded) {
-        return null;
-      }
+  if (!fontsLoaded) {
+    return null;
+  }
 
 
   return (
@@ -38,7 +38,7 @@ export default function ChatScreen() {
         - рекомендуем вам обратиться к квалифицированному психотерпевту 
         в области расстройств и нарушений пищевого поведения.</Text>
         <TouchableOpacity style={[globalStyles.mainButton, {marginBottom: hp(1.9), width: wp(83.6)}]}
-            onPress={() => Linking.openURL('whatsapp://send?phone=+375447659068')} >
+            onPress={() => Linking.openURL('whatsapp://send?phone=+375447659068')}>
             <Text style={styles.buttonText}>Написать психотерапевту</Text>
         </TouchableOpacity>
       </View>
@@ -94,5 +94,5 @@ const styles = StyleSheet.create({
         fontSize: RFValue(17, height),
         lineHeight: hp(2.4),
         fontFamily: 'SF-Pro-Bold',
-      },
+    },
 })

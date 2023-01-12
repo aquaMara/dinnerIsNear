@@ -6,11 +6,20 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { globalStyles } from "../../../styles/styles";
 import GestureRecognizer from 'react-native-swipe-gestures';
+import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 
 const { height } = Dimensions.get('screen');
 
 export default function AppearingDishDescription({ item }) {
+
     const [modalVisibleIntro, setModalVisibleIntro] = useState(false);
+    const { cart, setCart } = useShoppingCart();
+
+    const handleCartChoice = (item) => {
+        setModalVisibleIntro(!modalVisibleIntro);
+        console.log(item);
+        setCart(cart => [...cart, item])
+    }
 
     useEffect(() => {
         //console.log('modalVisible ', modalVisible);
@@ -76,7 +85,7 @@ export default function AppearingDishDescription({ item }) {
                         Филе грудки цыплёнка, салат ромейн, салат айсберг, яйцо, сыр пармезан, томаты черри, гренки, соус цезарь (обращаем ваше внимание, что подача соуса изменилась).
                         </Text>
                 </View>
-                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => setModalVisibleIntro(!modalVisibleIntro)}>
+                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice(item)}>
                     <Text style={styles.buttonText}>В корзину</Text>
                 </TouchableOpacity>
             </View>

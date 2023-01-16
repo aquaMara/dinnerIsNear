@@ -1,47 +1,51 @@
-import { Dimensions, View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, SafeAreaView, Alert, Modal } from 'react-native'
-import React, { useEffect, useState } from 'react';
-import data from '../chat/data';
-import dishesIntroduction from '../../data/dishesIntroduction';
-import dishesSections from '../../data/dishesSections';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions, Image } from 'react-native';
+import { useState, useEffect } from 'react';
+import React from 'react';
+import AppearingDishDescription from '../components/AppearingDishDescription';
 import { useFonts } from 'expo-font';
-import { Linking } from 'react-native';
-import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
-import { globalStyles } from '../../styles/styles';
-import { colors } from '../../styles/colors';
+import { FlatList } from 'react-native';
+import { colors } from '../../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
-import { FlatList } from 'react-native';
-import TopView from './components/TopView';
-import AppearingDishDescription from './components/AppearingDishDescription';
+import data from '../../chat/data';
+import dishesSections from '../../../data/dishesSections';
 
-const { height } = Dimensions.get('screen');
+const { height } = Dimensions.get('screen');  
 
-export default function MenuScreen({ navigation, route }) {
+export default function RestaurantMenuScreen({navigation, route}) {
 
     const [dishes, setDishes] = useState([{}]);
     const [dishesIntro, setDishesIntro] = useState([]);
     const [currentSectionId, setCurrentSectionId] = useState(null);
-    const db = getFirestore();
-    const colRef = collection(db, 'dishes');
-    console.log('dd', data);
-    
-    console.log('jjjjjjj', route.params.title)
+    // const navigation = useNavigation();
+    console.log(route.params.id)
 
     const handleSectionChoice = (id, name) => {
         console.log('handleSectionChoice id ', id);
         setCurrentSectionId(id);
-        navigation.setOptions({
-            title: name,
-          });
+        
     }
 
     const handleDishChoice = (id) => {
         console.log('handleDishChoice id ', id);
     }
 
-    // <View style={[styles.topMenuBlock]}>
+    useEffect(() => {
+        setDishes(data);
+        setDishesIntro(dishesSections);
+        setCurrentSectionId(0)
+    }, []);
+
+    const [fontsLoaded] = useFonts({
+        'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
+        'SF-Pro-Medium': require('../../../assets/fonts/SFPro500.otf'),
+        'SF-Pro-Bold': require('../../../assets/fonts/SFPro700.otf'),
+      });
+      
+      if (!fontsLoaded) {
+        return null;
+      }
+
     const ItemRender = ({ name, id }) => (
         <TouchableOpacity style={[styles.topMenuBlock, currentSectionId === id && {backgroundColor: colors.green}]}
             onPress={() => handleSectionChoice(id, name)}>
@@ -52,9 +56,9 @@ export default function MenuScreen({ navigation, route }) {
     const renderItem = ({ item }) => (
         <View style={styles.block}>
             <View style={styles.topBlock}>
-                <Image source={require('../../assets/images/dish.png')} style={styles.dishImage} resizeMode='cover' />
+                <Image source={require('../../../assets/images/dish.png')} style={styles.dishImage} resizeMode='cover' />
                 <TouchableOpacity style={styles.heartImageButton}>
-                    <Image source={require('../../assets/images/heart.png')} style={styles.heartImage} />
+                    <Image source={require('../../../assets/images/heart.png')} style={styles.heartImage} />
                 </TouchableOpacity>
                 <View style={styles.middleBlock}>
                     <View style={{width: wp(23.08), height: hp(5.92)}}>
@@ -75,28 +79,12 @@ export default function MenuScreen({ navigation, route }) {
         </View>
     );
 
-    useEffect(() => {
-        setDishes(data);
-        setDishesIntro(dishesSections);
-        setCurrentSectionId(route.params.sectionId)
-    }, [])
-
-    const [fontsLoaded] = useFonts({
-        'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
-        'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
-        'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),
-      });
-      
-      if (!fontsLoaded) {
-        return null;
-      }
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
         <View style={styles.topMenu}>
             <View style={{width: wp(11.8)}}>
-                <TouchableOpacity style={{}}>
-                    <Image source={require('../../assets/images/searchButton.png')} style={styles.search}/>
+                <TouchableOpacity>
+                    <Image source={require('../../../assets/images/searchButton.png')} style={styles.search}/>
                 </TouchableOpacity>
             </View>
             <View style={{width: wp(88.2)}}>
@@ -108,7 +96,6 @@ export default function MenuScreen({ navigation, route }) {
         <FlatList numColumns={2} data={dishes} 
             renderItem={renderItem} keyExtractor={item => item.id} />
     </SafeAreaView>
-    
   )
 }
 

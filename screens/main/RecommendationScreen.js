@@ -116,7 +116,7 @@ export default function RecommendationScreen() {
 
   return (
     
-      <View style={{backgroundColor: colors.white}}>
+      <ScrollView style={{backgroundColor: colors.white}}>
         <RecommendationNorm />
         {
           meals.length > 0 && meals.map((meal) =>
@@ -169,10 +169,10 @@ export default function RecommendationScreen() {
           </View>
         )}
         <TouchableOpacity onPress={addMeal}
-          style={[globalStyles.mainButton, {backgroundColor: colors.white, marginTop: hp(3.56)}]}>
+          style={[globalStyles.mainButton, styles.whiteButton]}>
           <Text style={styles.buttonText}>Добавить перекус</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
   )
 }
 // <MealBlock key={meal.id} name={meal.name} calories={meal.calories} />
@@ -279,6 +279,15 @@ buttonText: {
   lineHeight: hp(2.4),
   fontFamily: 'SF-Pro-Bold',
 },
+whiteButton: {
+  backgroundColor: colors.white,
+  marginTop: hp(3.56),
+  marginBottom: hp(1.54),
+  shadowColor: 'rgba(0, 0, 0, 0.18)',
+  shadowOffset: {width: wp(0), height: hp(0.12)},
+  shadowRadius: hp(2.13),
+  shadowOpacity: 1,
+}
 
   
 

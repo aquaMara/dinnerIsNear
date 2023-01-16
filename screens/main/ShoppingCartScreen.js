@@ -50,7 +50,7 @@ export default function ShoppingCartScreen() {
     <View key={meal.id} style={!meal.visible && styles.mealInvisible} >
         <View style={styles.topLine}>
             <Text style={[ styles.titleText, !meal.visible && {marginLeft: wp(5.13)} ]}>{meal.name}</Text>
-            <TouchableOpacity onPress={() => changeBlockVisibility(meal.id)} style={styles.arrowButton}>
+            <TouchableOpacity onPress={() => changeBlockVisibility(meal.id)} style={[styles.arrowButton, !meal.visible && {marginRight: wp(4.1)}]}>
                 {meal.visible ? (<Image source={require('../../assets/images/chevronUp.png')}
                     style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />)
                 : (<Image source={require('../../assets/images/leftChevron.png')}

@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     recommendationNorm: {
         height: hp(17.3),
         width: wp(91.8),
+        marginTop: hp(3.55),
         //paddingVertical: hp(1.42),
         //paddingHorizontal: wp(4.36),
         backgroundColor: colors.white,

@@ -39,11 +39,9 @@ export default function ROrderPart(meal, ) {
         <View>
             <Text style={styles.orderText}>Выберите блюда из меню или заведение</Text>
         </View>
-        <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(1.07), alignSelf: 'flex-start',}]}>
-            <Text style={[styles.buttonText, {color: colors.white}]}>Меню ресторанов поблизости</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[globalStyles.mainButton, styles.button]}>
-            <Text style={[styles.buttonText, {color: colors.green}]}>Выбрать заведение</Text>
+        <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(1.07), alignSelf: 'flex-start'}]}
+        onPress={() => navigation.navigate("Restaurants")}>
+            <Text style={[styles.buttonText]}>Меню ресторанов поблизости</Text>
         </TouchableOpacity>
     </View>
   )
@@ -51,7 +49,7 @@ export default function ROrderPart(meal, ) {
 
 const styles = StyleSheet.create({
     orderBlock: {
-        height: hp(18.99),
+        height: hp(11.55),  // 18.99
         width: wp(95.9),
         marginTop: hp(2.37),
         alignSelf: 'flex-end',
@@ -62,19 +60,11 @@ const styles = StyleSheet.create({
         lineHeight: hp(1.84),
         fontFamily: 'SF-Pro-Regular',
     },
-    button: {
-        backgroundColor: colors.white,
-        marginTop: hp(1.07),
-        alignSelf: 'flex-start',
-        shadowColor: 'rgba(0, 0, 0, 0.18)',
-        shadowOffset: {width: wp(0), height: hp(0.12)},
-        shadowRadius: hp(2.13),
-        shadowOpacity: 1,
-    },
     buttonText: {
         fontSize: RFValue(17, height),
         lineHeight: hp(2.4),
         fontFamily: 'SF-Pro-Bold',
+        color: colors.white,
     },
     dishesLine: {
         height: hp(9.36),

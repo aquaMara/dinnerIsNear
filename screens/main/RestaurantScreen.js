@@ -113,7 +113,7 @@ export default function RestaurantScreen() {
     }
 
   return (
-    <View style={{backgroundColor: colors.white}}>
+    <ScrollView style={{backgroundColor: colors.white}}>
       <RecommendationNorm />
       {
           meals.length > 0 && meals.map((meal) =>
@@ -133,7 +133,7 @@ export default function RestaurantScreen() {
             </View>
           </View>)}
           {!meal.visible && (
-            <View style={[styles.appearedBlock, eatenBottomBlockVisibility && {height: hp(49.04)}]}>
+            <View style={[styles.appearedBlock, eatenBottomBlockVisibility && {height: hp(40.04)}]}>
               <View style={styles.mealLine}>
                 <Text style={styles.recommendationText}>{meal.name}</Text>
                 <TouchableOpacity onPress={() => changeBlockVisibility(meal.id)} style={styles.arrowButton}>
@@ -165,7 +165,12 @@ export default function RestaurantScreen() {
           )}
           </View>
         )}
-    </View>
+
+        <TouchableOpacity onPress={addMeal}
+          style={[globalStyles.mainButton, styles.whiteButton]}>
+          <Text style={styles.buttonText}>Добавить перекус</Text>
+        </TouchableOpacity>
+    </ScrollView>
   )
 }
 
@@ -223,7 +228,7 @@ const styles = StyleSheet.create({
     appearedBlock: {
       // width: wp(91.8),
       width: wp(100),
-      height: hp(38.04),
+      height: hp(31.04),
       marginTop: hp(2.37),
       alignItems: 'center',
     },
@@ -232,7 +237,7 @@ const styles = StyleSheet.create({
       height: hp(2.37),
       marginTop: hp(2.07),
       display: 'flex',
-      flexDirection: 'row', 
+      flexDirection: 'row',
       
     },
   
@@ -272,6 +277,16 @@ const styles = StyleSheet.create({
     lineHeight: hp(2.4),
     fontFamily: 'SF-Pro-Bold',
   },
+  
+whiteButton: {
+  backgroundColor: colors.white,
+  marginTop: hp(3.56),
+  marginBottom: hp(1.54),
+  shadowColor: 'rgba(0, 0, 0, 0.18)',
+  shadowOffset: {width: wp(0), height: hp(0.12)},
+  shadowRadius: hp(2.13),
+  shadowOpacity: 1,
+}
   
     
   

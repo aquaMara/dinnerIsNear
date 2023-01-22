@@ -57,8 +57,9 @@ export default function Restaurants() {
   return (
     <View style={{flex: 1, backgroundColor: colors.white}}>
       <View style={[styles.searchBarBox]}>
-        <TextInput value={search} style={styles.searchInput} onChangeText={(s) => setSearch(s)}
-        />
+        <TextInput value={search} style={styles.searchInput}
+          placeholder='Поиск' placeholderTextColor={colors.grey2}
+          onChangeText={(s) => setSearch(s)} />
         <TouchableOpacity style={styles.searchButton}>
           <Image source={require('../../../assets/images/search.png')} style={styles.searchImage} />
         </TouchableOpacity>

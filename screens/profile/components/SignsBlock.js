@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         width: wp(90.26),
         marginTop: hp(2.84),
         marginBottom: hp(2.49),
-        borderWidth: 0.4,
+        backgroundColor: colors.white,
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'row',
@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
     signBlock: {
         height: hp(13.63),
         width: wp(23.08),
-        borderWidth: 0.4,
         borderColor: 'green',
         alignItems: 'center',
     },
@@ -73,7 +72,6 @@ const styles = StyleSheet.create({
         width: wp(23.08),
         height: hp(10.67),
         borderRadius: wp(69.74),
-        borderWidth: 0.6,
         aspectRatio: 1,    
         shadowColor: colors.black,
         shadowOffset: {width: wp(0), height: hp(0.36)},
@@ -84,7 +82,6 @@ const styles = StyleSheet.create({
     circleImage: {
         height: hp(4.74),
         width: wp(10.26),
-        borderWidth: 0.3,
         marginTop: hp(2.42),
     },
     titleBoldText: {

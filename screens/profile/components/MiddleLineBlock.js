@@ -4,10 +4,14 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useFonts } from 'expo-font';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { colors } from '../../../styles/colors';
+import { useNavigation } from '@react-navigation/native';
+import { Linking } from 'react-native';
 
 const { height } = Dimensions.get('screen');
 
 export default function MiddleLineBlock() {
+
+  const navigation = useNavigation();
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
@@ -20,7 +24,7 @@ export default function MiddleLineBlock() {
   }
 
   return (
-    <View>
+    <View style={{backgroundColor: colors.white}}>
         <View style={styles.middleLineBlock}>
             <Text style={styles.regularText}>Дополнительно</Text>
         </View>
@@ -29,20 +33,22 @@ export default function MiddleLineBlock() {
                 <Text style={styles.titleText}>Полезные статьи</Text>
                 <Text style={styles.regularText}>Узнай подробнее о нутриентах</Text>
             </View>
-            <TouchableOpacity style={styles.arrowBlock}>
+            <TouchableOpacity style={styles.arrowBlock} onPress={() => navigation.navigate("Articles")}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                     style={styles.arrowImage} />
             </TouchableOpacity>
         </View>
-        <View style={[styles.block, styles.bottomBlockHeight]}>
+        <View style={[styles.block, styles.bottomBlock]}>
             <View style={[styles.textBlocks, styles.bottomTextBlockHeight]}>
                 <Text style={styles.titleText}>Консультация с нутрициологом</Text>
-                <Text style={styles.regularText} numberOfLines={2} ellipsizeMode='tail'>Хочешь добиться лучшего результата 
-                или улучшить своё самочувствие? Запишись на консультацию</Text>
+                <Text style={styles.regularText} numberOfLines={2} ellipsizeMode='tail'>
+                    Хочешь добиться лучшего результата 
+                    или улучшить своё самочувствие? Запишись на консультацию</Text>
             </View>
-            <TouchableOpacity style={styles.arrowBlock}>
+            <TouchableOpacity style={styles.arrowBlock}
+                onPress={() => Linking.openURL('whatsapp://send?phone=+375447659068')}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
-                    style={styles.arrowImage} />
+                style={styles.arrowImage} />
             </TouchableOpacity>
         </View>
     </View>
@@ -52,7 +58,7 @@ export default function MiddleLineBlock() {
 const styles = StyleSheet.create({
     middleLineBlock: {
         width: wp(92.31),
-        marginTop: hp(2.96),
+        // marginTop: hp(2.96),
         alignSelf: 'center',
     },
     titleText: {
@@ -87,8 +93,9 @@ const styles = StyleSheet.create({
     topBlockHeight: {
         height: hp(7.82),
     },
-    bottomBlockHeight: {
+    bottomBlock: {
         height: hp(9.6),
+        marginBottom: hp(1.54),
     },
     textBlocks: {
         width: wp(76.92),

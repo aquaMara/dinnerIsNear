@@ -21,7 +21,7 @@ export default function BottomLineBlock() {
   }
 
   return (
-    <View>
+    <View style={{backgroundColor: colors.white}}>
         <View style={styles.bottomLineBlock}>
             <Text style={styles.regularText}>Профиль</Text>
         </View>
@@ -60,6 +60,6 @@ const styles = StyleSheet.create({
         color: colors.white,
     },
     bottomButton: {
-        marginVertical: hp(1.54),
+        marginBottom: hp(1.54),
     }
 })

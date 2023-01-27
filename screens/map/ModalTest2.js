@@ -20,12 +20,12 @@ export default function ModalTest2({chooseMessage, visibility}) {
         <Modal 
             animationType="slide" transparent={true}
             visible={visibility} style={styles.modalStyle}>
-        <View style={[styles.centeredView, modalVisibleIntro && {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
+        <View style={[styles.centeredView, {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
             <View style={styles.modalView}>
                 <Image source={require('../../assets/images/dish.png')} style={styles.image} />
                 <View style={styles.topLine}>
                     <View style={{width: wp(47.95)}}>
-                        <Text style={styles.dishTitle} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
+                        <Text style={styles.dishTitle} numberOfLines={2} ellipsizeMode='tail'>item.dishName</Text>
                     </View>
                     <View style={{width: wp(13.77), marginLeft: 'auto', marginRight: 0}}>
                         <Text style={[styles.dishTitle, {textAlign: 'right'}]}>290р</Text>
@@ -35,19 +35,19 @@ export default function ModalTest2({chooseMessage, visibility}) {
                 <Image source={require('../../assets/images/rectangle9.png')} style={styles.topLineImage}/>
                 <View style={styles.middleLine}>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishCalories}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>item.dishCalories</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>ккал</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishProtein}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>item.dishProtein</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>белки</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishFats}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>item.dishFats</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>жиры</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishCarbohydrates}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>item.dishCarbohydrates</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>углеводы</Text>
                     </View>
                 </View>
@@ -57,7 +57,7 @@ export default function ModalTest2({chooseMessage, visibility}) {
                         Филе грудки цыплёнка, салат ромейн, салат айсберг, яйцо, сыр пармезан, томаты черри, гренки, соус цезарь (обращаем ваше внимание, что подача соуса изменилась).
                         </Text>
                 </View>
-                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice(item)}>
+                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice('item')}>
                     <Text style={styles.buttonText}>В корзину</Text>
                 </TouchableOpacity>
             </View>

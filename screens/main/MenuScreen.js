@@ -14,7 +14,8 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
 import { FlatList } from 'react-native';
 import TopView from './components/TopView';
-import AppearingDishDescription from './components/AppearingDishDescription';
+//import AppearingDishDescription from './components/AppearingDishDescription';
+import AppearingDishDescriptionModal from './modals/AppearingDishDescriptionModal';
 
 const { height } = Dimensions.get('screen');
 
@@ -26,6 +27,11 @@ export default function MenuScreen({ navigation, route }) {
     const db = getFirestore();
     const colRef = collection(db, 'dishes');
     console.log('dd', data);
+
+    const [visibility, setVisibility] = useState(false);
+    const chooseMessage = (message) => {
+        setVisibility(message);
+    };
     
     console.log('jjjjjjj', route.params.title)
 
@@ -71,7 +77,10 @@ export default function MenuScreen({ navigation, route }) {
                 <View style={{marginHorizontal: wp(2.56)}}><Text style={styles.regularText}>{item.dishFats} Ж</Text></View>
                 <View><Text style={styles.regularText}>{item.dishCarbohydrates} У</Text></View>
             </View>
-            <AppearingDishDescription item={item} />  
+            <TouchableOpacity onPress={() => chooseMessage(true)} style={styles.littleButton}>
+            <Text style={styles.buttonText}>{item.dishPrice}р</Text>
+                <AppearingDishDescriptionModal item={item} chooseMessage={chooseMessage} visibility={visibility} />
+            </TouchableOpacity>
         </View>
     );
 
@@ -224,5 +233,21 @@ const styles = StyleSheet.create({
         shadowRadius: wp(2.1),
         shadowOpacity: 1,
         marginTop: hp(2.37),
-    }
+    },   
+    buttonText: {
+        color: colors.white,
+        fontSize: RFValue(17, height),
+        lineHeight: hp(2.4),
+        fontFamily: 'SF-Pro-Medium',
+        textAlign: 'center',
+    },
+    littleButton: {
+        width: wp(40.51),
+        height: hp(3.8),
+        backgroundColor: colors.green,
+        borderRadius: hp(2.61),
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignSelf: 'center',
+    },
 })

@@ -42,7 +42,6 @@ export default function ArticleScreen({route}) {
         <View style={styles.bodyTextBlock}>
             <Text style={styles.bodyText}>{article.body}</Text>
         </View>
-
     </ScrollView>
   )
 }

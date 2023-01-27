@@ -60,6 +60,6 @@ const styles = StyleSheet.create({
         color: colors.white,
     },
     bottomButton: {
-        marginBottom: hp(1.54),
+        marginVertical: hp(1.54),
     }
 })

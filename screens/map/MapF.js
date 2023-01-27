@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
 import React from 'react'
 import ModalTest from './ModalTest';
+import ModalTest2 from './ModalTest2';
 
 export default function MapF() {
     const [v, setV] = useState(false);
@@ -22,7 +23,7 @@ export default function MapF() {
             <Text>press</Text>
         </TouchableOpacity>
         {visibility && <Text>h</Text>}
-        <ModalTest chooseMessage={chooseMessage} visibility={visibility} />
+        <ModalTest2 chooseMessage={chooseMessage} visibility={visibility} />
     </View>
   )
 }

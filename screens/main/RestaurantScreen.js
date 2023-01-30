@@ -142,7 +142,7 @@ export default function RestaurantScreen() {
                 </TouchableOpacity>
               </View>
               <CaloriesForAMeal />
-              <ROrderPart name={meal.name} navigation={navigation}/>
+              <ROrderPart mealId={meal.id}/>
               <View style={{alignItems: 'center'}}>
                 <View style={styles.introductionLine}>
                   <Text style={styles.recommendationText}>Вы съели:</Text>

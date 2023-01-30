@@ -5,6 +5,8 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { colors } from '../../styles/colors';
 import { countMeals } from '../../functions/CountMeals';
+import { useShoppingCart } from '../../auth/ShoppingCartProvider';
+import { useAuth } from '../../auth/AuthProvoder';
 
 const { height } = Dimensions.get('screen');
 
@@ -13,6 +15,8 @@ export default function ShoppingCartScreen() {
     const [meals, setMeals] = useState();
     let numberOfMeals = 4;
     let calorieIntake = 1700;
+    const { cart, setCart } = useShoppingCart();
+    const { currentUserMeals, setCurrentUserMeals} = useAuth();
 
     const changeBlockVisibility = (givenId) => {
         console.log(givenId)
@@ -29,9 +33,81 @@ export default function ShoppingCartScreen() {
         setMeals(changedMeals);
     }
 
+    // dishId = 1 in newElement заменить !!!
+    const addToEaten = (mealId) => {
+        console.log(mealId, 'mealId');
+        const newElement = {mealId, id: 1, 'sumProtein': 200, 'sumFats': 300, 'sumCarbohydrates': 400};
+        setCurrentUserMeals(prev => [...prev, newElement]);   
+    }
+
+    const filterFunction = (mId) => {
+        var result = cart.filter(obj => {
+            return obj.mealId === mId
+        })
+        //var uniqueResult = result.filter((v, i, a) => a.indexOf(v) === i);
+        const uniqueResult = [...result.reduce((a,c)=>{
+            a.set(c.id, c);
+            return a;
+          }, new Map()).values()];
+          
+        console.log('RESULT ', result, mId);
+        console.log('UNIQUE 1 ', uniqueResult)
+        return uniqueResult;
+    }
+    // currentUserData.filter !!!
+    const filterFunctionForTotalNutritionCount = (mId) => {
+        var result = cart.filter(obj => {
+            return obj.mealId === mId
+        })
+        let totalCalories = 0, totalProtein = 0, totalFats = 0, totalCarbohydrates = 0;
+        result.forEach(element => {
+            totalCalories += element.dishCalories;
+        });
+        result.forEach(element => {
+            totalProtein += element.dishProtein;
+        });
+        result.forEach(element => {
+            totalFats += element.dishFats;
+        });
+        result.forEach(element => {
+            totalCarbohydrates += element.dishCarbohydrates;
+        });
+        console.log('totalCalories: ', totalCalories, 'totalProtein: ', totalProtein);
+
+        return {totalCalories, totalProtein, totalFats, totalCarbohydrates};
+    }
+
+    // dishId = 1 in newElement заменить !!!
+    const addDish = (mId, item) => {
+    //const mealId = 1;
+      const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice} = item;
+      const newElement = {mealId: mId, id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice}
+      console.log('ADDDISH ', newElement)
+      setCart(cart => [...cart, newElement]);
+      console.log(cart)
+    }
+
+    const countNumberOfDishesInAMeal = (mId, ff) => {
+        // get all dishes for this meal by meal id
+        var result = cart.filter(obj => {
+            return obj.mealId === mId
+        })
+        console.log('countNumberOfDishesInAMeal ', mId, ff)
+        const idToFind = ff.id;
+        let amountOfDishInAMeal = 0;
+        result.forEach(element => {
+            if(element.id === idToFind) {
+                ++amountOfDishInAMeal;
+            }
+        });
+        return amountOfDishInAMeal;
+    }
+
     useEffect(() => {
         setMeals(countMeals(numberOfMeals, calorieIntake));
-        console.log('hjhjhjh', meals)
+        console.log('hjhjhjh', meals);
+        console.log(cart, 'CART');
+        filterFunctionForTotalNutritionCount(1);
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -62,39 +138,42 @@ export default function ShoppingCartScreen() {
         <View style={styles.middleLine}>
             <View style={styles.middleBlock}>
                 <Text style={styles.middleBlockText}>
-                    158 Б
+                    {console.log('HELLO ', filterFunctionForTotalNutritionCount(meal.id).totalCalories)}
+                    {filterFunctionForTotalNutritionCount(meal.id).totalProtein} Б
                 </Text>
             </View>
             <View style={[styles.middleBlock, {marginHorizontal: wp(10)}]}>
                 <Text style={styles.middleBlockText}>
-                    158 Ж
+                {filterFunctionForTotalNutritionCount(meal.id).totalFats} Ж
                 </Text>
             </View>
             <View style={styles.middleBlock}>
                 <Text style={styles.middleBlockText}>
-                    158 У
+                {filterFunctionForTotalNutritionCount(meal.id).totalCarbohydrates} У
                 </Text>
             </View>
             <View style={styles.middleBlockCalories}>
                 <Text style={styles.titleText}>
-                    1000 ккал
+                {filterFunctionForTotalNutritionCount(meal.id).totalCalories} ккал
                 </Text>
             </View>
         </View>
         <Image source={require('../../assets/images/rectangle12.png')}
                 style={{width: wp(91.8), height: hp(0.47), marginTop: hp(0.59), alignSelf: 'center'}}/>
-        <View style={styles.mealBlock}>
+        
+        { filterFunction(meal.id).length > 0 && filterFunction(meal.id).map((ff) =>(
+            <View style={styles.mealBlock} key={ff.id} >
             <View>
                 <Image source={require('../../assets/images/picture_1.jpg')}
                     style={styles.image}/>
             </View>
             <View style={styles.dishBlock}>
-                <View><Text style={styles.dishTitle}>Название блюда</Text></View>
+                <View><Text style={styles.dishTitle}>{ff.dishName}</Text></View>
                 <View style={{display: 'flex', flexDirection: 'row', marginBottom: 0, marginTop: 'auto'}}>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={[styles.dishInfo]}>К164</Text></View>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Б64</Text></View>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Ж64</Text></View>
-                    <View style={{width: wp(9.2)}}><Text style={styles.dishInfo}>У64</Text></View>
+                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={[styles.dishInfo]}>К{ff.dishCalories}</Text></View>
+                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Б{ff.dishProtein}</Text></View>
+                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Ж{ff.dishFats}</Text></View>
+                    <View style={{width: wp(9.2)}}><Text style={styles.dishInfo}>У{ff.dishCarbohydrates}</Text></View>
                 </View>
             </View>
             <View style={{display: 'flex', flexDirection: 'row', marginRight: 0, marginLeft: 'auto'}}>
@@ -103,14 +182,19 @@ export default function ShoppingCartScreen() {
                         style={styles.counterImage}/>
                 </TouchableOpacity>
                 <View style={{width: wp(5.13), alignItems: 'center', alignSelf: 'center'}}>
-                    <Text style={styles.counterText}>1</Text>
+                    {console.log('ff', ff)}
+                    <Text style={styles.counterText}>{countNumberOfDishesInAMeal(meal.id, ff)}</Text>
                 </View>
-                <TouchableOpacity style={styles.counterButton}>
+                <TouchableOpacity style={styles.counterButton} onPress={() => addDish(meal.id, ff)}>
                     <Image source={require('../../assets/images/counterPlus.png')}
                         style={styles.counterImage}/>
                 </TouchableOpacity>
             </View>
         </View>
+        ))}
+    <TouchableOpacity onPress={() => addToEaten(meal.id)}>
+        <Text>ADD</Text>
+    </TouchableOpacity>
         </View>)}
     </View>))}
     </ScrollView>

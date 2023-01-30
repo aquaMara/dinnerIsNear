@@ -5,7 +5,7 @@ import { useContext } from "react";
 export const ShoppingCartContext = createContext();
 
 export const ShoppingCartProvider = ( { children } ) => {
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState([{}]);
 
     return (
         <ShoppingCartContext.Provider value={{

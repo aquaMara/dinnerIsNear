@@ -9,6 +9,8 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import data from '../../chat/data';
 import dishesSections from '../../../data/dishesSections';
+import AppearingDishDescriptionModal from '../modals/AppearingDishDescriptionModal';
+import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 
 const { height } = Dimensions.get('screen');  
 
@@ -18,7 +20,12 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const [dishesIntro, setDishesIntro] = useState([]);
     const [currentSectionId, setCurrentSectionId] = useState(null);
     // const navigation = useNavigation();
-    console.log(route.params.id)
+    console.log('route.params.restrauntId', route.params.restrauntId);
+    console.log('route.params.mealId', route.params.mealId);
+    const [visibility, setVisibility] = useState(false);
+    const chooseMessage = (message) => {
+        setVisibility(message);
+    };
 
     const handleSectionChoice = (id, name) => {
         console.log('handleSectionChoice id ', id);
@@ -75,7 +82,10 @@ export default function RestaurantMenuScreen({navigation, route}) {
                 <View style={{marginHorizontal: wp(2.56)}}><Text style={styles.regularText}>{item.dishFats} Ж</Text></View>
                 <View><Text style={styles.regularText}>{item.dishCarbohydrates} У</Text></View>
             </View>
-            <AppearingDishDescription item={item} />  
+            <TouchableOpacity onPress={() => chooseMessage(true)} style={styles.littleButton}>
+            <Text style={styles.buttonText}>{item.dishPrice}р</Text>
+                <AppearingDishDescriptionModal item={item} mealId={route.params.mealId} chooseMessage={chooseMessage} visibility={visibility} />
+            </TouchableOpacity>
         </View>
     );
 
@@ -211,5 +221,21 @@ const styles = StyleSheet.create({
         shadowRadius: wp(2.1),
         shadowOpacity: 1,
         marginTop: hp(2.37),
-    }
+    },
+    buttonText: {
+        color: colors.white,
+        fontSize: RFValue(17, height),
+        lineHeight: hp(2.4),
+        fontFamily: 'SF-Pro-Medium',
+        textAlign: 'center',
+    },
+    littleButton: {
+        width: wp(40.51),
+        height: hp(3.8),
+        backgroundColor: colors.green,
+        borderRadius: hp(2.61),
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignSelf: 'center',
+    },
 })

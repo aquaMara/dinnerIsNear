@@ -71,7 +71,6 @@ export default function MainTabNavigation() {
                 <View style={{height: hp(4.27), display: 'flex', flexDirection: 'column'}}>
                 <View style={{display: 'flex', flexDirection: 'row',}} >
                     <Text style={styles.title}>Адрес доставки</Text>
-                    
                     <Image source={require('../../assets/images/chevronLight.png')}
                         style={{height: hp(1.3), width: wp(1.28), marginLeft: wp(1.03), alignSelf: 'center'}} />
                 </View>
@@ -81,13 +80,13 @@ export default function MainTabNavigation() {
         </View>),
         headerRight: () => 
         ( <View style={styles.buttonsBox}>
-            <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
+            <TouchableOpacity onPress={() => navigation.navigate('Favs')} style={{marginRight: wp(2)}} >
               <Image source={require('../../assets/images/favourites.png')}
-                style={{height: hp(3.55), width: wp(7.69)}}/>
+                style={styles.favsImage}/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Cart')} >
+            <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={{}}>
               <Image source={require('../../assets/images/shop.png')}
-                style={{height: hp(3.55), width: wp(7.69), marginLeft: wp(3.33)}} />
+                style={styles.shopImage} />
             </TouchableOpacity>
           </View> ),
         }} />
@@ -118,11 +117,11 @@ export default function MainTabNavigation() {
         ( <View style={styles.buttonsBox}>
             <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
               <Image source={require('../../assets/images/favourites.png')}
-                style={{height: hp(3.55), width: wp(7.69)}}/>
+                style={styles.favsImage}/>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Cart')} >
               <Image source={require('../../assets/images/shop.png')}
-                style={{height: hp(3.55), width: wp(7.69), marginLeft: wp(3.33)}} />
+                style={styles.shopImage} />
             </TouchableOpacity>
           </View> ),
         }} />
@@ -132,11 +131,11 @@ export default function MainTabNavigation() {
         ( <View style={styles.buttonsBox}>
             <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
               <Image source={require('../../assets/images/favourites.png')}
-                style={{height: hp(3.55), width: wp(7.69)}}/>
+                style={styles.favsImage}/>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Cart')} >
               <Image source={require('../../assets/images/shop.png')}
-                style={{height: hp(3.55), width: wp(7.69), marginLeft: wp(3.33)}} />
+                style={styles.shopImage} />
             </TouchableOpacity>
           </View> ) })} />
       <Stack.Screen name="Cart" component={ShoppingCartScreen} options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Корзина' }} />
@@ -147,11 +146,11 @@ export default function MainTabNavigation() {
         ( <View style={styles.buttonsBox}>
             <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
               <Image source={require('../../assets/images/favourites.png')}
-                style={{height: hp(3.55), width: wp(7.69)}}/>
+                style={styles.favsImage}/>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Cart')} >
               <Image source={require('../../assets/images/shop.png')}
-                style={{height: hp(3.55), width: wp(7.69), marginLeft: wp(3.33)}} />
+                style={styles.shopImage} />
             </TouchableOpacity>
           </View> ) })} />
     </Stack.Navigator>
@@ -168,13 +167,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonsBox: {
-      width: wp(19),
-      height: hp(3.55),
-      // marginRight: wp(4.1),
+      width: wp(21),
+      height: hp(5.55),
+      //marginRight: wp(2.1),
       display: 'flex',
       flexDirection: 'row',
       marginLeft: 'auto',
       alignSelf: 'center'
+  },
+  favsImage: {
+    height: hp(5.55),
+    width: wp(8.69)
+  },
+  shopImage: {
+    height: hp(5.55),
+    width: wp(8.69),
   },
   writtenAddress: {
     marginLeft: wp(3.33),

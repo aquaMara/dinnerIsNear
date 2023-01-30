@@ -11,6 +11,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfileScreen from '../../screens/profile/ProfileScreen';
 import ArticlesScreen from '../../screens/profile/ArticlesScreen';
 import ArticleScreen from '../../screens/profile/ArticleScreen';
+import ProfileConfigScreen from '../../screens/profile/ProfileConfigScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,8 @@ export default function ProfileNavigation() {
         options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Статьи'}}/>
       <Stack.Screen name="Article" component={ArticleScreen}
         options={({ route }) => ({ title: route.params.title, headerShown: true, headerBackTitle: 'Назад',})} />
+      <Stack.Screen name="ProfileConfig" component={ProfileConfigScreen}
+        options={({ route }) => ({ title: 'Настройка профиля', headerShown: true, headerBackTitle: 'Назад',})} />
     </Stack.Navigator>
   )
 }

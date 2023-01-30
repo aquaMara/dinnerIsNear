@@ -15,9 +15,10 @@ import dishesIntroduction from '../../../data/dishesIntroduction';
 
 const { height } = Dimensions.get('screen');
 
-export default function ROrderPart(meal, ) {
+export default function ROrderPart({ mealId }) {
 
     const navigation = useNavigation();
+    console.log(mealId, 'jhh87069856hhhhhhhhhhhh')
     const [dishesIntro, setDishesIntro] = useState([]);
 
     useEffect(() => {
@@ -40,7 +41,7 @@ export default function ROrderPart(meal, ) {
             <Text style={styles.orderText}>Выберите блюда из меню или заведение</Text>
         </View>
         <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(1.07), alignSelf: 'flex-start'}]}
-        onPress={() => navigation.navigate("Restaurants")}>
+        onPress={() => navigation.navigate("Restaurants", {mealId: mealId})}>
             <Text style={[styles.buttonText]}>Меню ресторанов поблизости</Text>
         </TouchableOpacity>
     </View>

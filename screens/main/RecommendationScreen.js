@@ -240,7 +240,6 @@ const styles = StyleSheet.create({
     marginTop: hp(2.07),
     display: 'flex',
     flexDirection: 'row', 
-    
   },
 
   introductionLine: {

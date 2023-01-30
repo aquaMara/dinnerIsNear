@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useFonts } from 'expo-font';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -9,6 +10,8 @@ import { globalStyles } from '../../../styles/styles';
 const { height } = Dimensions.get('screen');
 
 export default function BottomLineBlock() {
+
+  const navigation = useNavigation();
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
@@ -25,7 +28,7 @@ export default function BottomLineBlock() {
         <View style={styles.bottomLineBlock}>
             <Text style={styles.regularText}>Профиль</Text>
         </View>
-        <TouchableOpacity style={globalStyles.whiteButton}>
+        <TouchableOpacity style={globalStyles.whiteButton} onPress={() => navigation.navigate('ProfileConfig')}>
             <Text style={[styles.buttonText, styles.greenText]}>Настройка профиля</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[globalStyles.mainButton, styles.bottomButton]}>

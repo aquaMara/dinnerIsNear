@@ -10,16 +10,24 @@ import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 
 const { height } = Dimensions.get('screen');
 
-export default function AppearingDishDescriptionModal({chooseMessage, visibility, item}) {
+export default function AppearingDishDescriptionModal({chooseMessage, visibility, item, mealId}) {
 
   const [modalVisibleIntro, setModalVisibleIntro] = useState(false);
   const { cart, setCart } = useShoppingCart();
+  console.log('h', mealId);
+  console.log('itemitem', item);
 
   const handleCartChoice = (item) => {
       setModalVisibleIntro(!modalVisibleIntro);
       chooseMessage(false);
-      console.log(item);
-      setCart(cart => [...cart, item])
+      // !!!
+      //const mealId = 1;
+      const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice} = item;
+      // dishId = 1 in newElement заменить !!!
+      const cartItem = {mealId, id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice}
+      console.log('cartItem', cartItem)
+      setCart(cart => [...cart, cartItem]);
+      console.log(cart)
   }
 
   useEffect(() => {
@@ -44,6 +52,7 @@ export default function AppearingDishDescriptionModal({chooseMessage, visibility
         visible={visibility} style={styles.modalStyle}>
           <View style={[styles.centeredView, modalVisibleIntro && {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
             <View style={styles.modalView}>
+                {console.log(item.dishCalories)}
                 <Image source={require('../../../assets/images/dish.png')} style={styles.image} />
                 <View style={styles.topLine}>
                     <View style={{width: wp(47.95)}}>

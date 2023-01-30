@@ -8,13 +8,23 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ( { children } ) => {
     const [currentUser, setCurrentUser] = useState(null);
-    const [currentUserData, setCurrentUserData] = useState(null);
+
+    const [caloriesCount, setCaloriesCount] = useState(null);
+    const [proteinCount, setProteinCount] = useState(null);
+    const [fatsCount, setFatsCount] = useState(null);
+    const [carbohydratesCount, setCarbohydratesCount] = useState(null);
+    const [mealsNumber, setMealsNumber] = useState(null);
+
     const [loading, setLoading] = useState(true);
+
+    const [currentUserMeals, setCurrentUserMeals] = useState([{}]);
+    //currentUserMeals[0] = {"p": 25, "f": 34}
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(user => {
             setCurrentUser(user);
             setLoading(false);
+            // get all data from firebases
             console.log('Auth Provider, user : ', currentUser)
         });
     }, []);
@@ -22,10 +32,23 @@ export const AuthProvider = ( { children } ) => {
     return (
         <AuthContext.Provider value={{
             currentUser,
-            currentUserData, setCurrentUserData
+            caloriesCount, setCaloriesCount,
+            proteinCount, setProteinCount,
+            fatsCount, setFatsCount,
+            carbohydratesCount, setCarbohydratesCount,
+            mealsNumber, setMealsNumber,
+            currentUserMeals, setCurrentUserMeals
+
         }}>
             {children}
-            {console.log('Auth Provider, USER : ', currentUser, ' USER DATA : ', currentUserData)}
+
+            {console.log('Auth Provider, USER : ', currentUser)}
+            {console.log('Auth Provider, caloriesCount : ', caloriesCount)}
+            {console.log('Auth Provider, proteinCount : ', proteinCount)}
+            {console.log('Auth Provider, fatsCount : ', fatsCount)}
+            {console.log('Auth Provider, carbohydratesCount : ', carbohydratesCount)}
+            {console.log('Auth Provider, mealsNumber : ', mealsNumber)}
+            {console.log('Auth Provider, currentUserMeals : ', currentUserMeals)}
         </AuthContext.Provider>
     )
 };

@@ -12,15 +12,16 @@ import { useNavigation } from '@react-navigation/native';
 
 const { height } = Dimensions.get('screen');
 
-export default function Restaurants() {
+export default function Restaurants({route}) {
 
   const navigation = useNavigation();
+  console.log(route.params.mealId, 'jhh87069856hhhui980080890hhhhhhhhh')
   const [search, setSearch] = useState('');
   const [restaurants, setRestaurants] = useState([]);
 
-  const moveToRestaurant = (id, name) => {
-    console.log(id, name);
-    navigation.navigate("RestaurantMenu", {title: name, id: id})
+  const moveToRestaurant = (id, name, mealId) => {
+    console.log('moveToRestaurant', id, name, mealId);
+    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId})
   }
 
   const renderRestaurant = ({item}) => (
@@ -32,7 +33,7 @@ export default function Restaurants() {
         </View>
       </View>
       <View style={styles.bottomBlock}>
-        <TouchableOpacity style={styles.restrauntButton} onPress={() => moveToRestaurant(item.id, item.name)}>
+        <TouchableOpacity style={styles.restrauntButton} onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
           <Text style={styles.restaurantTitleText}>{item.name}</Text>
         </TouchableOpacity>
       </View>

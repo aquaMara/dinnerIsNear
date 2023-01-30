@@ -7,6 +7,7 @@ import { colors } from '../../styles/colors';
 import { countMeals } from '../../functions/CountMeals';
 import { useShoppingCart } from '../../auth/ShoppingCartProvider';
 import { useAuth } from '../../auth/AuthProvoder';
+import { globalStyles } from '../../styles/styles';
 
 const { height } = Dimensions.get('screen');
 
@@ -17,6 +18,10 @@ export default function ShoppingCartScreen() {
     let calorieIntake = 1700;
     const { cart, setCart } = useShoppingCart();
     const { currentUserMeals, setCurrentUserMeals} = useAuth();
+    const { caloriesCount, setCaloriesCount } = useAuth();
+    const { proteinCount, setProteinCount } = useAuth();
+    const { fatsCount, setFatsCount } = useAuth();
+    const { carbohydratesCount, setCarbohydratesCount } = useAuth();
 
     const changeBlockVisibility = (givenId) => {
         console.log(givenId)
@@ -34,57 +39,97 @@ export default function ShoppingCartScreen() {
     }
 
     // dishId = 1 in newElement заменить !!!
-    const addToEaten = (mealId) => {
-        console.log(mealId, 'mealId');
-        const newElement = {mealId, id: 1, 'sumProtein': 200, 'sumFats': 300, 'sumCarbohydrates': 400};
-        setCurrentUserMeals(prev => [...prev, newElement]);   
-    }
-
-    const filterFunction = (mId) => {
-        var result = cart.filter(obj => {
-            return obj.mealId === mId
-        })
-        //var uniqueResult = result.filter((v, i, a) => a.indexOf(v) === i);
-        const uniqueResult = [...result.reduce((a,c)=>{
-            a.set(c.id, c);
-            return a;
-          }, new Map()).values()];
-          
-        console.log('RESULT ', result, mId);
-        console.log('UNIQUE 1 ', uniqueResult)
-        return uniqueResult;
-    }
-    // currentUserData.filter !!!
-    const filterFunctionForTotalNutritionCount = (mId) => {
-        var result = cart.filter(obj => {
+    const addToEaten = (mId) => {
+        console.log(mId, 'mealId');
+        var foodForCurrentMeal = cart.filter(obj => {
             return obj.mealId === mId
         })
         let totalCalories = 0, totalProtein = 0, totalFats = 0, totalCarbohydrates = 0;
-        result.forEach(element => {
+        foodForCurrentMeal.forEach(element => {
             totalCalories += element.dishCalories;
         });
-        result.forEach(element => {
+        foodForCurrentMeal.forEach(element => {
             totalProtein += element.dishProtein;
         });
-        result.forEach(element => {
+        foodForCurrentMeal.forEach(element => {
             totalFats += element.dishFats;
         });
-        result.forEach(element => {
+        foodForCurrentMeal.forEach(element => {
             totalCarbohydrates += element.dishCarbohydrates;
         });
-        console.log('totalCalories: ', totalCalories, 'totalProtein: ', totalProtein);
-
-        return {totalCalories, totalProtein, totalFats, totalCarbohydrates};
+        // COUNT NUTRITION
+        //setCurrentUserMeals(prev => [...prev, foodForCurrentMeal]);
+        //const totalCaloriesObject = {mealId, totalCalories};
+        setCaloriesCount(prev => [...prev, {mealId: mId, totalCalories}]);
+        setProteinCount(prev => [...prev, {mealId: mId, totalProtein}]);
+        setFatsCount(prev => [...prev, {mealId: mId, totalFats}]);
+        setCarbohydratesCount(prev => [...prev, {mealId: mId, totalCarbohydrates}]);
+        
+        console.log("CART !", cart)
+        var cart2 = cart.filter(obj => {
+            return obj.mealId != mId
+        })
+        setCart(cart2);
+        console.log("CART !2", cart2)
     }
 
-    // dishId = 1 in newElement заменить !!!
-    const addDish = (mId, item) => {
-    //const mealId = 1;
+    const filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal = (mId) => {
+        var result = cart.filter(obj => {
+            return obj.mealId === mId
+        })
+        const uniqueResult = [...result.reduce((a,c)=>{
+            a.set(c.id, c);
+            return a;
+        }, new Map()).values()];
+          
+        return uniqueResult;
+    }
+
+    const filterFunctionForTotalCaloriesCount = (mId) => {
+        var caloriesForThisMealFromGlobal = caloriesCount.filter(obj => {
+            return obj.mealId === mId
+        })
+        let totalCalories = 0;
+        caloriesForThisMealFromGlobal.forEach(element => {
+            totalCalories += element.totalCalories;
+        });
+        return totalCalories;
+    }
+    const filterFunctionForTotalProteinCount = (mId) => {
+        var proteinForThisMealFromGlobal = proteinCount.filter(obj => {
+            return obj.mealId === mId
+        });
+        let totalProtein = 0;
+        proteinForThisMealFromGlobal.forEach(element => {
+            totalProtein += element.totalProtein;
+        });
+        return totalProtein;
+    }
+    const filterFunctionForTotalFatsCount = (mId) => {
+        var fatsForThisMealFromGlobal = fatsCount.filter(obj => {
+            return obj.mealId === mId
+        });
+        let  totalFats = 0;
+        fatsForThisMealFromGlobal.forEach(element => {
+            totalFats += element.totalFats;
+        });
+        return totalFats;
+    }
+    const filterFunctionForTotalCarbohydratesCount = (mId) => {
+        var carbohydratesForThisMealFromGlobal = carbohydratesCount.filter(obj => {
+            return obj.mealId === mId
+        });
+        let totalCarbohydrates = 0;
+        carbohydratesForThisMealFromGlobal.forEach(element => {
+            totalCarbohydrates += element.totalCarbohydrates;
+        });
+        return totalCarbohydrates;
+    }
+
+    const addDishToCart = (mId, item) => {
       const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice} = item;
       const newElement = {mealId: mId, id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice}
-      console.log('ADDDISH ', newElement)
       setCart(cart => [...cart, newElement]);
-      console.log(cart)
     }
 
     const countNumberOfDishesInAMeal = (mId, ff) => {
@@ -92,7 +137,6 @@ export default function ShoppingCartScreen() {
         var result = cart.filter(obj => {
             return obj.mealId === mId
         })
-        console.log('countNumberOfDishesInAMeal ', mId, ff)
         const idToFind = ff.id;
         let amountOfDishInAMeal = 0;
         result.forEach(element => {
@@ -105,9 +149,6 @@ export default function ShoppingCartScreen() {
 
     useEffect(() => {
         setMeals(countMeals(numberOfMeals, calorieIntake));
-        console.log('hjhjhjh', meals);
-        console.log(cart, 'CART');
-        filterFunctionForTotalNutritionCount(1);
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -138,30 +179,29 @@ export default function ShoppingCartScreen() {
         <View style={styles.middleLine}>
             <View style={styles.middleBlock}>
                 <Text style={styles.middleBlockText}>
-                    {console.log('HELLO ', filterFunctionForTotalNutritionCount(meal.id).totalCalories)}
-                    {filterFunctionForTotalNutritionCount(meal.id).totalProtein} Б
+                    {filterFunctionForTotalProteinCount(meal.id)} Б
                 </Text>
             </View>
             <View style={[styles.middleBlock, {marginHorizontal: wp(10)}]}>
                 <Text style={styles.middleBlockText}>
-                {filterFunctionForTotalNutritionCount(meal.id).totalFats} Ж
+                {filterFunctionForTotalFatsCount(meal.id)} Ж
                 </Text>
             </View>
             <View style={styles.middleBlock}>
                 <Text style={styles.middleBlockText}>
-                {filterFunctionForTotalNutritionCount(meal.id).totalCarbohydrates} У
+                {filterFunctionForTotalCarbohydratesCount(meal.id)} У
                 </Text>
             </View>
             <View style={styles.middleBlockCalories}>
                 <Text style={styles.titleText}>
-                {filterFunctionForTotalNutritionCount(meal.id).totalCalories} ккал
+                {filterFunctionForTotalCaloriesCount(meal.id)} ккал
                 </Text>
             </View>
         </View>
         <Image source={require('../../assets/images/rectangle12.png')}
                 style={{width: wp(91.8), height: hp(0.47), marginTop: hp(0.59), alignSelf: 'center'}}/>
         
-        { filterFunction(meal.id).length > 0 && filterFunction(meal.id).map((ff) =>(
+        { filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal(meal.id).length > 0 && filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal(meal.id).map((ff) =>(
             <View style={styles.mealBlock} key={ff.id} >
             <View>
                 <Image source={require('../../assets/images/picture_1.jpg')}
@@ -181,20 +221,20 @@ export default function ShoppingCartScreen() {
                     <Image source={require('../../assets/images/counterMinus.png')}
                         style={styles.counterImage}/>
                 </TouchableOpacity>
-                <View style={{width: wp(5.13), alignItems: 'center', alignSelf: 'center'}}>
+                <View style={{width: wp(6.13), alignItems: 'center', alignSelf: 'center'}}>
                     {console.log('ff', ff)}
                     <Text style={styles.counterText}>{countNumberOfDishesInAMeal(meal.id, ff)}</Text>
                 </View>
-                <TouchableOpacity style={styles.counterButton} onPress={() => addDish(meal.id, ff)}>
+                <TouchableOpacity style={styles.counterButton} onPress={() => addDishToCart(meal.id, ff)}>
                     <Image source={require('../../assets/images/counterPlus.png')}
                         style={styles.counterImage}/>
                 </TouchableOpacity>
             </View>
         </View>
         ))}
-    <TouchableOpacity onPress={() => addToEaten(meal.id)}>
-        <Text>ADD</Text>
-    </TouchableOpacity>
+        <TouchableOpacity onPress={() => addToEaten(meal.id)} style={globalStyles.mainButton}>
+            <Text style={styles.buttonText}>Добавить в съеденное</Text>
+        </TouchableOpacity>
         </View>)}
     </View>))}
     </ScrollView>
@@ -317,5 +357,12 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         alignSelf: 'center'
     },
+    buttonText: {
+        color: colors.white,
+        fontSize: RFValue(17, height),
+        lineHeight: hp(2.4),
+        fontFamily: 'SF-Pro-Medium',
+        textAlign: 'center',
+      },
 
 })

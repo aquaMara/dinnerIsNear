@@ -47,7 +47,7 @@ export default function MainTabNavigation() {
   }
 
   return (
-    <Stack.Navigator initialRouteName='Recommendation'>
+    <Stack.Navigator initialRouteName='Restaurant'>
       <Stack.Screen name="Recommendation" component={RecommendationScreen} options={{ 
         headerTitleStyle: {hidden: true, fontSize: 0},
         headerBackTitle: 'Назад', headerShown: true,
@@ -90,29 +90,9 @@ export default function MainTabNavigation() {
             </TouchableOpacity>
           </View> ),
         }} />
-      <Stack.Screen name="Restaurant" component={RestaurantScreen} options={{ 
-        headerTitleStyle: {hidden: true, fontSize: 0},
+      <Stack.Screen name="Restaurant" component={RestaurantScreen} options={{
         headerBackTitle: 'Назад', headerShown: true,
-        headerLeft: () => 
-        (<View style={styles.addressInsideBox}>
-          <SwitchSelector
-            style={{height: hp(3.67), width: wp(15.08), padding: 0}}
-            imageStyle={{height: hp(3.2), width: wp(6.92)}}
-            onPress={(val) => {navigation.navigate('Recommendation'), console.log('To rec', val)}}
-            initial={0}
-                selectedColor={colors.green}
-                textColor={'rgba(120, 120, 128, 0)'}
-                buttonColor={colors.white}
-                borderColor={colors.green}
-                backgroundColor={'rgba(120, 120, 128, 0.16)'}
-                options={[
-                    { value: false, imageIcon: require('../../assets/images/restaurant.png'), activeColor: 'white' },
-                    { value: true, imageIcon: require('../../assets/images/map.png'), activeColor: 'white' }
-                ]} />
-            <View style={{alignItems: 'center', justifyContent: 'center', marginLeft: wp(20.3)}} >
-                <Text style={[styles.value]}>В ресторане</Text>
-            </View>
-        </View>),
+        headerTitle: 'В ресторане',
         headerRight: () => 
         ( <View style={styles.buttonsBox}>
             <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
@@ -223,4 +203,42 @@ headerLeft: () => {
           </View>
         },
 
+        */
+
+        /*
+        <Stack.Screen name="Restaurant" component={RestaurantScreen} options={{ 
+        headerTitleStyle: {hidden: true, fontSize: 0},
+        headerBackTitle: 'Назад', headerShown: true,
+        headerLeft: () => 
+        (<View style={styles.addressInsideBox}>
+          <SwitchSelector
+            style={{height: hp(3.67), width: wp(15.08), padding: 0}}
+            imageStyle={{height: hp(3.2), width: wp(6.92)}}
+            onPress={(val) => {navigation.navigate('Recommendation'), console.log('To rec', val)}}
+            initial={0}
+                selectedColor={colors.green}
+                textColor={'rgba(120, 120, 128, 0)'}
+                buttonColor={colors.white}
+                borderColor={colors.green}
+                backgroundColor={'rgba(120, 120, 128, 0.16)'}
+                options={[
+                    { value: false, imageIcon: require('../../assets/images/restaurant.png'), activeColor: 'white' },
+                    { value: true, imageIcon: require('../../assets/images/map.png'), activeColor: 'white' }
+                ]} />
+            <View style={{alignItems: 'center', justifyContent: 'center', marginLeft: wp(20.3)}} >
+                <Text style={[styles.value]}>В ресторане</Text>
+            </View>
+        </View>),
+        headerRight: () => 
+        ( <View style={styles.buttonsBox}>
+            <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
+              <Image source={require('../../assets/images/favourites.png')}
+                style={styles.favsImage}/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Cart')} >
+              <Image source={require('../../assets/images/shop.png')}
+                style={styles.shopImage} />
+            </TouchableOpacity>
+          </View> ),
+        }} />
         */

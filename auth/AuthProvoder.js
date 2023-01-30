@@ -9,10 +9,10 @@ export const AuthContext = createContext();
 export const AuthProvider = ( { children } ) => {
     const [currentUser, setCurrentUser] = useState(null);
 
-    const [caloriesCount, setCaloriesCount] = useState(null);
-    const [proteinCount, setProteinCount] = useState(null);
-    const [fatsCount, setFatsCount] = useState(null);
-    const [carbohydratesCount, setCarbohydratesCount] = useState(null);
+    const [caloriesCount, setCaloriesCount] = useState([{}]);
+    const [proteinCount, setProteinCount] = useState([{}]);
+    const [fatsCount, setFatsCount] = useState([{}]);
+    const [carbohydratesCount, setCarbohydratesCount] = useState([{}]);
     const [mealsNumber, setMealsNumber] = useState(null);
 
     const [loading, setLoading] = useState(true);

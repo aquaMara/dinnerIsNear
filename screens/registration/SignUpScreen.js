@@ -54,14 +54,15 @@ useEffect(() => {
 const sendVerification = () => {
     const phoneProvider = new firebase.auth.PhoneAuthProvider();
     console.log(phoneNumber);
+    let pn = '+375' + phoneNumber;
     phoneProvider
-        .verifyPhoneNumber(phoneNumber, recaptchaVerifier.current)
+        .verifyPhoneNumber(pn, recaptchaVerifier.current)
         .then(res => {navigation.navigate('ConfirmSignUp', {verificationId: res, phoneNumber: phoneNumber})})
         .catch(err => console.log('Error sendVerification', err, ' phone ', phoneNumber));
   };
   
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <SafeAreaView style={styles.container}>
       <FirebaseRecaptchaVerifierModal 
         ref={recaptchaVerifier}
@@ -70,11 +71,14 @@ const sendVerification = () => {
       <View style={styles.titleBox}>
         <Text style={styles.title}>Введите номер телефона</Text>
       </View>
-      <TextInput
-        style={styles.phoneInput}
-        onChangeText={pn => setPhoneNumber(pn)}
-        keyboardType='phone-pad'
-      />
+      <View style={styles.inputBox}>
+        <Text style={styles.phoneText}>+7</Text>
+        <TextInput
+          style={styles.phoneInput}
+          onChangeText={pn => setPhoneNumber(pn)}
+          keyboardType='phone-pad'
+        />
+      </View>
       <View style={styles.conditionBox}>
         <Text style={styles.condition}>
           Нажимая кнопку «Войти» вы принимаете <Text 
@@ -99,25 +103,42 @@ const styles = StyleSheet.create({
   },
   titleBox: {
     width: wp(66.67),
-    marginTop: hp(19.79),
-    marginBottom: hp(7.1),
-    lineHeight: hp(4.74),
+    marginTop: hp(14.22),
+    marginBottom: hp(7.11),
   },
   title: {
     fontSize: RFValue(34, height),
     fontFamily: 'SF-Pro-Bold',
     textAlign: 'center',
-    color: '#000',
+    color: colors.black,
+    lineHeight: hp(4.81),
+  },
+  inputBox: {
+    width: wp(76.92),
+    height: hp(3.43),
+    borderBottomWidth: wp(0.26),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    //textAlignVertical: 'center'
+  },
+  phoneText: {
+    lineHeight: hp(2.4),
+    fontSize: RFValue(17, height),
+    fontFamily: 'SF-Pro-Regular',
+    borderBottomColor: colors.black,
+    marginLeft: wp(5.13),
+    paddingBottom: wp(1)
   },
   phoneInput: {
-    width: wp(76.9),
+    width: wp(65.9),
     height: hp(3.43),
     lineHeight: hp(2.4),
     fontSize: RFValue(17, height),
     fontFamily: 'SF-Pro-Regular',
-    borderBottomColor: '#000000',
-    borderBottomWidth: wp(0.26),
-    //paddingBottom: wp(1.8),
+    borderBottomColor: colors.black,
+    alignSelf: 'center',
+    marginLeft: wp(1),
   },
   conditionBox:{
     width: wp(68.72),
@@ -132,11 +153,12 @@ const styles = StyleSheet.create({
     color: '#6D6D72',
   },
   buttonUp: {
-    marginTop: hp(4.07),
-    //marginTop: hp(10.07),
+    marginTop: hp(10.07),
+    marginBottom: hp(1.54)
   },
   buttonRegular: {
     marginTop: hp(40.4),
+    marginBottom: hp(5.57),
   },
   buttonText: { // 600
     color: '#fff',

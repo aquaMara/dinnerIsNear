@@ -1,6 +1,6 @@
 export default [
     {
-        "id": "",
+        "id": 0,
         "dishName": "Том Ям Сифуд",
         "restaurantName": "Menza ",
         "section": "Япония",
@@ -14,7 +14,7 @@ export default [
         "weight": "340 мл"
       },
       {
-        "id": "",
+        "id": 1,
         "dishName": "Ролл с креветками",
         "restaurantName": "Menza ",
         "section": "Япония",
@@ -28,7 +28,7 @@ export default [
         "weight": "100 г"
       },
       {
-        "id": "",
+        "id": 2,
         "dishName": "Куриные стрипсы",
         "restaurantName": "Menza ",
         "section": "Япония",

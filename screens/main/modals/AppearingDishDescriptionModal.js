@@ -10,12 +10,13 @@ import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 
 const { height } = Dimensions.get('screen');
 
-export default function AppearingDishDescriptionModal({chooseMessage, visibility, item, mealId}) {
+export default function AppearingDishDescriptionModal({dishName,dishPath,dishProtein,dishFats,dishCarbohydrates, dishCalories,dishPrice,weight,description,id, chooseMessage, visibility, mealId}) {
 
   const [modalVisibleIntro, setModalVisibleIntro] = useState(false);
   const { cart, setCart } = useShoppingCart();
   console.log('h', mealId);
-  console.log('itemitem', item);
+  //console.log('itemitem', item);
+  console.log(dishName,dishPath,dishProtein,dishFats,dishCarbohydrates, dishCalories,dishPrice,weight,description, chooseMessage, visibility, mealId)
 
   const handleCartChoice = (item) => {
       setModalVisibleIntro(!modalVisibleIntro);
@@ -52,41 +53,43 @@ export default function AppearingDishDescriptionModal({chooseMessage, visibility
         visible={visibility} style={styles.modalStyle}>
           <View style={[styles.centeredView, modalVisibleIntro && {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
             <View style={styles.modalView}>
-                {console.log(item.dishCalories)}
-                <Image source={require('../../../assets/images/dish.png')} style={styles.image} />
+            <Text>{dishName} {id}</Text>
+                <Image source={{uri: dishPath}}
+                    style={styles.image} />
                 <View style={styles.topLine}>
                     <View style={{width: wp(47.95)}}>
-                        <Text style={styles.dishTitle} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
+                        <Text style={styles.dishTitle} numberOfLines={2} ellipsizeMode='tail'>{dishName}</Text>
                     </View>
                     <View style={{width: wp(13.77), marginLeft: 'auto', marginRight: 0}}>
-                        <Text style={[styles.dishTitle, {textAlign: 'right'}]}>290р</Text>
-                        <Text style={[styles.dishDescription, {marginTop: hp(0.47), textAlign: 'right', opacity: 0.4}]}>0,250кг</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'right'}]}>{dishPrice}р</Text>
+                        <Text style={[styles.dishDescription, {marginTop: hp(0.47), textAlign: 'right', opacity: 0.4}]}>{weight}</Text>
                     </View>
                 </View>
                 <Image source={require('../../../assets/images/rectangle9.png')} style={styles.topLineImage}/>
                 <View style={styles.middleLine}>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishCalories}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishCalories}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>ккал</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishProtein}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishProtein}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>белки</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishFats}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishFats}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>жиры</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{item.dishCarbohydrates}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishCarbohydrates}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>углеводы</Text>
                     </View>
                 </View>
                 <View style={styles.bottomLine}>
                     <Text style={[styles.dishDescription, {textAlign: 'left'}]}>Состав</Text>
-                    <Text style={[styles.dishDescription, {textAlign: 'justify', opacity: 0.6, marginTop: hp(0.83)}]} numberOfLines={3} ellipsizeMode='tail'>
-                        Филе грудки цыплёнка, салат ромейн, салат айсберг, яйцо, сыр пармезан, томаты черри, гренки, соус цезарь (обращаем ваше внимание, что подача соуса изменилась).
-                        </Text>
+                    <Text style={[styles.dishDescription, {textAlign: 'justify', opacity: 0.6, marginTop: hp(0.83)}]} 
+                        numberOfLines={3} ellipsizeMode='tail'>
+                            {description}
+                    </Text>
                 </View>
                 <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice(item)}>
                     <Text style={styles.buttonText}>В корзину</Text>

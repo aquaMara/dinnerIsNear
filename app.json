@@ -8,16 +8,15 @@
     "extra": {
       "eas": {
         "projectId": "ebd1cd4a-db27-4392-8770-80784c4401e4"
-      },
-      "build": {  
-        "runtimeVersion": "1.0.1" 
-       }
+      }
     },
+    "runtimeVersion": "exposdk:47.0.0",
     "updates": {
       "url": "https://u.expo.dev/ebd1cd4a-db27-4392-8770-80784c4401e4"
     },
     "android": {},
     "ios": {}
+    
   },
   "name": "dinnerIsNear"
 }

@@ -14,15 +14,55 @@ const { height } = Dimensions.get('screen');
 
 export default function RecommendationNorm({navigation, route}) {
 
-    const [calorieIntake, setCalorieIntake] = useState(1900);
-    const [protein, setProtein] = useState(60);
-    const [fats, setFats] = useState(50);
-    const [carbohydrates, setCarbohydrates] = useState(70);
+    const { currentUser, currentUserData } = useAuth();
+    const { currentUserMeals, setCurrentUserMeals} = useAuth();
+    // EATEN
+    const { caloriesCount, setCaloriesCount } = useAuth();  // eaten
+    const { proteinCount, setProteinCount } = useAuth();
+    const { fatsCount, setFatsCount } = useAuth();
+    const { carbohydratesCount, setCarbohydratesCount } = useAuth();
 
-    const [currentCalorieIntake, setCurrentCalorieIntake] = useState(1900);
-    const [currentProtein, setCurrentProtein] = useState(160);
-    const [currentFats, setCurrentFats] = useState(150);
-    const [currentCarbohydrates, setCurrentCarbohydrates] = useState(170);
+    const countEatenGlobalCalories = () => {
+        let eatenCalories = 0;
+        caloriesCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenCalories += element.totalCalories;
+            }
+        });
+        return eatenCalories;
+    }
+    const countEatenGlobalProtein = () => {
+        let eatenProtein = 0;
+        proteinCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenProtein += element.totalProtein;
+            }
+        });
+        return eatenProtein;
+    }
+    const countEatenGlobalFats = () => {
+        let eatenFats = 0;
+        fatsCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenFats += element.totalFats;
+            }
+        });
+        return eatenFats;
+    }
+    const countEatenGlobalCarbohydrates = () => {
+        let eatenCarbohydrates = 0;
+        carbohydratesCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenCarbohydrates += element.totalCarbohydrates;
+            }
+        });
+        return eatenCarbohydrates;
+    }
+
+    const {calories, setCalories} = useAuth();
+    const {protein, setProtein} = useAuth();
+    const {fats, setFats} = useAuth();
+    const {carbohydrates, setCarbohydrates} = useAuth();
 
     const [fontsLoaded] = useFonts({
         'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
@@ -38,7 +78,7 @@ export default function RecommendationNorm({navigation, route}) {
     <View style={styles.recommendationNorm}>
         <View style={styles.textBlock}>
             <Text style={styles.recommendationText}>Рекомендуемая норма</Text>
-            <Text style={styles.amountText}>{calorieIntake} ккал</Text>
+            <Text style={styles.amountText}>{calories} ккал</Text>
         </View>
         <View style={[styles.circles, {marginTop: hp(1.19)}]}>
             <View style={[styles.circle, {marginLeft: 0, marginRight: 'auto'}]}>
@@ -55,16 +95,16 @@ export default function RecommendationNorm({navigation, route}) {
             <Image source={require('../../../assets/images/topLine.png')} style={{width: wp(83.08), height: hp(0.19)}}/>
             <View style={styles.todaysBlocks}>
                 <View style={[styles.todaysBlock, {marginLeft: 0, marginRight: wp(7.3)}]}>
-                    <Text style={styles.todaysText}>{currentProtein} Б</Text>
+                    <Text style={styles.todaysText}>{countEatenGlobalProtein()} Б</Text>
                 </View>
                 <View style={styles.todaysBlock}>
-                    <Text style={styles.todaysText}>{currentFats} Ж</Text>
+                    <Text style={styles.todaysText}>{countEatenGlobalFats()} Ж</Text>
                 </View>
                 <View style={[styles.todaysBlock, {marginRight: 0, marginLeft: wp(7.3)}]}>
-                    <Text style={styles.todaysText}>{currentCarbohydrates} У</Text>
+                    <Text style={styles.todaysText}>{countEatenGlobalCarbohydrates()} У</Text>
                 </View>
                 <View style={styles.todaysCaloriesBlock}>
-                    <Text style={styles.todaysCaloriesText}>{currentCalorieIntake} ккал</Text>
+                    <Text style={styles.todaysCaloriesText}>{countEatenGlobalCalories()} ккал</Text>
                 </View>
             </View>
             <Image source={require('../../../assets/images/topLine.png')} style={{width: wp(83.08), height: hp(0.47)}}/>

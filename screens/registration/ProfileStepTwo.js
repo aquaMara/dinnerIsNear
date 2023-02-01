@@ -22,23 +22,32 @@ import { Picker } from 'react-native-wheel-pick';
 import { Modal } from 'react-native';
 import { countCalories } from '../../functions/CountCalories';
 import { countPFC } from '../../functions/CountPFC';
+import { useAuth } from '../../auth/AuthProvoder';
   
-
 const { height } = Dimensions.get('screen');
+
 export default function ProfileStepTwo({ navigation, route }) {
 
     const stepOne = route.params.stepOne;
     //const stepOne = 'route.params.stepOne';
-    console.log('route 2', stepOne);
 
-    const aims = ['Сбросить вес', 'Поддержать форму', 'Набрать вес'];
-    const [aim, setAim] = useState(aims[0]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [weightLoss, setWeightLoss] = useState('');
+    // AUTH PROVIDER
+    const {mealsCount, setMealsCount} = useAuth();
+    const {name, setName} = useAuth();
+    // Stable values for every day
+    const {calories, setCalories} = useAuth();
+    const {protein, setProtein} = useAuth();
+    const {fats, setFats} = useAuth();
+    const {carbohydrates, setCarbohydrates} = useAuth();
+
+    const [aim, setAim] = useState('maintainWeight');
+    const [aimFormatted, setAimFormatted] = useState('Поддержать форму');
+    const [aimRhytm, setAimRhytm] = useState('regular');
+    const [numberOfMeals, setNumberOfMeals] = useState(1);const [aimModalVisible, setAimModalVisible] = useState(false);
 
     const [veganism, setVeganism] = useState(false);
     const [vegetarianism, setVegetarianism] = useState(false);
-
+  
     const [fish, setFish] = useState(false);
     const [meat, setMeat] = useState(false);
     const [nuts, setNuts] = useState(false);
@@ -46,7 +55,7 @@ export default function ProfileStepTwo({ navigation, route }) {
     const [gluten, setGluten] = useState(false);
     const [lactose, setLactose] = useState(false);
     const [mushrooms, setMushrooms] = useState(false);
-
+  
     const [steamed, setSteamed] = useState(false);
     const [boiled, setBoiled] = useState(false);
     const [stewed, setStewed] = useState(false);
@@ -55,55 +64,76 @@ export default function ProfileStepTwo({ navigation, route }) {
     const [roasted, setRoasted] = useState(false);
     const [dried, setDried] = useState(false);
 
-    const [numberOfMeals, setNumberOfMeals] = useState(1);
-
-    const [CI, setCI] = useState(null);
-
-    const setResult = () => {
-        const {userId, phoneNumber, name, gender, dateOfBirth, weight, height, lifestyle} = stepOne;
+    const aims = ['Сбросить вес', 'Поддержать форму', 'Набрать вес'];
+    const createAim = (aimFormatted) => {
         let am;
-        switch (aim) {
-            case 'Сбросить вес': am = 'loseWeight'; break;
-            case 'Поддержать форму':  am = 'maintainWeight'; break;
-            case 'Набрать вес':  am = 'gainWeight'; break;
-            default: am = 'maintainWeight'; break;
+        switch (aimFormatted) {
+          case 'Сбросить вес': am = 'loseWeight'; break;
+          case 'Поддержать форму':  am = 'maintainWeight'; break;
+          case 'Набрать вес':  am = 'gainWeight'; break;
+          default: am = 'maintainWeight'; break;
         }
-        const stepTwo = {
-            userId, name, gender, dateOfBirth, weight, height,
-            aim : am, weightLoss, numberOfMeals, veganism, vegetarianism, 
-            fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-            steamed, boiled, stewed, fried, deepFried, roasted, dried};
-        console.log(stepTwo);
-        //navigation.navigate('StepTwo', {userId: userId});
+        return am;
+    }
+
+    const countProfileStatistics = () => {
+        
+        const {userId, phoneNumber, name, gender, dateOfBirthFormatted, weight, height, lifestyle} = stepOne;
+        console.log('FROM STEP 1: ', userId, phoneNumber, name, gender, dateOfBirthFormatted, weight, height, lifestyle)
+        
+        setAim(createAim());
+        const calorieIntake = countCalories(gender, weight, height, dateOfBirthFormatted, lifestyle, aim, aimRhytm);
+        const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
+        const {proteinIntake, fatsIntake, carbohydratesIntake} = countPFC(aim, calorieIntake);
+    
+        setCalories(calorieIntake);
+        setProtein(proteinIntake);
+        setFats(fatsIntake);
+        setCarbohydrates(carbohydratesIntake);
+        setMealsCount(numberOfMeals);
+        setName(name);
+    
+        sendToFirebase(userId, calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
+          name, gender, dateOfBirthFormatted, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
+          veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+          steamed, boiled, stewed, fried, deepFried, roasted, dried );
+    
+        //return {calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle}
+      }
+    
+      const sendToFirebase = (userId, calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
+                            name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
+                            veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+                            steamed, boiled, stewed, fried, deepFried, roasted, dried ) => {
+        console.log('sendToFirebase ********************************************************')
+        console.log(userId, calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake)
+        console.log(name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals);
+        console.log("veganism", veganism, "vegetarianism", vegetarianism);
+        console.log("fish", fish,"meat", meat, "nuts", nuts, "sugar", sugar, "gluten", gluten, "lactose", lactose, "mushrooms", mushrooms);
+        console.log(steamed, boiled, stewed, fried, deepFried, roasted, dried);
+        console.log('********************************************************')
+        console.log(calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle);
+    
+        // navigation.navigate('Profile');
         firebase.firestore().collection('users').doc(userId)
-            .set({
-                name,
-                gender,
-                dateOfBirth,
-                weight,
-                height,
-                lifestyle,
-                aim : am,
-                weightLoss, numberOfMeals, veganism, vegetarianism, 
+            .set({ name, gender, dateOfBirth, weight, height,
+                lifestyle, aim, aimRhytm, numberOfMeals,
+                veganism, vegetarianism,
                 fish, meat, nuts, sugar, gluten, lactose, mushrooms,
                 steamed, boiled, stewed, fried, deepFried, roasted, dried
-            // and so on 
             }) 
             .then(() => {
                 console.log('User is added to firestore');
-                const calorieIntake = countCalories(gender, weight, height, dateOfBirth, lifestyle, am, weightLoss);
-                setCI(calorieIntake);
-                const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
-                const {protein, fats, carbohydrates} = countPFC(am, calorieIntake);
                 firebase.firestore().collection('calorie_plan').doc(userId)
-                    .set({
-                        calorieIntake, numberOfMeals, caloriesForEachMeal, protein, fats, carbohydrates
+                    .set({ "calories": calorieIntake, "mealsCount": numberOfMeals, caloriesForEachMeal,
+                        "protein": proteinIntake, "fats": fatsIntake, "carbohydrates": carbohydratesIntake
                     })
-                    .then(() => {console.log('test', calorieIntake); navigation.navigate('CalorieCount', {cl: calorieIntake})})
+                    .then(() => navigation.navigate('CalorieCount'))
                     .catch(err => console.log('ProfileStepTwo caloriePlan error '));
             // do something like logging 'user registered' 
             }).catch(err => console.log('ProfileStepTwo ', err));
-    }
+
+      }
 
     const [fontsLoaded] = useFonts({
         'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -117,344 +147,329 @@ export default function ProfileStepTwo({ navigation, route }) {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.white }}>
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Цель</Text>
+        <View style={[styles.block, {marginTop: hp(2.37)}]}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Цель</Text>
         </View>
-        <View style={styles.toggleBlock}>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Text style={[ styles.toggleText, {width: wp(76.7)} ]}>{aim}</Text>
+        <View style={styles.modalOpenBlock}>
+            <TouchableOpacity onPress={() => setAimModalVisible(true)}>
+                <Text style={styles.listText}>{aimFormatted}</Text>
             </TouchableOpacity>
         </View>
         <View style={styles.modalContainer}>
-            <Modal animationType="slide" transparent={true} visible={modalVisible}
-                onRequestClose={() => { setModalVisible(!modalVisible) }} >
-                <View style={styles.modalStyle}>
-                    <Picker style={styles.pickerStyle} selectedValue={aims[0]} 
-                        pickerData={aims}
-                        itemStyle={styles.toggleText}
-                        onValueChange={(value) => { setAim(value); setModalVisible(false) }} />
-                </View>
+            <Modal animationType='slide' transparent={true} visible={aimModalVisible}>
+              <View style={styles.modalStyle}>
+                <Picker 
+                  style={{backgroundColor: colors.white, width: wp(84)}}
+                  itemStyle={styles.listText} selectedValue='Поддержать форму'
+                  pickerData={aims} onValueChange={value => {setAimFormatted(value); setAim(createAim(value))}} />
+                <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}
+                  onPress={() => setAimModalVisible(!aimModalVisible)}>
+                  <Text style={[styles.listText, aimModalVisible && {textAlign: 'center'}]}>OK</Text>
+                </TouchableOpacity>
+              </View>
             </Modal>
         </View>
-        {   aim === 'Сбросить вес' ?
-            (<View style={{ alignItems: 'center' }}>
-            <SwitchSelector style={{  width: wp(91.8) }}
-                initial={0}
-                onPress={wl => setWeightLoss(wl) }
-                textColor={colors.black}
-                selectedColor={colors.white}
-                buttonColor={colors.green}
-                borderColor='rgba(118, 118, 128, 0)'
-                backgroundColor='rgba(118, 118, 128, 0.12)'
-                hasPadding
-                borderRadius={hp(1.07)}
-                borderWidth={hp(0.1)}
-                height={hp(4.59)}
-                options={[
-                    { label: 'Плавное', value: "smooth" },
-                    { label: "Обычное", value: "regular" },
-                    { label: "Активное", value: "active" },
+      </View>
+      {aimFormatted != 'Поддержать форму' ?
+        (<View style={styles.block}>
+          <View style={{ alignItems: 'center' }}>
+            <SwitchSelector style={{width: wp(91.8), marginLeft: 0, marginRight: 'auto'}}
+              initial={0} onPress={wl => setAimRhytm(wl) }
+              textColor={colors.black} selectedColor={colors.white} buttonColor={colors.green}
+              borderColor='rgba(118, 118, 128, 0)' backgroundColor='rgba(118, 118, 128, 0.12)'
+              hasPadding borderRadius={hp(1.07)} borderWidth={hp(0.1)}
+              height={hp(4.59)}
+              options={[
+                { label: 'Плавно', value: "smooth" },
+                { label: 'Обычно', value: "regular" },
+                { label: 'Активно', value: "active" },
                 ]} />
-            </View>) : null
-        }
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Количество приёмов пищи</Text>
+          </View>
         </View>
+      ) : null}
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Количество приёмов пищи</Text>
+        </View>      
         <View style={styles.counterContainer}>
-            <Text style={[styles.toggleText, {width: wp(60)}]}>Приёмы пищи</Text>
-            <View style={styles.counterInner}>
-                <TouchableOpacity onPress={() => setNumberOfMeals(previousState => previousState - 1)} disabled={numberOfMeals <= 1}>
-                    {numberOfMeals <= 1 
-                    ? (<Image style={styles.sign} source={require('../../assets/images/minusGray.png')}/>) 
-                    : (<Image style={styles.sign} source={require('../../assets/images/minusGreen.png')}/>) }
-                </TouchableOpacity>
-                <View style={styles.counterText}>
-                    <Text style={styles.toggleText}>{numberOfMeals}</Text>
-                </View>
-                <TouchableOpacity onPress={() => setNumberOfMeals(previousState => previousState + 1)} disabled={numberOfMeals >= 6}>
-                {numberOfMeals >= 6 
-                    ? (<Image style={styles.sign} source={require('../../assets/images/plusGray.png')}/>) 
-                    : (<Image style={styles.sign} source={require('../../assets/images/plusGreen.png')}/>) }
-                </TouchableOpacity>
+          <Text style={[styles.listText, {width: wp(60)}]}>Приёмы пищи</Text>
+          <View style={styles.counterInner}>
+            <TouchableOpacity onPress={() => setNumberOfMeals(previousState => previousState - 1)}
+              style={styles.signButton}
+              disabled={numberOfMeals <= 1}>
+                {numberOfMeals <= 1 
+                  ? (<Image style={styles.sign} source={require('../../assets/images/minusGray.png')}/>) 
+                  : (<Image style={styles.sign} source={require('../../assets/images/minusGreen.png')}/>) }
+            </TouchableOpacity>
+            <View style={styles.counterText}>
+                <Text style={styles.listText}>{numberOfMeals}</Text>
+            </View>
+            <TouchableOpacity onPress={() => setNumberOfMeals(previousState => previousState + 1)}
+              disabled={numberOfMeals >= 6} style={styles.signButton}>
+              {numberOfMeals >= 6 
+                ? (<Image style={styles.sign} source={require('../../assets/images/plusGray.png')}/>) 
+                : (<Image style={styles.sign} source={require('../../assets/images/plusGreen.png')}/>) }
+            </TouchableOpacity>
             </View>
         </View>
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Система питания</Text>
+      </View>
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Система питания</Text>
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Веганство</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: 'rgba(120, 120, 128, 0.16)' }}
-                thumbColor={veganism ? colors.green : colors.white}
-                ios_backgroundColor='rgba(120, 120, 128, 0.16)'
-                onValueChange={() => setVeganism(previousState => !previousState)}
-                value={veganism}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Веганство</Text>
+            <Switch value={veganism} onValueChange={() => setVeganism(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Вегетаринство</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={vegetarianism ? colors.green : colors.white}
-                onValueChange={() => setVegetarianism(previousState => !previousState)}
-                value={vegetarianism}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Вегетарианство</Text>
+            <Switch value={vegetarianism} onValueChange={() => setVegetarianism(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Исключить продукты из рациона</Text>
-        </View>
-        <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Рыба</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={fish ? colors.green : colors.white}
-                onValueChange={() => setFish(previousState => !previousState)}
-                value={fish}
-            />
+      </View>
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Исключить продукты из рациона</Text>
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Мясо</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={meat ? colors.green : colors.white}
-                onValueChange={() => setMeat(previousState => !previousState)}
-                value={meat}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Рыба</Text>
+            <Switch value={fish} onValueChange={() => setFish(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Орехи</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={nuts ? colors.green : colors.white}
-                onValueChange={() => setNuts(previousState => !previousState)}
-                value={nuts}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Мясо</Text>
+            <Switch value={meat} onValueChange={() => setMeat(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Сахар</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={sugar ? colors.green : colors.white}
-                onValueChange={() => setSugar(previousState => !previousState)}
-                value={sugar}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Орехи</Text>
+            <Switch value={nuts} onValueChange={() => setNuts(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Глютен</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={gluten ? colors.green : colors.white}
-                onValueChange={() => setGluten(previousState => !previousState)}
-                value={gluten}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Сахар</Text>
+            <Switch value={sugar} onValueChange={() => setSugar(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Лактоза</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={lactose ? colors.green : colors.white}
-                onValueChange={() => setLactose(previousState => !previousState)}
-                value={lactose}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Глютен</Text>
+            <Switch value={gluten} onValueChange={() => setGluten(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Грибы</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={mushrooms ? colors.green : colors.white}
-                onValueChange={() => setMushrooms(previousState => !previousState)}
-                value={mushrooms}
-            />
-        </View>
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Исключить способы приготовления</Text>
+            <Text style={[styles.listText, {width: wp(77)}]}>Лактоза</Text>
+            <Switch value={lactose} onValueChange={() => setLactose(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>На пару</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={steamed ? colors.green : colors.white}
-                onValueChange={() => setSteamed(previousState => !previousState)}
-                value={steamed}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Грибы</Text>
+            <Switch value={mushrooms} onValueChange={() => setMushrooms(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
+        </View>
+      </View>
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Исключить способы приготовления</Text>
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Варёное</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={boiled ? colors.green : colors.white}
-                onValueChange={() => setBoiled(previousState => !previousState)}
-                value={boiled}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>На пару</Text>
+            <Switch value={steamed} onValueChange={() => setSteamed(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Тушёное</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={stewed ? colors.green : colors.white}
-                onValueChange={() => setStewed(previousState => !previousState)}
-                value={stewed}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Варёное</Text>
+            <Switch value={boiled} onValueChange={() => setBoiled(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Жареное</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={fried ? colors.green : colors.white}
-                onValueChange={() => setFried(previousState => !previousState)}
-                value={fried}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Тушёное</Text>
+            <Switch value={stewed} onValueChange={() => setStewed(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Во фритюре</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={deepFried ? colors.green : colors.white}
-                onValueChange={() => setDeepFried(previousState => !previousState)}
-                value={deepFried}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Жареное</Text>
+            <Switch value={fried} onValueChange={() => setFried(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Жареное на огне</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={roasted ? colors.green : colors.white}
-                onValueChange={() => setRoasted(previousState => !previousState)}
-                value={roasted}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Во фритюре</Text>
+            <Switch value={deepFried} onValueChange={() => setDeepFried(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
         <View style={styles.toggleBlock}>
-            <Text style={[styles.toggleText, {width: wp(76.7)}]}>Вяленое</Text>
-            <Switch style={{ marginLeft: wp(2.56) }}
-                trackColor={{ false: "rgba(120, 120, 128, 0.16)", true: "rgba(120, 120, 128, 0.16)" }}
-                thumbColor={dried ? colors.green : colors.white}
-                onValueChange={() => setDried(previousState => !previousState)}
-                value={dried}
-            />
+            <Text style={[styles.listText, {width: wp(77)}]}>Жареное на огне</Text>
+            <Switch value={roasted} onValueChange={() => setRoasted(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
-        <TouchableOpacity onPress={setResult}
-            style={[globalStyles.mainButton, {marginTop: hp(3.08)}]}>
-            <Text style={styles.buttonText}>Завершить</Text>
-        </TouchableOpacity>
-        <View style={styles.stepBox}>
-            <Text style={[styles.labelText, styles.stepText]}>Шаг 2 из 2</Text>
+        <View style={styles.toggleBlock}>
+            <Text style={[styles.listText, {width: wp(77)}]}>Вяленое</Text>
+            <Switch value={dried} onValueChange={() => setDried(previousState => !previousState)}
+                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+                thumbColor={colors.white} />
         </View>
+      </View>
+      <TouchableOpacity onPress={countProfileStatistics} style={[globalStyles.mainButton, {marginTop: hp(3.08)}]}>
+        <Text style={styles.buttonText}>Следующий шаг</Text>
+      </TouchableOpacity>
+      <View style={styles.stepBox}>
+        <Text style={[styles.labelText, styles.stepText]}>Шаг 1 из 2</Text>
+      </View>
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: hp(2.49),
-    },
-    modalStyle: {
-        width: wp (70),
-        height: hp(35),
-        marginTop: hp(10),
-        backgroundColor: colors.white,
-        borderColor: colors.green,
-        borderWidth: 0.26,
-        borderRadius: wp(5.1),
-        paddingVertical: hp(1.4),
-        alignItems: 'center',
-        alignSelf: 'center',
-    },
-    pickerStyle: {
-        width: wp(60),
-        height: hp(8.98),
-        backgroundColor: 'white',
-    },
-    toggleBlock: {
-        height: hp(4.98),
-        width: wp(95.9),
-        marginLeft: wp(4.1),
-        display: 'flex',
-        flexDirection: 'row',
-        //alignContent: 'center',
-        alignItems: 'center',
-        borderBottomColor: colors.separator,
-        borderBottomWidth: wp(0.26),
-    },
-    toggleText: {
-        fontSize: RFValue(17, height),
-        fontFamily: 'SF-Pro-Medium',
-        lineHeight: hp(2.4),
-    },
-    labelBox: {
+    block: {
+        // borderWidth: 1,
+        marginTop: hp(3.56),
+        marginLeft: wp(4),
+      },
+      labelBlock: {
         height: hp(1.9),
-        width: wp(65.77),
-        marginLeft: wp(4.1),
-        marginTop: hp(2.49),
-        marginBottom: hp(1.78),
-    },
-    labelText: {
-        fontSize: RFValue(13, height),
+      },
+      labelText: {
         fontFamily: 'SF-Pro-Regular',
-        opacity: 0.6,
-        lineHeight: hp(1.9),
-    },
-    counterContainer: {
-        height: hp(4.98),
-        marginLeft: wp(4.1),
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomColor: colors.separator,
-        borderBottomWidth: wp(0.26),
-    },
-    counterInner: {
-        height: hp(4.98),
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    counterText: {
-        width: wp(12.82),
-        alignItems: 'center',
-        marginHorizontal: wp(4.36)
-    },
-    sign: {
-        height: hp(2.5),
-        width: hp(2.6)
-    },
-    plusSign: {
-        fontSize: RFValue(40, height),
-        fontFamily: 'SF-Pro-Bold',
-    },
-    minusSign: {
-        fontSize: RFValue(50, height),
-        fontFamily: 'SF-Pro-Medium',
-    },
-    textInput: {
+        fontSize: RFValue(13, height),
+        lineHeight: hp(1.84),
+        color: colors.grey,
+        textAlign: 'left'
+      },
+      textInput : {
         width: wp(95.9),
         height: hp(5.45),
-        marginLeft: wp(4.1),
         marginTop: hp(1.78),
-        marginBottom: hp(3.55),
         lineHeight: hp(2.4),
         fontSize: RFValue(17, height),
         fontFamily: 'SF-Pro-Regular',
         borderBottomColor: colors.separator,
         borderBottomWidth: wp(0.26),
-    },
-    buttonText: {
-      color: '#fff',
-      fontSize: RFValue(17, height),
-      lineHeight: hp(2.4),
-      fontFamily: 'SF-Pro-Medium',
-      textAlign: 'center',
-    },
+      },
+      listText: {
+        fontSize: RFValue(17, height),
+        fontFamily: 'SF-Pro-Regular',
+        color: colors.black,
+        lineHeight: hp(2.4),
+      },
+      modalContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalOpenBlock: {
+        width: wp(95.9),
+        height: hp(5.45),
+        marginTop: hp(1.78),
+        borderBottomWidth: wp(0.26),
+        borderBottomColor: colors.separator,
+        justifyContent: 'center',
+      },
+      modalStyle: {
+        width: wp (86),
+        height: hp(36),
+        marginTop: hp(30),
+        backgroundColor: colors.white,
+        alignItems: 'center',
+        alignSelf: 'center',
+        borderWidth: 0.3,
+        borderColor: colors.separator,
+      },
+      counterContainer: {
+        width: wp(95.9),
+        height: hp(5.45),
+        marginTop: hp(1.78),
+        marginLeft: 'auto',
+        marginRight: wp(5.38),
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomColor: colors.separator,
+        borderBottomWidth: wp(0.26),
+      },
+      counterInner: {
+        height: hp(5.45),
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      counterText: {
+          width: wp(6.82),
+          alignItems: 'center',
+          marginHorizontal: wp(4.36)
+      },
+      sign: {
+          height: hp(2.5),
+          width: hp(2.6),
+          alignSelf: 'center',
+      },
+      signButton: {
+        width: wp(8),
+        height: hp(5),
+        justifyContent: 'center'
+      },
+      plusSign: {
+          fontSize: RFValue(40, height),
+          fontFamily: 'SF-Pro-Bold',
+      },
+      minusSign: {
+          fontSize: RFValue(50, height),
+          fontFamily: 'SF-Pro-Medium',
+      },
+      toggleBlock: {
+        height: hp(4.98),
+        width: wp(95.9),
+        marginTop: hp(1.78),
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomColor: colors.separator,
+        borderBottomWidth: wp(0.26),
+      },
+      buttonText: {
+        color: colors.white,
+        fontSize: RFValue(17, height),
+        lineHeight: hp(2.4),
+        fontFamily: 'SF-Pro-Medium',
+        textAlign: 'center',
+      },      
     stepBox: {
         marginTop: hp(1.54),
-        // marginBottom: hp(5.57),
-        marginBottom: hp(4.03),
-    },
+        marginBottom: hp(5.57)
+    },  
     stepText: {
         textAlign: 'center',
-    }
+    },
 })
 /*
 <TouchableOpacity onPress={() => setHidden(prev => !prev)} >

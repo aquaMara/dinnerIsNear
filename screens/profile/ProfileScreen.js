@@ -8,42 +8,111 @@ import { colors } from '../../styles/colors';
 import SignsBlock from './components/SignsBlock';
 import BottomLineBlock from './components/BottomLineBlock';
 import MiddleLineBlock from './components/MiddleLineBlock';
+import { useAuth } from '../../auth/AuthProvoder';
 
 const { height } = Dimensions.get('screen');
 
 export default function ProfileScreen() {
 
     const [dayStatisticsVisible, setDayStatisticsVisible] = useState(false);
-    const [caloriesAmount, setCaloriesAmount] = useState(1100);
-    const [proteinAmount, setProteinAmount] = useState(90);
-    const [fatsAmount, setFatsAmount] = useState(60);
-    const [carbohydratesAmount, setCarbohydratesAmount] = useState(60);
 
-    const [caloriesEaten, setCaloriesEaten] = useState(600);
-    const [proteinEaten, setProteinEaten] = useState(90);
-    const [fatsEaten, setFatsEaten] = useState(30);
-    const [carbohydratesEaten, setCarbohydratesEaten] = useState(80);
-    let h = 91.8;
-    let h2 = 91.8 * 0.6;
+    const {name, setName} = useAuth();
+    // Stable values for every day
+    const {calories, setCalories} = useAuth();
+    const {protein, setProtein} = useAuth();
+    const {fats, setFats} = useAuth();
+    const {carbohydrates, setCarbohydrates} = useAuth();
+    // Eaten this day
+    const {caloriesCount, setCaloriesCount} = useAuth();
+    const {proteinCount, setProteinCount} = useAuth();
+    const {fatsCount, setFatsCount} = useAuth();
+    const {carbohydratesCount, setCarbohydratesCount} = useAuth();
 
+    const countCaloriesEaten = () => {
+        let eatenCalories = 0;
+        caloriesCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenCalories += element.totalCalories;
+            }
+        });
+        return eatenCalories;
+    }
+    const countCaloriesWidth = () => {
+        const eatenCalories = countCaloriesEaten();
+        return countColourPercentage(eatenCalories, calories);
+    }
+    const countCaloriesColor = () => {
+        const eatenCalories = countCaloriesEaten();
+        return countBackgroundColour(eatenCalories, calories);
+    }
+    const countProteinEaten = () => {
+        let eatenProtein = 0;
+        proteinCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenProtein += element.totalProtein;
+            }
+        });
+        return eatenProtein;
+    }
+    const countProteinWidth = () => {
+        const eatenProtein = countProteinEaten();
+        return countColourPercentage(eatenProtein, protein);
+    }
+    const countProteinColor = () => {
+        const eatenProtein = countProteinEaten();
+        return countBackgroundColour(eatenProtein, protein);
+    }
+
+    const countFatsEaten = () => {
+        let eatenFats = 0;
+        fatsCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenFats += element.totalFats;
+            }
+        });
+        return eatenFats;
+    }
+    const countFatsWidth = () => {
+        const eatenFats = countFatsEaten();
+        return countColourPercentage(eatenFats, fats);
+    }
+    const countFatsColor = () => {
+        const eatenFats = countFatsEaten();
+        return countBackgroundColour(eatenFats, fats);
+    }
+
+    const countCarbohydratesEaten = () => {
+        let eatenCarbohydrates = 0;
+        carbohydratesCount.forEach(element => {
+            if (Object.keys(element).length > 0) {
+                eatenCarbohydrates += element.totalCarbohydrates;
+            }
+        });
+        return eatenCarbohydrates;
+    }
+    const countCarbohydratesWidth = () => {
+        const eatenCarbohydrates = countCarbohydratesEaten();
+        return countColourPercentage(eatenCarbohydrates, carbohydrates);
+    }
+    const countCarbohydratesColor = () => {
+        const eatenCarbohydrates = countCarbohydratesEaten();
+        return countBackgroundColour(eatenCarbohydrates, carbohydrates);
+    }
 
     const countColourPercentage = (eaten, amount) => {
         let percentageOfEatenFromAmount = eaten / amount;
         let innerStatisticsBlockWidth = 74.1;
         let outerStatisticsBlockWidth = 91.8;
         let percentageOfSmallBlockWidth = percentageOfEatenFromAmount * innerStatisticsBlockWidth;
-        console.log('eaten: ', eaten, ' amount: ', amount, ' percentageOfEatenFromAmount: ', percentageOfEatenFromAmount);
-        console.log('percentageOfSmallBlockWidth', percentageOfSmallBlockWidth);
         if (percentageOfSmallBlockWidth > outerStatisticsBlockWidth) {
             percentageOfSmallBlockWidth = outerStatisticsBlockWidth;
         }
-        return percentageOfSmallBlockWidth;
+        return isNaN(percentageOfSmallBlockWidth) ? 0 : percentageOfSmallBlockWidth;
     }
 
     const countBackgroundColour = (eaten, amount) => {
         let percentageOfEatenFromAmount = eaten * 100 / amount;
         let bgColor = colors.red;
-        console.log('percentageOfEatenFromAmount ', percentageOfEatenFromAmount);
         if (percentageOfEatenFromAmount <= 39 || percentageOfEatenFromAmount > 100) {
             bgColor = colors.red;
         } else if (percentageOfEatenFromAmount <= 69) {
@@ -53,14 +122,8 @@ export default function ProfileScreen() {
         } else {
             bgColor = colors.darkGreen;
         }
-        console.log('bgColor: ', bgColor);
         return bgColor;
     }
-
-    useEffect(() => {
-        
-    console.log(h, h2);
-    }, [])
 
     const [fontsLoaded] = useFonts({
         'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -75,7 +138,7 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={{flex: 1, backgroundColor: colors.white}}>
         <View style={styles.nameBlock}>
-            <Text style={[styles.titleText, styles.regular]}>Фамилия Имя</Text>
+            <Text style={[styles.titleText, styles.regular]}>{name}</Text>
         </View>
         <SignsBlock />
         <View style={styles.topLineBlock}>
@@ -105,45 +168,45 @@ export default function ProfileScreen() {
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
                         <View style={[styles.statisticsResultBlock, 
-                            {width: wp(countColourPercentage(caloriesEaten, caloriesAmount)), backgroundColor: countBackgroundColour(caloriesEaten, caloriesAmount)}]}>
+                            {width: wp(countCaloriesWidth()), backgroundColor: countCaloriesColor()}]}>
                             <Text style={styles.statisticsText}>Калории</Text>
                         </View>                    
                     </View>
                     <View style={styles.innerStatisticsTextBlock}>
-                        <Text style={[styles.regularText, styles.rightAlign]}>{caloriesAmount}</Text>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countCaloriesEaten()}</Text>
                     </View>
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
                         <View style={[styles.statisticsResultBlock, 
-                            {width: wp(countColourPercentage(proteinEaten, proteinAmount)), backgroundColor: countBackgroundColour(proteinEaten, proteinAmount)}]}>
+                            {width: wp(countProteinWidth()), backgroundColor: countProteinColor()}]}>
                             <Text style={styles.statisticsText}>Белки</Text>
                         </View>                    
                     </View>
                     <View style={styles.innerStatisticsTextBlock}>
-                        <Text style={[styles.regularText, styles.rightAlign]}>{proteinAmount}</Text>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countProteinEaten()}</Text>
                     </View>
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
                         <View style={[styles.statisticsResultBlock, 
-                            {width: wp(countColourPercentage(fatsEaten, fatsAmount)), backgroundColor: countBackgroundColour(fatsEaten, fatsAmount)}]}>
+                            {width: wp(countFatsWidth()), backgroundColor: countFatsColor()}]}>
                             <Text style={styles.statisticsText}>Жиры</Text>
                         </View>                    
                     </View>
                     <View style={styles.innerStatisticsTextBlock}>
-                        <Text style={[styles.regularText, styles.rightAlign]}>{fatsAmount}</Text>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countFatsEaten()}</Text>
                     </View>
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
                         <View style={[styles.statisticsResultBlock, 
-                            {width: wp(countColourPercentage(carbohydratesEaten, carbohydratesAmount)), backgroundColor: countBackgroundColour(carbohydratesEaten, carbohydratesAmount)}]}>
+                            {width: wp(countCarbohydratesWidth()), backgroundColor: countCarbohydratesColor()}]}>
                             <Text style={styles.statisticsText}>Углеводы</Text>
                         </View>                    
                     </View>
                     <View style={styles.innerStatisticsTextBlock}>
-                        <Text style={[styles.regularText, styles.rightAlign]}>{carbohydratesAmount}</Text>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countCarbohydratesEaten()}</Text>
                     </View>
                 </View>
 

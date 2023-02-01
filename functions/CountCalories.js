@@ -1,18 +1,14 @@
-export const countCalories = (gender, weight, height, dateOfBirth, lifestyle, aim, weightChange) => {
+export const countCalories = (gender, weight, height, dateOfBirthFormatted, lifestyle, aim, weightChange) => {
 
     let today = new Date();
-    console.log(today, 'today')
     // 2022/12/07
-    let birthDate = new Date(dateOfBirth);  // create a date object directly from `dob1` argument
-    console.log(birthDate, 'birthDate')
-    console.log(dateOfBirth, 'dateOfBirth')
-    let age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) 
+    let dateOfBirth = new Date(dateOfBirthFormatted);
+    let age = today.getFullYear() - dateOfBirth.getFullYear();
+    var m = today.getMonth() - dateOfBirth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) 
     {
         age--;
     }
-    console.log(age)
 
     let lifestyleCoefficient = 1.375;
     switch (lifestyle) {

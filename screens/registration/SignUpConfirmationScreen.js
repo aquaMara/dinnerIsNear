@@ -20,11 +20,17 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
   const auth = getAuth(app);
   const verificationId = route.params.verificationId;
   const phoneNumber = route.params.phoneNumber;
-  console.log('verId ', verificationId);
   const [code, setCode] = useState(null);
   const recaptchaVerifier = useRef(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
+
+  const {mealsCount, setMealsCount} = useAuth();
+  const {name, setName} = useAuth();
+  const {calories, setCalories} =  useAuth();
+  const {protein, setProtein} =  useAuth();
+  const {fats, setFats} =  useAuth();
+  const {carbohydrates, setCarbohydrates} =  useAuth();
 
   /*
   firebase.auth().onAuthStateChanged((user) => {
@@ -75,7 +81,6 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
   }
 
   const confirmCode = () => {
-    console.log('code', code);
     setCode(code);
     const credential = firebase.auth.PhoneAuthProvider.credential(
         verificationId,
@@ -83,20 +88,20 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     );
     firebase.auth().signInWithCredential(credential)
     .then(() => {
-      //setCode('');
       const usid = firebase.auth().currentUser.uid;
       console.log('IDIDIDIDIDIID ', usid);
       const userCheck = firebase.firestore().collection('users').doc(usid)
       if (usid != null && code != null) {
         userCheck.get().then((userInfo) => {
+          console.log(userInfo)
+          console.log(userInfo.exists)
           if (userInfo.exists) {
-            console.log('EXISTS')
-            console.log('HELLO')
             // todo : navigate to some other page
+            // todo: get user data
+            getInfoFromFirebase(usid);
             navigation.navigate('Tab');
           } else {
-            console.log('EMPTY')
-            navigation.navigate('LittleMore', {uid: usid, phoneNumber: phoneNumber})
+            navigation.navigate('LittleMore', {usid, phoneNumber})
           }
         }).catch(err => console.log('problem in adressing users collection', err))
       } else {
@@ -107,6 +112,27 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     .catch((error) => {
         console.log("ERROR ", error);
     });
+  }
+
+  const getInfoFromFirebase = (userId) => {
+    firebase.firestore().collection('calorie_plan')
+      .doc(userId).get().then((snapshot) => {
+        if (snapshot) {
+          console.log(snapshot.data());
+          setCalories(snapshot.data().calories);
+          setProtein(snapshot.data().protein);
+          setFats(snapshot.data().fats);
+          setCarbohydrates(snapshot.data().carbohydrates);
+          setMealsCount(snapshot.data().mealsCount)
+        }
+    })
+    firebase.firestore().collection('users')
+      .doc(userId).get().then((snapshot) => {
+        if (snapshot) {
+          console.log(snapshot.data());
+          setName(snapshot.data().name);
+        }
+    })
   }
   
   return (
@@ -145,8 +171,8 @@ const styles = StyleSheet.create({
   },
   titleBox: {
     width: wp(66.67),
-    marginTop: hp(19.79),
-    marginBottom: hp(7.1),
+    marginTop: hp(19.07),
+    marginBottom: hp(7.11),
     lineHeight: hp(4.74),
   },
   title: {
@@ -178,11 +204,12 @@ const styles = StyleSheet.create({
     color: '#6D6D72',
   },
   buttonUp: {
-    marginTop: hp(4.07),
-    //marginTop: hp(10.07),
+    marginBottom: hp(1.54),
+    marginTop: hp(11.97),
   },
   buttonRegular: {
     marginTop: hp(40.4),
+    marginBottom: hp(5.57),
   },
   buttonText: {
     color: '#fff',

@@ -95,7 +95,7 @@ export default function MainTabNavigation() {
         headerTitle: 'В ресторане',
         headerRight: () => 
         ( <View style={styles.buttonsBox}>
-            <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
+            <TouchableOpacity onPress={() => navigation.navigate('Favs')}  style={{marginRight: wp(2)}}>
               <Image source={require('../../assets/images/favourites.png')}
                 style={styles.favsImage}/>
             </TouchableOpacity>
@@ -109,7 +109,7 @@ export default function MainTabNavigation() {
       <Stack.Screen name="Menu" component={MenuScreen} options={({ route }) => ({ title: route.params.title, headerBackTitle: 'Назад', headerShown: true, 
         headerRight: () => 
         ( <View style={styles.buttonsBox}>
-            <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
+            <TouchableOpacity onPress={() => navigation.navigate('Favs')} style={{marginRight: wp(2)}}>
               <Image source={require('../../assets/images/favourites.png')}
                 style={styles.favsImage}/>
             </TouchableOpacity>
@@ -124,7 +124,7 @@ export default function MainTabNavigation() {
       <Stack.Screen name="RestaurantMenu" component={RestaurantMenuScreen} options={({ route }) => ({ title: "Меню: " + route.params.title, headerBackTitle: 'Назад', headerShown: true, 
         headerRight: () => 
         ( <View style={styles.buttonsBox}>
-            <TouchableOpacity onPress={() => navigation.navigate('Favs')} >
+            <TouchableOpacity onPress={() => navigation.navigate('Favs')} style={{marginRight: wp(2)}}>
               <Image source={require('../../assets/images/favourites.png')}
                 style={styles.favsImage}/>
             </TouchableOpacity>

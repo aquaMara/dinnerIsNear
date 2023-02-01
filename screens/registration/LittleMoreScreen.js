@@ -14,8 +14,7 @@ const { height } = Dimensions.get('screen');
 
 export default function LittleMoreScreen({ route, navigation }) {
 
-  const userIdentif = route.params.uid;
-  //const userId = 'fghjk';
+  const userId = route.params.usid;
   
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -36,7 +35,7 @@ export default function LittleMoreScreen({ route, navigation }) {
         <Text style={styles.bodyText}>Нобходимо ввести некоторые данные о тебе и выбрать параметры сортировки блюд,
          чтобы мы смогли представить тебе сбалансированные блюда.</Text>        
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('StepOne', {userId: userIdentif})}
+      <TouchableOpacity onPress={() => navigation.navigate('StepOne', {userId})}
         style={[globalStyles.mainButton, styles.buttonRegular]}>
         <Text style={styles.buttonText}>Настроить профиль</Text>
       </TouchableOpacity>
@@ -52,11 +51,10 @@ const styles = StyleSheet.create({
   },
   titleBox: {
     width: wp(66.67),
-    marginTop: hp(38.74),
-    marginBottom: hp(3.08),
-    lineHeight: hp(4.74),
+    marginTop: hp(33.17),
   },
   title: {
+    lineHeight: hp(4.74),
     fontSize: RFValue(34, height),
     fontFamily: 'SF-Pro-Bold',
     textAlign: 'center',
@@ -71,9 +69,12 @@ const styles = StyleSheet.create({
     lineHeight: hp(2.12),
     fontFamily: 'SF-Pro-Regular',
     textAlign: 'center',
+    color: colors.black,
+    opacity: 0.6
   },
   buttonRegular: {
-    marginTop: hp(25.1),
+    marginTop: hp(32.11),
+    marginBottom: hp(5.57)
   },
   buttonText: {
     color: '#fff',

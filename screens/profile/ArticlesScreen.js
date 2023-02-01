@@ -41,7 +41,7 @@ export default function ArticlesScreen() {
             <Image source={require('../../assets/images/search.png')} style={styles.searchImage} />
             </TouchableOpacity>
         </View>
-        <FlatList numColumns={1} data={articles} 
+        <FlatList numColumns={1} data={articles} scrollEnabled={false} 
             renderItem={({ item }) => <ArticleBlock item={item}/>}
             keyExtractor={item => item.id} />
     </View>

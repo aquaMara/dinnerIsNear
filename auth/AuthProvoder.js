@@ -7,8 +7,18 @@ import firebase from "firebase/compat";
 export const AuthContext = createContext();
 
 export const AuthProvider = ( { children } ) => {
+    // id, name
     const [currentUser, setCurrentUser] = useState(null);
+    const [mealsCount, setMealsCount] = useState(4);
+    const [name, setName] = useState('');
 
+    // Stable values for every day
+    const [calories, setCalories] = useState(null);
+    const [protein, setProtein] = useState(null);
+    const [fats, setFats] = useState(null);
+    const [carbohydrates, setCarbohydrates] = useState(null);
+
+    // Eaten this day
     const [caloriesCount, setCaloriesCount] = useState([{}]);
     const [proteinCount, setProteinCount] = useState([{}]);
     const [fatsCount, setFatsCount] = useState([{}]);
@@ -17,8 +27,8 @@ export const AuthProvider = ( { children } ) => {
 
     const [loading, setLoading] = useState(true);
 
+    // For Cart
     const [currentUserMeals, setCurrentUserMeals] = useState([{}]);
-    //currentUserMeals[0] = {"p": 25, "f": 34}
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(user => {
@@ -32,6 +42,14 @@ export const AuthProvider = ( { children } ) => {
     return (
         <AuthContext.Provider value={{
             currentUser,
+            mealsCount, setMealsCount,
+            name, setName,
+
+            calories, setCalories,
+            protein, setProtein,
+            fats, setFats,
+            carbohydrates, setCarbohydrates,
+
             caloriesCount, setCaloriesCount,
             proteinCount, setProteinCount,
             fatsCount, setFatsCount,

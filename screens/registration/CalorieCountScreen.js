@@ -12,18 +12,13 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { signInWithPhoneNumber } from 'firebase/auth';
+import { useAuth } from '../../auth/AuthProvoder';
 
 const { height } = Dimensions.get('screen');
 
 export default function Screen({ navigation, route }) {
 
-  console.log(route.params.cl)
-  const [calorieIntake, setCalorieIntake] = useState(1350);
-
-  // todo get calories from db by uid
-  useEffect(() => {
-    setCalorieIntake(route.params.cl);
-  }, [])
+  const { calories, setCalories } = useAuth();
   
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -39,13 +34,13 @@ export default function Screen({ navigation, route }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.titleBox}>
         <Text style={[styles.intakeInfo, {color: '#000'}]}>Ваша норма:</Text>
-        <Text style={styles.intake}>{calorieIntake} ккал</Text>
+        <Text style={styles.intake}>{calories} ккал</Text>
       </View>
       <View style={styles.intakeInfoBox}>
         <Text style={[styles.intakeInfo, {color: '#6D6D72'} ]}>
         Мы рассчитали вашу норму макро- и микро-элементов и готовы приступить к работе.</Text>        
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('Tab', {calorieIntake: calorieIntake})}
+      <TouchableOpacity onPress={() => navigation.navigate('Tab')}
         style={[globalStyles.mainButton, {marginTop: hp(28.9)} ]}>
         <Text style={styles.buttonText}>Войти</Text>
       </TouchableOpacity>

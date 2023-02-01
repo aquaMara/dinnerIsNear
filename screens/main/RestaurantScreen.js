@@ -27,12 +27,13 @@ export default function RestaurantScreen() {
     const navigation = useNavigation();
 
     const { currentUser, currentUserData } = useAuth();
+    const { mealsCount, setMealsCount } = useAuth();
+    const { calories, setCalories } = useAuth();
     //const id = currentUser.uid;
-    const id = '56heP7RFY7ZLGTwepBzjBTsdiA63';
+    //console.log(currentUser.uid)
+    const id = 'iLQD9PDWB1d6u5UI5vk6QNYvrwy';
     
     const [caloriesForEachMeal, setCaloriesForEachMeal] = useState(450);
-    const [calorieIntake, setCalorieIntake] = useState(1700);
-    const [numberOfMeals, setNumberOfMeals] = useState(4);
     const [meals, setMeals] = useState([{}]);
     const [isMainBlockHidden, setIsMainBlockHidden] = useState(false);
     const [orderVisibility, setOrderVisibility] = useState(true);
@@ -40,15 +41,13 @@ export default function RestaurantScreen() {
     const [eatenBottomBlockVisibility, setEatenBottomBlockVisibility] = useState(false);
 
     const addMeal = () => {
-      if (numberOfMeals <= 6) {
-        setNumberOfMeals(prev => ++prev);
-        setMeals(countMeals(numberOfMeals, calorieIntake));
-      }      
-    }
-
-
-    const openMenu = () => {
-      navigation.navigate('Menu');
+      console.log('addMeal 1mealsCount ', mealsCount)
+      if (mealsCount < 6) {
+        setMealsCount(prev => mealsCount + 1);
+        console.log('jhhhhhhh')
+        setMeals( prev => countMeals(mealsCount + 1, calories) );
+      }
+      console.log('addMeal mealsCount, meals also', mealsCount, meals)
     }
 
     const changeBlockVisibility = (givenId) => {
@@ -71,35 +70,8 @@ export default function RestaurantScreen() {
       console.log(eatenBottomBlockVisibility);
     }
 
-    const db = getFirestore();
-    const db1 = firebase.firestore();
-    const colRef = collection(db, 'calorie_plan');
-    const docRef = doc(db, 'calorie_plan', id)
-    const [address, setAddress] = useState('проспект Толстова, 237');
-
     useEffect(() => {
-
-      setMeals(countMeals(numberOfMeals, calorieIntake));
-      
-      
-      getDocs(colRef).then((snapshot) => {
-        let arr = [];
-        snapshot.docs.forEach((doc) => {
-          arr.push({...doc.data(), id: doc.id})
-        })
-        console.log(arr);
-      }).catch(err => console.log(err));
-
-      getDoc(docRef).then((doc) => {
-        console.log('DATAAAAAAAAAAAAAAAAA ', doc.data())
-        setCalorieIntake(doc.data().calorieIntake)
-        setProtein(doc.data().protein)
-        setFats(doc.data().fats)
-        setCarbohydrates(doc.data().carbohydrates)
-        setCaloriesForEachMeal(doc.data().caloriesForEachMeal)
-        setNumberOfMeals(doc.data().numberOfMeals)
-      }).catch(err => console.log(err))
-      /// here countMeals
+      setMeals(countMeals(mealsCount, calories));
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -119,19 +91,21 @@ export default function RestaurantScreen() {
           meals.length > 0 && meals.map((meal) =>
           <View key={meal.id}>
           {meal.visible && (
-          <View style={[styles.mealBlock]}>
-            <View style={styles.topLine}>
-              <Text style={styles.recommendationText}>{meal.name}</Text>
-              <TouchableOpacity onPress={() => changeBlockVisibility(meal.id)} style={styles.arrowButton}>
-                <Image source={require('../../assets/images/leftChevron.png')}
-                    style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />
-              </TouchableOpacity>
+          <TouchableOpacity onPress={() => changeBlockVisibility(meal.id)}>
+            <View style={[styles.mealBlock]}>
+              <View style={styles.topLine}>
+                <Text style={styles.recommendationText}>{meal.name}</Text>
+                <View style={styles.arrowButton}>
+                  <Image source={require('../../assets/images/leftChevron.png')}
+                      style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />
+                </View>
+              </View>
+              <View style={styles.bottomLine}>
+                <Text style={styles.greyText}>Рекомендуем</Text>
+                <Text style={[styles.greyText, {marginRight: 0, marginLeft: 'auto'}]}>~{meal.calories}ккал</Text>
+              </View>
             </View>
-            <View style={styles.bottomLine}>
-              <Text style={styles.greyText}>Рекомендуем</Text>
-              <Text style={[styles.greyText, {marginRight: 0, marginLeft: 'auto'}]}>~{meal.calories}ккал</Text>
-            </View>
-          </View>)}
+          </TouchableOpacity>)}
           {!meal.visible && (
             <View style={[styles.appearedBlock, eatenBottomBlockVisibility && {height: hp(40.04)}]}>
               <View style={styles.mealLine}>
@@ -141,7 +115,7 @@ export default function RestaurantScreen() {
                       style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />
                 </TouchableOpacity>
               </View>
-              <CaloriesForAMeal />
+              <CaloriesForAMeal mealId={meal.id} />
               <ROrderPart mealId={meal.id}/>
               <View style={{alignItems: 'center'}}>
                 <View style={styles.introductionLine}>
@@ -240,7 +214,6 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       
     },
-  
     introductionLine: {
       width: wp(91.8),
       height: hp(2.37),
@@ -276,18 +249,43 @@ const styles = StyleSheet.create({
     fontSize: RFValue(17, height),
     lineHeight: hp(2.4),
     fontFamily: 'SF-Pro-Bold',
-  },
-  
-whiteButton: {
-  backgroundColor: colors.white,
-  marginTop: hp(3.56),
-  marginBottom: hp(1.54),
-  shadowColor: 'rgba(0, 0, 0, 0.18)',
-  shadowOffset: {width: wp(0), height: hp(0.12)},
-  shadowRadius: hp(2.13),
-  shadowOpacity: 1,
-}
-  
+    },
     
-  
+  whiteButton: {
+    backgroundColor: colors.white,
+    marginTop: hp(3.56),
+    marginBottom: hp(1.54),
+    shadowColor: 'rgba(0, 0, 0, 0.18)',
+    shadowOffset: {width: wp(0), height: hp(0.12)},
+    shadowRadius: hp(2.13),
+    shadowOpacity: 1,
+  }
+      
   })
+
+  /*
+    const db = getFirestore();
+    const db1 = firebase.firestore();
+    const colRef = collection(db, 'calorie_plan');
+    const docRef = doc(db, 'calorie_plan', id)
+    const [address, setAddress] = useState('проспект Толстова, 237');
+    in useEffect:
+
+    getDocs(colRef).then((snapshot) => {
+        let arr = [];
+        snapshot.docs.forEach((doc) => {
+          arr.push({...doc.data(), id: doc.id})
+        })
+        console.log(arr);
+      }).catch(err => console.log(err));
+
+      getDoc(docRef).then((doc) => {
+        console.log('DATAAAAAAAAAAAAAAAAA ', doc.data())
+        setCalorieIntake(doc.data().calorieIntake)  // calories
+        setProtein(doc.data().protein)
+        setFats(doc.data().fats)
+        setCarbohydrates(doc.data().carbohydrates)
+        setCaloriesForEachMeal(doc.data().caloriesForEachMeal)
+        setNumberOfMeals(doc.data().numberOfMeals)  // mealsCount
+      }).catch(err => console.log(err))
+  */

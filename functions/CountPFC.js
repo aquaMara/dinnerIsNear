@@ -1,6 +1,4 @@
 export const countPFC = (aim, calorieIntake) => {
-
-    console.log(aim)
     let proteinDouble, fatsDouble, carbohydratesDouble;
     if (aim === 'maintainWeight') {
         proteinDouble = 0.3 * calorieIntake;
@@ -17,8 +15,8 @@ export const countPFC = (aim, calorieIntake) => {
         fatsDouble = 0.2 * calorieIntake;
         carbohydratesDouble = 0.45 * calorieIntake;
     }
-    const protein = parseInt(proteinDouble, 10);
-    const fats = parseInt(fatsDouble, 10);
-    const carbohydrates = parseInt(carbohydratesDouble, 10);
-    return {protein, fats, carbohydrates};
+    const proteinIntake = parseInt(proteinDouble, 10);
+    const fatsIntake = parseInt(fatsDouble, 10);
+    const carbohydratesIntake = parseInt(carbohydratesDouble, 10);
+    return {proteinIntake, fatsIntake, carbohydratesIntake};
 }

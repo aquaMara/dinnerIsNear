@@ -13,35 +13,41 @@ import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Picker, DatePicker } from 'react-native-wheel-pick';
+import { Picker } from 'react-native-wheel-pick';
 import { Modal } from 'react-native';
-import { useIsFocused } from "@react-navigation/native";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import SwitchSelector from "react-native-switch-selector";
 
 const { height } = Dimensions.get('screen');
 
 export default function ProfileStepOne({ navigation, route }) {
-  const isFocusedHistory = useIsFocused();
 
   const userId = route.params.userId;
+  console.log('USERID ProfileStepOne ', userId)
+  //const userId = 'ff';
+  //const phoneNumber = 6;
   const phoneNumber = route.params.phoneNumber;
-  const [name, setName] = useState('');
+  const [nameData, setNameData] = useState('');
   const [gender, setGender] = useState('female');
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState(new Date());
+  const [dateOfBirthFormatted, setDateOfBirthFormatted] = useState('2023/1/1');
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
+  const [lifestyle, setLifestyle] = useState('average');
+  const [lifestyleFormatted, setLifestyleFormatted] = useState('Средняя активность');
+
+  const [birthdayModalVisible, setBirthdayModalVisible] = useState(false);
+  const [lifestyleModalVisible, setLifestyleModalVisible] = useState(false);
 
   const lifestyles = [
     'Минимальная активность', 'Небольшая активность', 'Средняя активность',
     'Активность выше среднего', 'Повышенная активность', 
     'Высокая активность', 'Очень высокая активность'];
-  const [lifestyle, setLifestyle] = useState(lifestyles[0]);
-  const [modalVisible, setModalVisible] = useState(false);
 
-  const setResult = () => {
+  const createLifestyle = (lifestyleFormatted) => {
     let lf;
-    switch (lifestyle) {
+    switch (lifestyleFormatted) {
         case 'Минимальная активность': lf = 'minimum'; break;
         case 'Небольшая активность':  lf = 'little'; break;
         case 'Средняя активность':  lf = 'average'; break;
@@ -51,8 +57,18 @@ export default function ProfileStepOne({ navigation, route }) {
         case 'Очень высокая активность': lf = 'veryHigh'; break;
         default: lf = 'min'; break;
     }
-    const stepOne = {userId, phoneNumber, name, gender, dateOfBirth, weight, height, lifestyle : lf};
-    // () => navigation.navigate('StepTwo', {userId: userId})
+    return lf;
+  }
+
+  const setDate = (event, date) => {
+    var mm = date.getMonth() + 1;
+    setDateOfBirth(date);
+    setDateOfBirthFormatted(date.getFullYear() + '/' + mm + '/' + date.getDate());
+  };
+
+  const toNextStep = () => {
+    const stepOne = {userId, phoneNumber, 'name': nameData, gender, dateOfBirthFormatted, weight, height, 'lifestyle': lifestyle};
+    console.log(userId, phoneNumber, 'name', nameData, gender, dateOfBirth, weight, height, 'lifestyle', lifestyle);
     navigation.navigate('StepTwo', {stepOne: stepOne})
   }
 
@@ -67,194 +83,230 @@ export default function ProfileStepOne({ navigation, route }) {
   });
     
   if (!fontsLoaded) {
-    //return null;
+    return null;
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.white }}>
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={globalStyles.container}>
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <SafeAreaView style={[globalStyles.container, styles.temp]}>
-      <SafeAreaView style={globalStyles.inner}>
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Имя Фамилия</Text>
+    <ScrollView style={{flex: 1, backgroundColor: colors.white}}>
+      <View style={[styles.block, {marginTop: hp(2.37)}]}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Имя Фамилия</Text>
         </View>
-        <TextInput style={styles.textInput} value={name}
-            placeholder='Введите имя и фамилию' placeholderTextColor={'#8A8A8E'}
-            onChangeText={n => setName(n)} />  
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Пол</Text>
+        <TextInput style={styles.textInput} value={nameData}
+            placeholder='Введите имя и фамилию' placeholderTextColor={colors.grey}
+            onChangeText={n => setNameData(n)} />
+      </View>
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Пол</Text>
         </View>
-        <View style={{ alignItems: 'center' }}>
-            <SwitchSelector style={{  width: wp(91.8) }}
-                initial={0}
-                onPress={g => setGender(g) }
-                textColor={colors.black}
-                selectedColor={colors.white}
-                buttonColor={colors.green}
-                borderColor='rgba(118, 118, 128, 0)'
-                backgroundColor='rgba(118, 118, 128, 0.12)'
-                hasPadding
-                borderRadius={hp(1.07)}
-                borderWidth={hp(0.1)}
-                height={hp(4.59)}
-                options={[
-                    { label: "Женский", value: "female" },
-                    { label: "Мужской", value: "male" }
-                ]} />
+        <SwitchSelector style={{  width: wp(91.8), marginTop: hp(1.78), }}
+            initial={0} onPress={g => setGender(g)}
+            options={[
+              { label: "Женский", value: "female" },
+              { label: "Мужской", value: "male" }
+            ]}
+            textColor={colors.black} selectedColor={colors.white}
+            buttonColor={colors.green}
+            borderColor='rgba(118, 118, 128, 0)' backgroundColor='rgba(118, 118, 128, 0.12)'
+            hasPadding borderRadius={hp(1.07)} 
+            borderWidth={hp(0.1)} height={hp(4.59)} />
+      </View>
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Дата рождения</Text>
         </View>
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Дата рождения</Text>
-        </View>
-        <TextInput style={styles.textInput} value={dateOfBirth}
-            placeholder='Введите дату рождения' placeholderTextColor={'#8A8A8E'}
-            onChangeText={dob => setDateOfBirth(dob)} />          
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Рост</Text>
-        </View>
-        <TextInput style={styles.textInput} value={height}
-            placeholder='Введите свой рост в см' placeholderTextColor={'#8A8A8E'}
-            onChangeText={h => setHeight(h)} />        
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Вес</Text>
-        </View>
-        <TextInput style={styles.textInput} value={weight}
-            placeholder='Введите свой вес в кг' placeholderTextColor={'#8A8A8E'}
-            onChangeText={w => setWeight(w)} />
-        <View style={styles.labelBox}>
-            <Text style={styles.labelText}>Активность</Text>
-        </View>
-        <View style={styles.toggleBlock}>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Text style={[ styles.toggleText, {width: wp(76.7) } ]}>{lifestyle}</Text>
+        <View style={styles.modalOpenBlock}>
+            <TouchableOpacity onPress={() => setBirthdayModalVisible(true)}>
+                <Text style={styles.listText}>{dateOfBirthFormatted}</Text>
             </TouchableOpacity>
         </View>
         <View style={styles.modalContainer}>
-            <Modal animationType="slide" transparent={true} visible={modalVisible}
-                onRequestClose={() => { setModalVisible(!modalVisible) }} >
-                <View style={styles.modalStyle}>
-                    <Picker style={styles.pickerStyle} selectedValue={lifestyles[0]} 
-                        pickerData={lifestyles}
-                        itemStyle={styles.toggleText}
-                        onValueChange={(value) => { setLifestyle(value); setModalVisible(false) }} />
-                </View>
+            <Modal animationType="slide" transparent={true} visible={birthdayModalVisible}>
+              <View style={styles.modalStyle}>
+                <DateTimePicker value={dateOfBirth} display='spinner' mode='date'
+                  style={{backgroundColor: 'white'}} textColor={colors.black}
+                  themeVariant='light' locale='rus-RUS'
+                  minimumDate={new Date(1950, 0, 1)} maximumDate={new Date(2030, 10, 20)}
+                  onChange={setDate} dateFormat="dayofweek day month" />
+                <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}
+                  onPress={() => setBirthdayModalVisible(!birthdayModalVisible)}>
+                  <Text style={[styles.listText, birthdayModalVisible && {textAlign: 'center'}]}>OK</Text>
+                </TouchableOpacity>
+              </View>
             </Modal>
         </View>
-      </SafeAreaView>
-      <TouchableOpacity onPress={setResult}
-        style={globalStyles.mainButton}>
+      </View> 
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Рост</Text>
+        </View>
+        <TextInput style={styles.textInput} value={height}
+            placeholder='Введите свой рост в см' placeholderTextColor={colors.grey}
+            onChangeText={h => setHeight(h)} keyboardType='number-pad' />
+      </View>
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Вес</Text>
+        </View>
+        <TextInput style={styles.textInput} value={weight}
+            placeholder='Введите свой вес в кг' placeholderTextColor={colors.grey}
+            onChangeText={w => setWeight(w)} keyboardType='numeric' />
+      </View>
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Активность</Text>
+        </View>
+        <View style={styles.modalOpenBlock}>
+            <TouchableOpacity onPress={() => setLifestyleModalVisible(true)}>
+                <Text style={styles.listText}>{lifestyleFormatted}</Text>
+            </TouchableOpacity>
+        </View>
+        <View style={styles.modalContainer}>
+            <Modal animationType='slide' transparent={true} visible={lifestyleModalVisible}>
+              <View style={styles.modalStyle}>
+                <Picker 
+                  style={{backgroundColor: colors.white, width: wp(84)}}
+                  itemStyle={styles.listText} selectedValue='Средняя активность'
+                  pickerData={lifestyles} onValueChange={value => {setLifestyleFormatted(value), setLifestyle(createLifestyle(value))}} />
+                <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}
+                  onPress={() => setLifestyleModalVisible(!lifestyleModalVisible)}>
+                  <Text style={[styles.listText, lifestyleModalVisible && {textAlign: 'center'}]}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+        </View>
+      </View>
+      <TouchableOpacity onPress={toNextStep} style={[globalStyles.mainButton, {marginTop: hp(3.08)}]}>
         <Text style={styles.buttonText}>Следующий шаг</Text>
       </TouchableOpacity>
       <View style={styles.stepBox}>
         <Text style={[styles.labelText, styles.stepText]}>Шаг 1 из 2</Text>
       </View>
-    </SafeAreaView>
-    </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
     </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: "center",
-        marginTop: hp(10),
-    },
-    modalStyle: {
-        width: wp (95),
-        height: hp(40),
-        marginTop: hp(30),
-        backgroundColor: colors.white,
-        borderColor: colors.green,
-        borderWidth: 0.26,
-        alignItems: "center",
-        alignSelf: 'center',
-        display: 'flex',
-        flexDirection: 'column'
-    },
-    pickerStyle: {
-        width: wp(60),
-        height: hp(8.98),
-        backgroundColor: 'white',
-    },
-    labelBox: {
+    block: {
+        // borderWidth: 1,
+        marginTop: hp(3.56),
+        marginLeft: wp(4),
+      },
+      labelBlock: {
         height: hp(1.9),
-        width: wp(40.77),
-        marginLeft: wp(4.1),
-        marginTop: hp(2.49),
-        marginBottom: hp(1.78),
-    },
-    labelText: {
-        fontSize: RFValue(13, height),
+      },
+      labelText: {
         fontFamily: 'SF-Pro-Regular',
-        opacity: 0.6,
-        lineHeight: hp(1.9),
-    },
-    textInput : {
+        fontSize: RFValue(13, height),
+        lineHeight: hp(1.84),
+        color: colors.grey,
+        textAlign: 'left'
+      },
+      textInput : {
         width: wp(95.9),
-        height: hp(4.45),
-        marginLeft: wp(4.1),
+        height: hp(5.45),
         marginTop: hp(1.78),
-        marginBottom: hp(3.55),
         lineHeight: hp(2.4),
         fontSize: RFValue(17, height),
         fontFamily: 'SF-Pro-Regular',
         borderBottomColor: colors.separator,
         borderBottomWidth: wp(0.26),
-    },
-    buttonText: {
-      color: '#fff',
-      fontSize: RFValue(17, height),
-      lineHeight: hp(2.4),
-      fontFamily: 'SF-Pro-Medium',
-      textAlign: 'center',
-    },
-    stepBox: {
-        marginTop: hp(1.54),
-        // marginBottom: hp(5.57),
-        //marginBottom: hp(1.03),
-    },  
-    stepText: {
-        textAlign: 'center',
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: hp(2.49),
-    },
-    modalStyle: {
-        width: wp (70),
-        height: hp(35),
-        marginTop: hp(10),
-        backgroundColor: colors.white,
-        borderColor: colors.green,
-        borderWidth: 0.26,
-        borderRadius: wp(5.1),
-        paddingVertical: hp(1.4),
-        alignItems: 'center',
-        alignSelf: 'center',
-    },
-    pickerStyle: {
-        width: wp(60),
-        height: hp(8.98),
-        backgroundColor: 'white',
-    },
-    toggleText: {
+      },
+      listText: {
         fontSize: RFValue(17, height),
         fontFamily: 'SF-Pro-Regular',
-    },
-    toggleBlock: {
-        height: hp(4.98),
+        color: colors.black,
+        lineHeight: hp(2.4),
+      },
+      modalContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalOpenBlock: {
         width: wp(95.9),
-        marginLeft: wp(4.1),
+        height: hp(5.45),
+        marginTop: hp(1.78),
+        borderBottomWidth: wp(0.26),
+        borderBottomColor: colors.separator,
+        justifyContent: 'center',
+      },
+      modalStyle: {
+        width: wp (86),
+        height: hp(36),
+        marginTop: hp(30),
+        backgroundColor: colors.white,
+        alignItems: 'center',
+        alignSelf: 'center',
+        borderWidth: 0.3,
+        borderColor: colors.separator,
+      },
+      counterContainer: {
+        width: wp(95.9),
+        height: hp(5.45),
+        marginTop: hp(1.78),
+        marginLeft: 'auto',
+        marginRight: wp(5.38),
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         borderBottomColor: colors.separator,
         borderBottomWidth: wp(0.26),
+      },
+      counterInner: {
+        height: hp(5.45),
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      counterText: {
+          width: wp(6.82),
+          alignItems: 'center',
+          marginHorizontal: wp(4.36)
+      },
+      sign: {
+          height: hp(2.5),
+          width: hp(2.6),
+          alignSelf: 'center',
+      },
+      signButton: {
+        width: wp(8),
+        height: hp(5),
+        justifyContent: 'center'
+      },
+      plusSign: {
+          fontSize: RFValue(40, height),
+          fontFamily: 'SF-Pro-Bold',
+      },
+      minusSign: {
+          fontSize: RFValue(50, height),
+          fontFamily: 'SF-Pro-Medium',
+      },
+      toggleBlock: {
+        height: hp(4.98),
+        width: wp(95.9),
+        marginTop: hp(1.78),
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomColor: colors.separator,
+        borderBottomWidth: wp(0.26),
+      },
+      buttonText: {
+        color: colors.white,
+        fontSize: RFValue(17, height),
+        lineHeight: hp(2.4),
+        fontFamily: 'SF-Pro-Medium',
+        textAlign: 'center',
+      },
+    stepBox: {
+        marginTop: hp(1.54),
+        marginBottom: hp(5.57)
+    },  
+    stepText: {
+        textAlign: 'center',
     },
 })

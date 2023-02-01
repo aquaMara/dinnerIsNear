@@ -10,17 +10,16 @@ import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 
 const { height } = Dimensions.get('screen');
 
-export default function AppearingDishDescriptionModal({dishName,dishPath,dishProtein,dishFats,dishCarbohydrates, dishCalories,dishPrice,weight,description,id, chooseMessage, visibility, mealId}) {
+export default function AppearingDishDescriptionModal({activeItem, mealId, chooseMessage, visibility}) {
 
   const [modalVisibleIntro, setModalVisibleIntro] = useState(false);
   const { cart, setCart } = useShoppingCart();
   console.log('h', mealId);
   //console.log('itemitem', item);
-  console.log(dishName,dishPath,dishProtein,dishFats,dishCarbohydrates, dishCalories,dishPrice,weight,description, chooseMessage, visibility, mealId)
-
+  
   const handleCartChoice = (item) => {
       setModalVisibleIntro(!modalVisibleIntro);
-      chooseMessage(false);
+      chooseMessage(null, false);
       // !!!
       //const mealId = 1;
       const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice} = item;
@@ -47,40 +46,40 @@ export default function AppearingDishDescriptionModal({dishName,dishPath,dishPro
     }
 
   return (
-    <GestureRecognizer onSwipeDown={() => chooseMessage(false)}>
+    <GestureRecognizer onSwipeDown={() => chooseMessage(activeItem, false)}>
       <Modal 
         animationType="slide" transparent={true}
         visible={visibility} style={styles.modalStyle}>
           <View style={[styles.centeredView, modalVisibleIntro && {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
             <View style={styles.modalView}>
-            <Text>{dishName} {id}</Text>
-                <Image source={{uri: dishPath}}
+            <Text>{activeItem.dishName} {activeItem.id}</Text>
+                <Image source={{uri: activeItem.dishPath}}
                     style={styles.image} />
                 <View style={styles.topLine}>
                     <View style={{width: wp(47.95)}}>
-                        <Text style={styles.dishTitle} numberOfLines={2} ellipsizeMode='tail'>{dishName}</Text>
+                        <Text style={styles.dishTitle} numberOfLines={2} ellipsizeMode='tail'>{activeItem.dishName}</Text>
                     </View>
                     <View style={{width: wp(13.77), marginLeft: 'auto', marginRight: 0}}>
-                        <Text style={[styles.dishTitle, {textAlign: 'right'}]}>{dishPrice}р</Text>
-                        <Text style={[styles.dishDescription, {marginTop: hp(0.47), textAlign: 'right', opacity: 0.4}]}>{weight}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'right'}]}>{activeItem.dishPrice}р</Text>
+                        <Text style={[styles.dishDescription, {marginTop: hp(0.47), textAlign: 'right', opacity: 0.4}]}>{activeItem.weight}</Text>
                     </View>
                 </View>
                 <Image source={require('../../../assets/images/rectangle9.png')} style={styles.topLineImage}/>
                 <View style={styles.middleLine}>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishCalories}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{activeItem.dishCalories}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>ккал</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishProtein}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{activeItem.dishProtein}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>белки</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishFats}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{activeItem.dishFats}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>жиры</Text>
                     </View>
                     <View style={styles.middleBlock}>
-                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{dishCarbohydrates}</Text>
+                        <Text style={[styles.dishTitle, {textAlign: 'center'}]}>{activeItem.dishCarbohydrates}</Text>
                         <Text style={[styles.dishDescription, {textAlign: 'center', opacity: 0.4}]}>углеводы</Text>
                     </View>
                 </View>
@@ -88,10 +87,10 @@ export default function AppearingDishDescriptionModal({dishName,dishPath,dishPro
                     <Text style={[styles.dishDescription, {textAlign: 'left'}]}>Состав</Text>
                     <Text style={[styles.dishDescription, {textAlign: 'justify', opacity: 0.6, marginTop: hp(0.83)}]} 
                         numberOfLines={3} ellipsizeMode='tail'>
-                            {description}
+                            {activeItem.description}
                     </Text>
                 </View>
-                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice(item)}>
+                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice(activeItem)}>
                     <Text style={styles.buttonText}>В корзину</Text>
                 </TouchableOpacity>
             </View>

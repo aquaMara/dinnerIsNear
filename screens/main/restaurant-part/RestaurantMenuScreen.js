@@ -19,18 +19,21 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const [dishes, setDishes] = useState([{}]);
     const [dishesIntro, setDishesIntro] = useState([]);
     const [currentSectionId, setCurrentSectionId] = useState(null);
+    const [activeItem, setActiveItem] = useState({});
     // const navigation = useNavigation();
     console.log('route.params.restrauntId', route.params.restrauntId);
     console.log('route.params.mealId', route.params.mealId);
     const [visibility, setVisibility] = useState(false);
-    const chooseMessage = (message) => {
+
+
+    const chooseMessage = (item,message) => {
+        setActiveItem(item);
         setVisibility(message);
     };
 
     const handleSectionChoice = (id, name) => {
         console.log('handleSectionChoice id ', id);
-        setCurrentSectionId(id);
-        
+        setCurrentSectionId(id);   
     }
 
     const handleDishChoice = (id) => {
@@ -60,35 +63,32 @@ export default function RestaurantMenuScreen({navigation, route}) {
         </TouchableOpacity>
     );
 
-    const RenderItem = ({ dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice, dishPath, weight, description, id }) => (
+    const RenderItem = ({ item }) => (
         <View style={styles.block}>
             <View style={styles.topBlock}>
-                <Image source={{uri: dishPath}} style={styles.dishImage} resizeMode='cover' />
+                <Image source={{uri: item.dishPath}} style={styles.dishImage} resizeMode='cover' />
                 <TouchableOpacity style={styles.heartImageButton}>
                     <Image source={require('../../../assets/images/heart.png')} style={styles.heartImage} />
                 </TouchableOpacity>
                 <View style={styles.middleBlock}>
                     <View style={{width: wp(23.08), height: hp(5.92)}}>
-                        <Text style={styles.dishText} numberOfLines={2} ellipsizeMode='tail'>{dishName}</Text>
+                        <Text style={styles.dishText} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
                     </View>
                     <View style={{width: wp(12)}}>
-                        <Text style={[styles.dishText, {textAlign: 'center'}]}>{dishCalories}</Text>
+                        <Text style={[styles.dishText, {textAlign: 'center'}]}>{item.dishCalories}</Text>
                         <Text style={[styles.dishText, {textAlign: 'center'}]}>ккал</Text>
                     </View>
                 </View>
             </View>
             <View style={styles.bottomBlock}>
-                <View><Text style={styles.regularText}>{dishProtein} Б</Text></View>
-                <View style={{marginHorizontal: wp(2.56)}}><Text style={styles.regularText}>{dishFats} Ж</Text></View>
-                <View><Text style={styles.regularText}>{dishCarbohydrates} У</Text></View>
+                <View><Text style={styles.regularText}>{item.dishProtein} Б</Text></View>
+                <View style={{marginHorizontal: wp(2.56)}}><Text style={styles.regularText}>{item.dishFats} Ж</Text></View>
+                <View><Text style={styles.regularText}>{item.dishCarbohydrates} У</Text></View>
             </View>
-            <TouchableOpacity onPress={() => chooseMessage(true)} style={styles.littleButton}>
-            <Text style={styles.buttonText}>{dishPrice}р</Text>
-                <Text>{dishName} {id}</Text>
-                <AppearingDishDescriptionModal key={id} dishName={dishName} dishCalories={dishCalories}
-                    dishProtein={dishProtein} dishFats={dishFats} dishCarbohydrates={dishCarbohydrates}
-                    id={id} dishPrice={dishPrice} dishPath={dishPath} weight={weight} description={description}  
-                    mealId={route.params.mealId} chooseMessage={chooseMessage} visibility={visibility} />
+            <TouchableOpacity onPress={() => chooseMessage(item, true)} style={styles.littleButton}>
+            <Text style={styles.buttonText}>{item.dishPrice}р</Text>
+                <Text>{item.dishName}</Text>
+                
             </TouchableOpacity>
         </View>
     );
@@ -108,12 +108,11 @@ export default function RestaurantMenuScreen({navigation, route}) {
             </View>   
         </View>
         <FlatList numColumns={2} data={dishes} 
-            // renderItem={renderItem}
-            renderItem={({ item }) => <RenderItem dishName={item.dishName} dishCalories={item.dishCalories}
-            dishProtein={item.dishProtein} dishFats={item.dishFats} dishCarbohydrates={item.dishCarbohydrates}
-            dishPrice={item.dishPrice} dishPath={item.dishPath} weight={item.weight} description={item.description} 
-            id={item.id} />}
+            renderItem={RenderItem}
             keyExtractor={item => item.id} />
+
+            <AppearingDishDescriptionModal activeItem={activeItem}  
+                    mealId={route.params.mealId} chooseMessage={chooseMessage} visibility={visibility} />
     </SafeAreaView>
   )
 }

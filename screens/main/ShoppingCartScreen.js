@@ -204,7 +204,7 @@ export default function ShoppingCartScreen() {
         { filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal(meal.id).length > 0 && filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal(meal.id).map((ff) =>(
             <View style={styles.mealBlock} key={ff.id} >
             <View>
-                <Image source={require('../../assets/images/picture_1.jpg')}
+                <Image source={{uri: ff.dishPath}}
                     style={styles.image}/>
             </View>
             <View style={styles.dishBlock}>

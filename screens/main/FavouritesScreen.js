@@ -93,7 +93,7 @@ export default function FavouritesScreen() {
     }
 
   return (
-    <FlatList numColumns={1} data={meals} 
+    <FlatList numColumns={1} data={meals} style={{backgroundColor: colors.white, flex: 1}}
             renderItem={render1} keyExtractor={meal => meal.id} />
   )
 }

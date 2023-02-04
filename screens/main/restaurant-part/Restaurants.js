@@ -21,7 +21,7 @@ export default function Restaurants({route}) {
 
   const moveToRestaurant = (id, name, mealId) => {
     console.log('moveToRestaurant', id, name, mealId);
-    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId})
+    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId});
   }
 
   const renderRestaurant = ({item}) => (

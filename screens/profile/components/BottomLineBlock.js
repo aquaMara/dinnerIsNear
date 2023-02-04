@@ -31,7 +31,7 @@ export default function BottomLineBlock() {
         <TouchableOpacity style={globalStyles.whiteButton} onPress={() => navigation.navigate('ProfileConfig')}>
             <Text style={[styles.buttonText, styles.greenText]}>Настройка профиля</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[globalStyles.mainButton, styles.bottomButton]}>
+        <TouchableOpacity style={[globalStyles.mainButton, styles.bottomButton]} onPress={() => navigation.navigate('ProConfig')}>
             <Text style={[styles.buttonText, styles.whiteText]}>Настройка профиля PRO</Text>
         </TouchableOpacity>
     </View>

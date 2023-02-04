@@ -36,7 +36,7 @@ export default function RecommendationScreen() {
     const [calorieIntake, setCalorieIntake] = useState(1700);
     const [numberOfMeals, setNumberOfMeals] = useState(4);
     const [meals, setMeals] = useState([{}]);
-    const [isMainBlockHidden, setIsMainBlockHidden] = useState(false);
+    const [isMainBlockHidden, setIsMainBlockHidden] = useState(true);
     const [orderVisibility, setOrderVisibility] = useState(true);
 
     const [eatenBottomBlockVisibility, setEatenBottomBlockVisibility] = useState(false);

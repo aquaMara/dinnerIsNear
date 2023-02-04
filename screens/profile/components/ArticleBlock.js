@@ -10,17 +10,17 @@ const { height } = Dimensions.get('screen');
 
 export default function ArticleBlock({ item }) {
 
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
-    const [fontsLoaded] = useFonts({
-        'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
-        'SF-Pro-Medium': require('../../../assets/fonts/SFPro500.otf'),
-        'SF-Pro-Bold': require('../../../assets/fonts/SFPro700.otf'),
-    });
+  const [fontsLoaded] = useFonts({
+    'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
+    'SF-Pro-Medium': require('../../../assets/fonts/SFPro500.otf'),
+    'SF-Pro-Bold': require('../../../assets/fonts/SFPro700.otf'),
+  });
             
-    if (!fontsLoaded) {
-        return null;
-    }
+  if (!fontsLoaded) {
+    return null;
+  }
     
   return (
     <View style={styles.articleBlock}>

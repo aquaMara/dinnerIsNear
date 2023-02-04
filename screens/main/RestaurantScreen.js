@@ -90,7 +90,7 @@ export default function RestaurantScreen() {
       {
           meals.length > 0 && meals.map((meal) =>
           <View key={meal.id}>
-          {meal.visible && (
+          {!meal.visible && (
           <TouchableOpacity onPress={() => changeBlockVisibility(meal.id)}>
             <View style={[styles.mealBlock]}>
               <View style={styles.topLine}>
@@ -106,7 +106,7 @@ export default function RestaurantScreen() {
               </View>
             </View>
           </TouchableOpacity>)}
-          {!meal.visible && (
+          {meal.visible && (
             <View style={[styles.appearedBlock, eatenBottomBlockVisibility && {height: hp(40.04)}]}>
               <View style={styles.mealLine}>
                 <Text style={styles.recommendationText}>{meal.name}</Text>

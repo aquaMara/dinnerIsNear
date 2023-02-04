@@ -18,7 +18,8 @@ const { height } = Dimensions.get('screen');
 export default function SignUpScreen({ navigation }) {
 
   const [phoneNumber, setPhoneNumber] = useState('');
-  const countryCode = '+7';
+  const [countryCode, setCountryCode] = useState('+7')
+  //const countryCode = '+7';
   const [code, setCode] = useState('');
   const [verificationId, setVerificationId] = useState(null);
   const recaptchaVerifier = useRef(null);
@@ -72,9 +73,10 @@ const sendVerification = () => {
         <Text style={styles.title}>Введите номер телефона</Text>
       </View>
       <View style={styles.inputBox}>
-        <Text style={styles.phoneText}>+7</Text>
-        <TextInput
-          style={styles.phoneInput}
+        <TextInput value={countryCode} editable={false} 
+          style={styles.countryCodeInput}  />
+        <TextInput style={styles.phoneInput}
+          value={phoneNumber}
           onChangeText={pn => setPhoneNumber(pn)}
           keyboardType='phone-pad'
         />
@@ -120,15 +122,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    //textAlignVertical: 'center'
   },
-  phoneText: {
+  countryCodeInput: {
+    width: wp(5.37),
+    height: hp(3.43),
+    marginLeft: wp(5.13),
     lineHeight: hp(2.4),
     fontSize: RFValue(17, height),
     fontFamily: 'SF-Pro-Regular',
-    borderBottomColor: colors.black,
-    marginLeft: wp(5.13),
-    paddingBottom: wp(1)
   },
   phoneInput: {
     width: wp(65.9),
@@ -136,9 +137,8 @@ const styles = StyleSheet.create({
     lineHeight: hp(2.4),
     fontSize: RFValue(17, height),
     fontFamily: 'SF-Pro-Regular',
-    borderBottomColor: colors.black,
-    alignSelf: 'center',
-    marginLeft: wp(1),
+    //alignSelf: 'center',
+    //smarginLeft: wp(1),
   },
   conditionBox:{
     width: wp(68.72),

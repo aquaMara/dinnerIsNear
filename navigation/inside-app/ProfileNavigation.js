@@ -12,6 +12,10 @@ import ProfileScreen from '../../screens/profile/ProfileScreen';
 import ArticlesScreen from '../../screens/profile/ArticlesScreen';
 import ArticleScreen from '../../screens/profile/ArticleScreen';
 import ProfileConfigScreen from '../../screens/profile/ProfileConfigScreen';
+import ProConfigFirstScreen from '../../screens/profile/pro/ProConfigFirstScreen';
+import UndesirableProductsScreen from '../../screens/profile/pro/UndesirableProductsScreen';
+import WeekTagsScreen from '../../screens/profile/pro/WeekTagsScreen';
+import ModesScreen from '../../screens/profile/pro/ModesScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -33,9 +37,17 @@ export default function ProfileNavigation() {
       <Stack.Screen name="Articles" component={ArticlesScreen}
         options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Статьи'}}/>
       <Stack.Screen name="Article" component={ArticleScreen}
-        options={({ route }) => ({ title: route.params.title, headerShown: true, headerBackTitle: 'Назад',})} />
+        options={({ route }) => ({ title: route.params.title, headerShown: true, headerBackTitle: 'Назад'})} />
       <Stack.Screen name="ProfileConfig" component={ProfileConfigScreen}
-        options={({ route }) => ({ title: 'Настройка профиля', headerShown: true, headerBackTitle: 'Назад',})} />
+        options={({ route }) => ({ title: 'Настройка профиля', headerShown: true, headerBackTitle: 'Назад'})} />
+      <Stack.Screen name="ProConfig" component={ProConfigFirstScreen}
+        options={({ route }) => ({ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'})} />
+      <Stack.Screen name="UndesirableProducts" component={UndesirableProductsScreen}
+        options={{ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'}} />
+      <Stack.Screen name="WeekTags" component={WeekTagsScreen}
+        options={{ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'}} />
+      <Stack.Screen name="Modes" component={ModesScreen}
+        options={{ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'}} />
     </Stack.Navigator>
   )
 }

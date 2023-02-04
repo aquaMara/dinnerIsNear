@@ -18,13 +18,11 @@ export default function RestaurantMenuScreen({navigation, route}) {
 
     const [dishes, setDishes] = useState([{}]);
     const [dishesIntro, setDishesIntro] = useState([]);
-    const [currentSectionId, setCurrentSectionId] = useState(null);
+    const [currentSectionName, setCurrentSectionName] = useState(null);
     const [activeItem, setActiveItem] = useState({});
-    // const navigation = useNavigation();
-    console.log('route.params.restrauntId', route.params.restrauntId);
-    console.log('route.params.mealId', route.params.mealId);
     const [visibility, setVisibility] = useState(false);
-
+    const currentRestaurantName = route.params.title;
+    console.log('currentRestaurantName ', currentRestaurantName);
 
     const chooseMessage = (item,message) => {
         setActiveItem(item);
@@ -32,18 +30,34 @@ export default function RestaurantMenuScreen({navigation, route}) {
     };
 
     const handleSectionChoice = (id, name) => {
-        console.log('handleSectionChoice id ', id);
-        setCurrentSectionId(id);   
+        if (name === 'Все') {
+            setDishes(findDishesByRestaurant())
+            setCurrentSectionName('Все')
+        } else {
+            setDishes(findDishesByRestaurantAndBySectionName(name));
+            setCurrentSectionName(name);
+        }     
     }
 
-    const handleDishChoice = (id) => {
-        console.log('handleDishChoice id ', id);
+    const findDishesByRestaurantAndBySectionName = (name) => {
+        var result = dishesList.filter(obj => {
+            return obj.section === name && obj.restaurantName === currentRestaurantName;
+        })
+        return result;
+    }
+
+    const findDishesByRestaurant = () => {
+        console.log('findDishesByRestaurant')
+        var result = dishesList.filter(obj => {
+            return obj.restaurantName === currentRestaurantName;
+        })
+        return result;
     }
 
     useEffect(() => {
-        setDishes(dishesList);
+        setDishes(findDishesByRestaurant());
         setDishesIntro(dishesSections);
-        setCurrentSectionId(0)
+        setCurrentSectionName('Все');
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -57,7 +71,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
       }
 
     const ItemRender = ({ name, id }) => (
-        <TouchableOpacity style={[styles.topMenuBlock, currentSectionId === id && {backgroundColor: colors.green}]}
+        <TouchableOpacity style={[styles.topMenuBlock, currentSectionName === name && {backgroundColor: colors.green}]}
             onPress={() => handleSectionChoice(id, name)}>
             <Text style={styles.regularText}>{name}</Text>
         </TouchableOpacity>
@@ -86,9 +100,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
                 <View><Text style={styles.regularText}>{item.dishCarbohydrates} У</Text></View>
             </View>
             <TouchableOpacity onPress={() => chooseMessage(item, true)} style={styles.littleButton}>
-            <Text style={styles.buttonText}>{item.dishPrice}р</Text>
-                <Text>{item.dishName}</Text>
-                
+                <Text style={styles.buttonText}>{item.dishPrice}р</Text>
             </TouchableOpacity>
         </View>
     );
@@ -110,7 +122,6 @@ export default function RestaurantMenuScreen({navigation, route}) {
         <FlatList numColumns={2} data={dishes} 
             renderItem={RenderItem}
             keyExtractor={item => item.id} />
-
             <AppearingDishDescriptionModal activeItem={activeItem}  
                     mealId={route.params.mealId} chooseMessage={chooseMessage} visibility={visibility} />
     </SafeAreaView>

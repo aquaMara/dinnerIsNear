@@ -17,14 +17,15 @@ export default function AppearingDishDescriptionModal({activeItem, mealId, choos
   console.log('h', mealId);
   //console.log('itemitem', item);
   
-  const handleCartChoice = (item) => {
+  const handleCartChoice = () => {
       setModalVisibleIntro(!modalVisibleIntro);
-      chooseMessage(null, false);
+      console.log(activeItem)
+      chooseMessage(activeItem, false);
       // !!!
       //const mealId = 1;
-      const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice} = item;
+      const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice, dishPath} = activeItem;
       // dishId = 1 in newElement заменить !!!
-      const cartItem = {mealId, id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice}
+      const cartItem = {mealId, id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice, dishPath}
       console.log('cartItem', cartItem)
       setCart(cart => [...cart, cartItem]);
       console.log(cart)
@@ -52,7 +53,6 @@ export default function AppearingDishDescriptionModal({activeItem, mealId, choos
         visible={visibility} style={styles.modalStyle}>
           <View style={[styles.centeredView, modalVisibleIntro && {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
             <View style={styles.modalView}>
-            <Text>{activeItem.dishName} {activeItem.id}</Text>
                 <Image source={{uri: activeItem.dishPath}}
                     style={styles.image} />
                 <View style={styles.topLine}>
@@ -90,7 +90,8 @@ export default function AppearingDishDescriptionModal({activeItem, mealId, choos
                             {activeItem.description}
                     </Text>
                 </View>
-                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice(activeItem)}>
+                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} 
+                    onPress={() => handleCartChoice()}>
                     <Text style={styles.buttonText}>В корзину</Text>
                 </TouchableOpacity>
             </View>

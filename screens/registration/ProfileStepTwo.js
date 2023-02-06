@@ -123,16 +123,21 @@ export default function ProfileStepTwo({ navigation, route }) {
                 steamed, boiled, stewed, fried, deepFried, roasted, dried
             }) 
             .then(() => {
-                console.log('User is added to firestore');
-                firebase.firestore().collection('calorie_plan').doc(userId)
+              firebase.firestore().collection('tags').doc(userId)
+                .set({ veganism, vegetarianism,
+                    fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+                    steamed, boiled, stewed, fried, deepFried, roasted, dried
+                })
+                .then(() => {
+                  console.log('User is added to firestore');
+                  firebase.firestore().collection('calorie_plan').doc(userId)
                     .set({ "calories": calorieIntake, "mealsCount": numberOfMeals, caloriesForEachMeal,
                         "protein": proteinIntake, "fats": fatsIntake, "carbohydrates": carbohydratesIntake
-                    })
-                    .then(() => navigation.navigate('CalorieCount'))
-                    .catch(err => console.log('ProfileStepTwo caloriePlan error '));
-            // do something like logging 'user registered' 
-            }).catch(err => console.log('ProfileStepTwo ', err));
-
+                  })
+                  .then(() => navigation.navigate('CalorieCount'))
+                  .catch(err => console.log('ProfileStepTwo caloriePlan error ')) })
+            }).catch(err => console.log('ProfileStepTwo tags ', err))
+            .catch(err => console.log('ProfileStepTwo users ', err));
       }
 
     const [fontsLoaded] = useFonts({

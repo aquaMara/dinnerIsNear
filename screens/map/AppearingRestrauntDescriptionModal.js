@@ -9,16 +9,12 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 
 const { height } = Dimensions.get('screen');
 
-export default function ModalTest2({chooseMessage, visibility, activeRestaurant}) {
-    
-  console.log('visibility is  ', visibility, ' is visibility');
-  console.log('ModalTest2 activeRestaurant is ', activeRestaurant)
+export default function AppearingRestrauntDescriptionModal({chooseMessage, visibility, activeRestaurant}) {
   
-  return (
+    return (
     <GestureRecognizer onSwipeDown={() => chooseMessage(activeRestaurant, false)}>
-        <Modal 
-            animationType="slide" transparent={true}
-            visible={visibility} style={styles.modalStyle}>
+    <Modal animationType="slide" transparent={true}
+        visible={visibility} style={styles.modalStyle}>
         <View style={[styles.centeredView, {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
             <View style={styles.modalView}>
                 <Image source={require('../../assets/images/dish.png')} style={styles.image} />
@@ -61,7 +57,6 @@ export default function ModalTest2({chooseMessage, visibility, activeRestaurant}
                 </TouchableOpacity>
             </View>
         </View>
-        
         </Modal>
     </GestureRecognizer>
   )
@@ -72,10 +67,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-      },
-      modalView: {
+    },
+    modalView: {
         width: wp(100),
-        height: hp(67.9),
+        height: hp(66.71),
         marginBottom: 0,
         marginTop: 'auto',
         backgroundColor: "white",
@@ -86,15 +81,15 @@ const styles = StyleSheet.create({
         shadowOffset: {width: wp(0), height: hp(0.12)},
         shadowRadius: wp(2.1),
         shadowOpacity: 1,
-      },
-      littleButton: {
-          width: wp(40.51),
-          height: hp(3.8),
+    },
+    littleButton: {
+        width: wp(40.51),
+        height: hp(3.8),
           backgroundColor: colors.green,
           borderRadius: hp(2.61),
           justifyContent: 'center',
           alignContent: 'center',
-      },
+    },
       buttonText: {
           color: colors.white,
           fontSize: RFValue(17, height),

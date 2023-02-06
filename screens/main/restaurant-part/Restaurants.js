@@ -10,19 +10,54 @@ import restsIntroduction from '../../../data/restsIntroduction';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import { getAuth } from 'firebase/auth';
+import app from '../../../firebase-config';
+import firebase from 'firebase/compat';
+
 const { height } = Dimensions.get('screen');
 
 export default function Restaurants({route}) {
 
   const navigation = useNavigation();
-  console.log(route.params.mealId, 'jhh87069856hhhui980080890hhhhhhhhh')
   const [search, setSearch] = useState('');
   const [restaurants, setRestaurants] = useState([]);
+  const [tags, setTags] = useState({});
 
-  const moveToRestaurant = (id, name, mealId) => {
+  const moveToRestaurant = async  (id, name, mealId) => {
     console.log('moveToRestaurant', id, name, mealId);
-    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId});
+    // no: find dishes by restaurant name
+    // yes: get user tags
+    
+    console.log('SNAPSHOT DATA TAGS ssss ', tags);
+
+    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId, tags: tags});
   }
+
+  const TagsSearch = async  () => {
+    
+}
+
+useEffect(() => {
+  const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
+    console.log('USERID ', userId);
+
+  firebase.firestore().collection('tags')
+      .doc(userId).get()
+      .then((snapshot) => {
+        if (snapshot) {
+            setTags(snapshot.data());
+            console.log('SNAPSHOT DATA TAGS ', tags);
+            return snapshot.data();
+            //setTags(prev => ([...prev, ...snapshot.data()]));
+        }
+        
+        console.log('SNAPSHOT DATA TAGS 2 ', tags);
+    }).catch((err) => {console.log('TAGS ERR', err)})
+    
+    console.log('SNAPSHOT DATA TAGS 3 ', tags);
+
+
+}, [])
 
   const renderRestaurant = ({item}) => (
     <View style={styles.restaurantBlock}>

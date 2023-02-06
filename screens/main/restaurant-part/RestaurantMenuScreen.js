@@ -11,18 +11,27 @@ import dishesSections from '../../../data/dishesSections';
 import AppearingDishDescriptionModal from '../modals/AppearingDishDescriptionModal';
 import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 import dishesList from '../../../data/dishesList';
+import { useAuth } from '../../../auth/AuthProvoder';
+
+import { getAuth } from 'firebase/auth';
+import app from '../../../firebase-config';
+import firebase from 'firebase/compat';
+
+import { TagsSearch } from '../../../functions/TagsSearch';
 
 const { height } = Dimensions.get('screen');  
 
 export default function RestaurantMenuScreen({navigation, route}) {
 
+    const [tags, setTags] = useState();
+    //const {currentUser, setCurrentUser} = useAuth();
     const [dishes, setDishes] = useState([{}]);
     const [dishesIntro, setDishesIntro] = useState([]);
     const [currentSectionName, setCurrentSectionName] = useState(null);
     const [activeItem, setActiveItem] = useState({});
     const [visibility, setVisibility] = useState(false);
     const currentRestaurantName = route.params.title;
-    console.log('currentRestaurantName ', currentRestaurantName);
+    console.log('ghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh', route.params)
 
     const chooseMessage = (item,message) => {
         setActiveItem(item);
@@ -54,8 +63,95 @@ export default function RestaurantMenuScreen({navigation, route}) {
         return result;
     }
 
+    const TagsSearch = async () => {
+        const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
+        console.log('USERID ', userId);
+
+        await firebase.firestore().collection('tags')
+          .doc(userId).get()
+          .then((snapshot) => {
+            if (snapshot) {
+                console.log('snapshot.data()', snapshot.data())
+                setTags(snapshot.data());
+                //setTags(prev => ([...prev, ...snapshot.data()]));
+            }
+            console.log('tags', tags);
+            return tags;
+        }).catch((err) => {console.log('TAGS ERR', err)})
+        console.log('test')
+        return tags;
+    }
+
+    const filterTags = async () => {
+        console.log('foundTags', foundTags)
+        if (foundTags) {
+            var keys = Object.keys(foundTags);
+            var filteredTrueTags = keys.filter(function(key) {
+                return foundTags[key]
+            });
+            console.log('FILTERED ', filteredTrueTags);
+
+            console.log('**********************************************************')
+            // FILTERED  ["roasted", "stewed", "nuts", "lactose", "sugar", "vegetarianism", "gluten", "fish"]
+            const dishesTest = [
+                {"id": "1",
+                "name": "one",
+                "tags": "meat, nuts, milk"},
+                {"id": "2",
+                "name": "two",
+                "tags": "roasted"},
+                {"id": "3",
+                "name": "one",
+                "tags": "any"},
+                {"id": "4",
+                "name": "four",
+                "tags": ""},
+            ]
+            dishesTest.forEach(element => {
+                console.log(element)
+            });
+
+            let check = 0;
+            var filterDishesWithTags = dishesTest.filter(obj => {
+                
+                filteredTrueTags.every(element => {
+                    console.log('element ', element, ' obj.tags ', obj.tags)
+                    console.log('obj.tags.indexOf(element)', obj.tags.indexOf(element))
+                    if (obj.tags.indexOf(element) === -1) {
+                        check = -1;
+                        return true;
+                    } else {
+                        check = obj.tags.indexOf(element);
+                        console.log('HAHHAHHAHHAHHAHHAHHAHHAHHAHHAHHAHHAHHAHHAHHAHHAH', element, obj.tags)
+                        return false;
+                    }
+                });
+                console.log('check check check check check check check check', check, obj)
+                if (check === -1) {
+                    return obj;
+                }
+
+            })
+
+            console.log('filterDishesWithTags', filterDishesWithTags);
+
+            filteredTrueTags.forEach(element => {
+                console.log(element)
+            });
+            
+        }
+
+        
+        /*
+        var foodForCurrentMeal = cart.filter(obj => {
+            return obj.mealId === mId
+        })
+        */
+    }
+
     useEffect(() => {
         setDishes(findDishesByRestaurant());
+        //filterTags();
         setDishesIntro(dishesSections);
         setCurrentSectionName('Все');
     }, []);

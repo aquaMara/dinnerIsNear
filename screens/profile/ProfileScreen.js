@@ -145,15 +145,15 @@ export default function ProfileScreen() {
             <Text style={[styles.regularText, styles.leftAlign]}>Показатели</Text>
         </View>
         {!dayStatisticsVisible && (
-        <View style={styles.block}>
+        <TouchableOpacity style={styles.block} onPress={() => setDayStatisticsVisible(true)}>
             <View style={styles.smallBlock}>
                 <Text style={[styles.titleText, styles.medium]}>За день</Text>
-                <TouchableOpacity style={styles.arrowButton} onPress={() => setDayStatisticsVisible(true)}>
+                <View style={styles.arrowButton}>
                     <Image source={require('../../assets/images/chevronUp.png')}
                         style={styles.arrowImage}/>
-                </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </TouchableOpacity>
         )}
         {dayStatisticsVisible && (
         <View style={{}}>
@@ -313,10 +313,6 @@ const styles = StyleSheet.create({
         width: wp(91.8),
         height: hp(14.57),
         alignSelf: 'center',
-        shadowOffset: {width: wp(0), height: hp(0.12)},
-        shadowColor: colors.black,
-        shadowRadius: wp(2.05),
-        shadowOpacity: 0.15,
     },
     outerStatisticsBlock: {
         width: wp(91.8),
@@ -345,9 +341,6 @@ const styles = StyleSheet.create({
         height: hp(2.13),
         borderRadius: wp(13.08),
         shadowColor: colors.black,
-        shadowOffset: {width: wp(0), height: hp(0.36)},
-        shadowRadius: hp(0.95),
-        shadowOpacity: 0.15,
         justifyContent: 'center'
     },
     statisticsText: {

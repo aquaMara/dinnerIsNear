@@ -38,7 +38,7 @@ export default function ChatScreen() {
         - рекомендуем вам обратиться к квалифицированному психотерпевту 
         в области расстройств и нарушений пищевого поведения.</Text>
         <TouchableOpacity style={[globalStyles.mainButton, {marginBottom: hp(1.9), width: wp(83.6)}]}
-            onPress={() => Linking.openURL('whatsapp://send?phone=+375447659068')}>
+            onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
             <Text style={styles.buttonText}>Написать психотерапевту</Text>
         </TouchableOpacity>
       </View>
@@ -48,7 +48,7 @@ export default function ChatScreen() {
         назначение на сдачу анализов или учесть имеющиеся анализы и диагнозы в планировании вашего питания, 
         то рекомендуем вам обратиться к сертифицированному нутрициологу.</Text>
         <TouchableOpacity style={[globalStyles.mainButton, {marginBottom: hp(1.9), width: wp(83.6)}]}
-            onPress={() => Linking.openURL('whatsapp://send?phone=+375447659068')}>
+            onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
             <Text style={styles.buttonText}>Написать нутрициологу</Text>
         </TouchableOpacity>
       </View>
@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
         shadowOffset: {width: wp(0), height: hp(0.12)},
         shadowRadius: hp(2.13),
         shadowOpacity: 1,
+        paddingHorizontal: wp(4.1)
     },
     titleText: {
         color: colors.black,

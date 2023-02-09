@@ -129,6 +129,7 @@ export default function ProfileStepOne({ navigation, route }) {
                 <DateTimePicker value={dateOfBirth} display='spinner' mode='date'
                   style={{backgroundColor: 'white'}} textColor={colors.black}
                   themeVariant='light' locale='rus-RUS'
+                  style={{borderRadius: wp(5.13)}}
                   minimumDate={new Date(1950, 0, 1)} maximumDate={new Date(2030, 10, 20)}
                   onChange={setDate} dateFormat="dayofweek day month" />
                 <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}
@@ -168,7 +169,7 @@ export default function ProfileStepOne({ navigation, route }) {
             <Modal animationType='slide' transparent={true} visible={lifestyleModalVisible}>
               <View style={styles.modalStyle}>
                 <Picker 
-                  style={{backgroundColor: colors.white, width: wp(84)}}
+                  style={{backgroundColor: colors.white, width: wp(84), borderRadius: wp(5.13)}}
                   itemStyle={styles.listText} selectedValue='Средняя активность'
                   pickerData={lifestyles} onValueChange={value => {setLifestyleFormatted(value), setLifestyle(createLifestyle(value))}} />
                 <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}
@@ -241,8 +242,14 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         alignItems: 'center',
         alignSelf: 'center',
-        borderWidth: 0.3,
-        borderColor: colors.separator,
+        //borderWidth: 0.3,
+        //borderColor: colors.separator,
+                
+        shadowOffset: {width: wp(0), height: hp(0.12)},
+        shadowColor: colors.black,
+        shadowRadius: wp(2.05),
+        shadowOpacity: 0.15,
+        borderRadius: wp(5.13)
       },
       counterContainer: {
         width: wp(95.9),

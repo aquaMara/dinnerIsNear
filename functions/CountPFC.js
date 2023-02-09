@@ -15,8 +15,8 @@ export const countPFC = (aim, calorieIntake) => {
         fatsDouble = 0.2 * calorieIntake;
         carbohydratesDouble = 0.45 * calorieIntake;
     }
-    const proteinIntake = parseInt(proteinDouble, 10) / 4;
-    const fatsIntake = parseInt(fatsDouble, 10) / 9;
-    const carbohydratesIntake = parseInt(carbohydratesDouble, 10) / 4;
+    const proteinIntake = parseInt(proteinDouble / 4, 10);
+    const fatsIntake = parseInt(fatsDouble / 9, 10);
+    const carbohydratesIntake = parseInt(carbohydratesDouble / 4, 10);
     return {proteinIntake, fatsIntake, carbohydratesIntake};
 }

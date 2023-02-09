@@ -23,22 +23,26 @@ export default function TabNavigation() {
         headerShown: false,
         tabBarLabel: 'Главная',
         tabBarIcon: ({size,focused,color}) => {
-          return (<Image style={{ width: size, height: size }} source={require('../assets/images/mainIcon.png')} />);}
+          return ( focused ? <Image style={{ width: size, height: size }} source={require('../assets/images/mainIcon.png')} />
+                  : <Image style={{ width: size, height: size }} source={require('../assets/images/mainIconNotFocused.png')} />);}
         }} />
       <Tab.Screen name="MapTab" component={MapNavigation} options={{ 
         headerShown: false, tabBarLabel: 'Карта',
         tabBarIcon: ({size,focused,color}) => {
-          return (<Image style={{ width: size, height: size }} source={require('../assets/images/mapIcon.png')} />);} 
+          return ( focused ? <Image style={{ width: size, height: size }} source={require('../assets/images/mapIcon.png')} />
+                  : <Image style={{ width: size, height: size }} source={require('../assets/images/MapIconNotFocused.png')} />);} 
           }} />
       <Tab.Screen name="ChatTab" component={ChatNavigation} options={{ 
         headerShown: false, tabBarLabel: 'Чат',
         tabBarIcon: ({size,focused,color}) => {
-          return (<Image style={{ width: size, height: size }} source={require('../assets/images/chatIcon.png')} />);}
+          return ( focused ? <Image style={{ width: size, height: size }} source={require('../assets/images/chatIcon.png')} />
+                  : <Image style={{ width: size, height: size }} source={require('../assets/images/chatIconNotFocused.png')} />);}
         }} />
       <Tab.Screen name="ProfileTab" component={ProfileNavigation} options={{ 
         headerShown: false, tabBarLabel: 'Профиль',
         tabBarIcon: ({size,focused,color}) => {
-        return (<Image style={{ width: size, height: size }} source={require('../assets/images/profileIcon.png')} />);} 
+        return ( focused ? <Image style={{ width: size, height: size }} source={require('../assets/images/profileIcon.png')} />
+                : <Image style={{ width: size, height: size }} source={require('../assets/images/profileIconNotFocused.png')} />);} 
         }} />
     </Tab.Navigator>
   )

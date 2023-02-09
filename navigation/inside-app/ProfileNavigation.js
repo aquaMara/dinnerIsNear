@@ -41,13 +41,21 @@ export default function ProfileNavigation() {
       <Stack.Screen name="ProfileConfig" component={ProfileConfigScreen}
         options={({ route }) => ({ title: 'Настройка профиля', headerShown: true, headerBackTitle: 'Назад'})} />
       <Stack.Screen name="ProConfig" component={ProConfigFirstScreen}
-        options={({ route }) => ({ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'})} />
+        options={({ route }) => ({ title: 'Настройка PRO', headerShown: true,
+                                  headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}}
+                                )} />
       <Stack.Screen name="UndesirableProducts" component={UndesirableProductsScreen}
-        options={{ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'}} />
+        options={{ title: 'Настройка PRO', headerShown: true,
+                   headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}
+                }} />
       <Stack.Screen name="WeekTags" component={WeekTagsScreen}
-        options={{ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'}} />
+        options={{ title: 'Настройка PRO', headerShown: true,
+                   headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}
+                }} />
       <Stack.Screen name="Modes" component={ModesScreen}
-        options={{ title: 'Настройка PRO', headerShown: true, headerBackTitle: 'Назад'}} />
+        options={{ title: 'Настройка PRO', headerShown: true,
+                   headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}
+                }} />
     </Stack.Navigator>
   )
 }

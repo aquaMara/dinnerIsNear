@@ -60,7 +60,7 @@ useEffect(() => {
 }, [])
 
   const renderRestaurant = ({item}) => (
-    <View style={styles.restaurantBlock}>
+    <TouchableOpacity style={styles.restaurantBlock} onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
       <View style={styles.topBlock}>
         <Image source={item.image} style={styles.restaurantImage} />
         <View style={{marginRight: wp(2.31), marginLeft: 'auto', marginBottom: hp(1.07), marginTop: 'auto'}}>
@@ -68,11 +68,11 @@ useEffect(() => {
         </View>
       </View>
       <View style={styles.bottomBlock}>
-        <TouchableOpacity style={styles.restrauntButton} onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
+        <View style={styles.restrauntButton}>
           <Text style={styles.restaurantTitleText}>{item.name}</Text>
-        </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   useEffect(() => {
@@ -92,13 +92,15 @@ useEffect(() => {
 
   return (
     <View style={{flex: 1, backgroundColor: colors.white}}>
-      <View style={[styles.searchBarBox]}>
-        <TextInput value={search} style={styles.searchInput}
-          placeholder='Поиск' placeholderTextColor={colors.grey2}
-          onChangeText={(s) => setSearch(s)} />
-        <TouchableOpacity style={styles.searchButton}>
-          <Image source={require('../../../assets/images/search.png')} style={styles.searchImage} />
-        </TouchableOpacity>
+      <View style={{height: hp(7.82)}}>
+        <View style={styles.searchBarBox}>
+          <TextInput value={search} style={styles.searchInput}
+            placeholder='Поиск' placeholderTextColor={colors.grey2}
+            onChangeText={(s) => setSearch(s)} />
+          <TouchableOpacity style={styles.searchButton}>
+            <Image source={require('../../../assets/images/search.png')} style={styles.searchImage} />
+          </TouchableOpacity>
+        </View>
       </View>
       <FlatList numColumns={2} data={restaurants} 
         renderItem={renderRestaurant} keyExtractor={item => item.id} />

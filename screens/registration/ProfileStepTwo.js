@@ -165,7 +165,7 @@ export default function ProfileStepTwo({ navigation, route }) {
             <Modal animationType='slide' transparent={true} visible={aimModalVisible}>
               <View style={styles.modalStyle}>
                 <Picker 
-                  style={{backgroundColor: colors.white, width: wp(84)}}
+                  style={{backgroundColor: colors.white, width: wp(84), borderRadius: wp(5.13)}}
                   itemStyle={styles.listText} selectedValue='Поддержать форму'
                   pickerData={aims} onValueChange={value => {setAimFormatted(value); setAim(createAim(value))}} />
                 <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}
@@ -407,8 +407,14 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         alignItems: 'center',
         alignSelf: 'center',
-        borderWidth: 0.3,
-        borderColor: colors.separator,
+        //borderWidth: 0.3,
+        //borderColor: colors.separator,
+                
+        shadowOffset: {width: wp(0), height: hp(0.12)},
+        shadowColor: colors.black,
+        shadowRadius: wp(2.05),
+        shadowOpacity: 0.15,
+        borderRadius: wp(5.13)
       },
       counterContainer: {
         width: wp(95.9),

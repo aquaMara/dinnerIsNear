@@ -58,6 +58,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const findDishesByRestaurant = () => {
         console.log('findDishesByRestaurant')
         var result = dishesList.filter(obj => {
+            console.log('OBJ', obj)
             return obj.restaurantName === currentRestaurantName;
         })
         return result;
@@ -174,12 +175,21 @@ export default function RestaurantMenuScreen({navigation, route}) {
     );
 
     const RenderItem = ({ item }) => (
-        <View style={styles.block}>
+        <TouchableOpacity style={styles.block} onPress={() => chooseMessage(item, true)}>
             <View style={styles.topBlock}>
                 <Image source={{uri: item.dishPath}} style={styles.dishImage} resizeMode='cover' />
-                <TouchableOpacity style={styles.heartImageButton}>
-                    <Image source={require('../../../assets/images/heart.png')} style={styles.heartImage} />
-                </TouchableOpacity>
+                <View style={styles.imagesContainer}>
+                    <TouchableOpacity style={styles.heartImageButton}>
+                        <Image source={require('../../../assets/images/heart.png')} style={styles.heartImage} />
+                    </TouchableOpacity>
+                    <View style={styles.tagsContainer}>
+                        {item.tags.indexOf("vegetarianism") > -1 && <Image source={require('../../../assets/images/vegetarianismTag.png')} style={[styles.tagImage, {marginRight: 0}]} />}
+                        {item.tags.indexOf("veganism") > -1 && <Image source={require('../../../assets/images/veganismTag.png')} style={styles.tagImage} />}
+                        {item.tags.indexOf("meat") > -1 && <Image source={require('../../../assets/images/meatTag.png')} style={styles.tagImage} />}
+                        {item.tags.indexOf("fish") > -1 && <Image source={require('../../../assets/images/fishTag.png')} style={[styles.tagImage]} />}
+                    </View>
+                </View>
+
                 <View style={styles.middleBlock}>
                     <View style={{width: wp(23.08), height: hp(5.92)}}>
                         <Text style={styles.dishText} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
@@ -198,7 +208,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
             <TouchableOpacity onPress={() => chooseMessage(item, true)} style={styles.littleButton}>
                 <Text style={styles.buttonText}>{item.dishPrice}р</Text>
             </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     );
 
   return (
@@ -246,17 +256,45 @@ const styles = StyleSheet.create({
         height: hp(20.14),
         borderRadius: hp(2.37),
     },
+    imagesContainer: {
+        height: hp(5),
+        width: wp(38.46),
+        alignSelf: 'center',
+        //marginHorizontal: wp(2.82),
+        marginTop: hp(-19.1),
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
     heartImageButton: {
         height: hp(5),
         width: wp(10),
-        marginLeft: wp(2.82),
-        marginTop: hp(-19.1),
+        justifyContent: 'center',
     },
     heartImage: {
         height: hp(1.66),
         width: wp(4.1),
         width: wp(6.92),
         height: hp(2.84),
+    },
+    tagsContainer: {
+        height: hp(5),
+        width: wp(28.46),
+        borderWidth: 1,
+        //justifyContent: 'center',
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    tagImage: {
+        borderWidth: 0.5,
+        width: wp(6.92),
+        width: wp(9.23),
+        height: hp(2.84),
+        height: hp(4.27),
+        //aspectRatio: 1,
+        borderColor: 'red',
+        marginLeft: wp(-6), marginRight: 'auto'
     },
     middleBlock: {
         width: wp(37.44),

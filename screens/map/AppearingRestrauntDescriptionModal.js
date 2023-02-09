@@ -15,7 +15,7 @@ export default function AppearingRestrauntDescriptionModal({chooseMessage, visib
     <GestureRecognizer onSwipeDown={() => chooseMessage(activeRestaurant, false)}>
     <Modal animationType="slide" transparent={true}
         visible={visibility} style={styles.modalStyle}>
-        <View style={[styles.centeredView, {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
+        <View style={[styles.centeredView]}>
             <View style={styles.modalView}>
                 <Image source={require('../../assets/images/dish.png')} style={styles.image} />
                 <View style={styles.topLine}>
@@ -52,9 +52,6 @@ export default function AppearingRestrauntDescriptionModal({chooseMessage, visib
                         Филе грудки цыплёнка, салат ромейн, салат айсберг, яйцо, сыр пармезан, томаты черри, гренки, соус цезарь (обращаем ваше внимание, что подача соуса изменилась).
                         </Text>
                 </View>
-                <TouchableOpacity style={[globalStyles.mainButton, {marginTop: hp(4.74)}]} onPress={() => handleCartChoice('item')}>
-                    <Text style={styles.buttonText}>В корзину</Text>
-                </TouchableOpacity>
             </View>
         </View>
         </Modal>

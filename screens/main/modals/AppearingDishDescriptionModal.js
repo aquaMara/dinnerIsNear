@@ -50,7 +50,7 @@ export default function AppearingDishDescriptionModal({activeItem, mealId, choos
     <GestureRecognizer onSwipeDown={() => chooseMessage(activeItem, false)}>
       <Modal 
         animationType="slide" transparent={true}
-        visible={visibility} style={styles.modalStyle}>
+        visible={visibility} style={styles.modalView}>
           <View style={[styles.centeredView, modalVisibleIntro && {backgroundColor: 'rgba(0, 0, 0, 0.4)'}]}>
             <View style={styles.modalView}>
                 <Image source={{uri: activeItem.dishPath}}

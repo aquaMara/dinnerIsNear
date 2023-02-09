@@ -54,7 +54,7 @@ export default function MainNavigation() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='SignUp'>
-      
+        
         <Stack.Screen name="Tab" component={TabNavigation} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

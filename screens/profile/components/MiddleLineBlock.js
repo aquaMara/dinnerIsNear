@@ -46,7 +46,7 @@ export default function MiddleLineBlock() {
                     или улучшить своё самочувствие? Запишись на консультацию</Text>
             </View>
             <TouchableOpacity style={styles.arrowBlock}
-                onPress={() => Linking.openURL('whatsapp://send?phone=+375447659068')}>
+                onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                 style={styles.arrowImage} />
             </TouchableOpacity>

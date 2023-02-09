@@ -185,10 +185,10 @@ const styles = StyleSheet.create({
       borderRadius: hp(1.54),
       alignSelf: 'center',
       alignItems: 'center',
-      shadowColor: 'rgba(0, 0, 0, 0.18)',
       shadowOffset: {width: wp(0), height: hp(0.12)},
-      shadowRadius: hp(2.13),
-      shadowOpacity: 1,
+      shadowColor: colors.black,
+      shadowRadius: wp(2.05),
+      shadowOpacity: 0.18,
   },
   topLine: {
       width: wp(76.7),
@@ -282,10 +282,10 @@ whiteButton: {
   backgroundColor: colors.white,
   marginTop: hp(3.56),
   marginBottom: hp(1.54),
-  shadowColor: 'rgba(0, 0, 0, 0.18)',
   shadowOffset: {width: wp(0), height: hp(0.12)},
-  shadowRadius: hp(2.13),
-  shadowOpacity: 1,
+  shadowColor: colors.black,
+  shadowRadius: wp(2.05),
+  shadowOpacity: 0.18,
 }
 
   

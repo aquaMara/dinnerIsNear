@@ -61,7 +61,7 @@ export default function ProConfigFirstScreen() {
                 <Text style={styles.regularText}>Поможем настроить профиль идеяльно для вас</Text>
             </View>
             <TouchableOpacity style={styles.arrowBlock} 
-                onPress={() => Linking.openURL('whatsapp://send?phone=+375447659068')}>
+                onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                     style={styles.arrowImage} />
             </TouchableOpacity>

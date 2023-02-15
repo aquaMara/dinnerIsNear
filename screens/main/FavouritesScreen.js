@@ -106,10 +106,10 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         borderRadius: hp(1.54),
         alignSelf: 'center',
-        shadowColor: 'rgba(0, 0, 0, 0.18)',
         shadowOffset: {width: wp(0), height: hp(0.12)},
-        shadowRadius: hp(2.13),
-        shadowOpacity: 1,
+        shadowColor: colors.black,
+        shadowRadius: wp(2.05),
+        shadowOpacity: 0.15,
     },
     topLine: {
         width: wp(91.8),

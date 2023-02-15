@@ -15,6 +15,7 @@ const { height } = Dimensions.get('screen');
 export default function ProfileScreen() {
 
     const [dayStatisticsVisible, setDayStatisticsVisible] = useState(false);
+    const [elevenDaysStatisticsVisible, setElevenDaysStatisticsVisible] = useState(false);
 
     const {name, setName} = useAuth();
     // Stable values for every day
@@ -214,7 +215,8 @@ export default function ProfileScreen() {
         </View>
         )}
 
-        <View style={[styles.block, {marginBottom: hp(2.13),}]}>
+        {!elevenDaysStatisticsVisible && (
+        <TouchableOpacity style={[styles.block, {marginBottom: hp(2.13),}]} onPress={() => setElevenDaysStatisticsVisible(true)}>
             <View style={styles.smallBlock}>
                 <Text style={[styles.titleText, styles.medium]}>За 11 дней</Text>
                 <TouchableOpacity style={styles.arrowButton}>
@@ -222,8 +224,66 @@ export default function ProfileScreen() {
                         style={styles.arrowImage}/>
                 </TouchableOpacity>
             </View>
-        </View>
+        </TouchableOpacity>
+        )}
+        {elevenDaysStatisticsVisible && (
+        <View style={{}}>
+            <View style={[styles.smallBlock, styles.smallBlockStatistics]}>
+                <Text style={[styles.titleText, styles.medium]}>За 11 дней</Text>
+                <TouchableOpacity style={styles.arrowButton} onPress={() => setElevenDaysStatisticsVisible(false)}>
+                    <Image source={require('../../assets/images/leftChevron.png')}
+                        style={styles.arrowImage}/>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.statisticsBlocks}>
+                <View style={styles.outerStatisticsBlock}>
+                    <View style={styles.innerStatisticsBlock}>
+                        <View style={[styles.statisticsResultBlock, 
+                            {width: wp(countCaloriesWidth()), backgroundColor: countCaloriesColor()}]}>
+                            <Text style={styles.statisticsText}>Калории</Text>
+                        </View>                    
+                    </View>
+                    <View style={styles.innerStatisticsTextBlock}>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countCaloriesEaten()}</Text>
+                    </View>
+                </View>
+                <View style={styles.outerStatisticsBlock}>
+                    <View style={styles.innerStatisticsBlock}>
+                        <View style={[styles.statisticsResultBlock, 
+                            {width: wp(countProteinWidth()), backgroundColor: countProteinColor()}]}>
+                            <Text style={styles.statisticsText}>Белки</Text>
+                        </View>                    
+                    </View>
+                    <View style={styles.innerStatisticsTextBlock}>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countProteinEaten()}</Text>
+                    </View>
+                </View>
+                <View style={styles.outerStatisticsBlock}>
+                    <View style={styles.innerStatisticsBlock}>
+                        <View style={[styles.statisticsResultBlock, 
+                            {width: wp(countFatsWidth()), backgroundColor: countFatsColor()}]}>
+                            <Text style={styles.statisticsText}>Жиры</Text>
+                        </View>                    
+                    </View>
+                    <View style={styles.innerStatisticsTextBlock}>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countFatsEaten()}</Text>
+                    </View>
+                </View>
+                <View style={styles.outerStatisticsBlock}>
+                    <View style={styles.innerStatisticsBlock}>
+                        <View style={[styles.statisticsResultBlock, 
+                            {width: wp(countCarbohydratesWidth()), backgroundColor: countCarbohydratesColor()}]}>
+                            <Text style={styles.statisticsText}>Углеводы</Text>
+                        </View>                    
+                    </View>
+                    <View style={styles.innerStatisticsTextBlock}>
+                        <Text style={[styles.regularText, styles.rightAlign]}>{countCarbohydratesEaten()}</Text>
+                    </View>
+                </View>
 
+            </View>
+        </View>
+        )}
         
         <MiddleLineBlock />
         <BottomLineBlock />

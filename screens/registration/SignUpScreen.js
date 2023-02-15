@@ -55,7 +55,7 @@ useEffect(() => {
 const sendVerification = () => {
     const phoneProvider = new firebase.auth.PhoneAuthProvider();
     console.log(phoneNumber);
-    let pn = '+7' + phoneNumber;
+    let pn = '+375' + phoneNumber;
     phoneProvider
         .verifyPhoneNumber(pn, recaptchaVerifier.current)
         .then(res => {navigation.navigate('ConfirmSignUp', {verificationId: res, phoneNumber: phoneNumber})})

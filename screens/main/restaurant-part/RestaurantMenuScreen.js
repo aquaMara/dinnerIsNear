@@ -18,6 +18,8 @@ import app from '../../../firebase-config';
 import firebase from 'firebase/compat';
 
 import { TagsSearch } from '../../../functions/TagsSearch';
+import { arrayUnion } from '@firebase/firestore';
+import { map } from '@firebase/util';
 
 const { height } = Dimensions.get('screen');  
 
@@ -31,9 +33,8 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const [activeItem, setActiveItem] = useState({});
     const [visibility, setVisibility] = useState(false);
     const currentRestaurantName = route.params.title;
-    console.log('ghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh', route.params)
 
-    const chooseMessage = (item,message) => {
+    const chooseMessage = (item, message) => {
         setActiveItem(item);
         setVisibility(message);
     };
@@ -56,9 +57,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
     }
 
     const findDishesByRestaurant = () => {
-        console.log('findDishesByRestaurant')
         var result = dishesList.filter(obj => {
-            console.log('OBJ', obj)
             return obj.restaurantName === currentRestaurantName;
         })
         return result;
@@ -150,6 +149,73 @@ export default function RestaurantMenuScreen({navigation, route}) {
         */
     }
 
+    const addToFavs = (id, item) => {
+        const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
+        const l = {"description": "Тайский суп на кокосовом молоке с креветками, кальмарами и щупальцами кальмара, шампиньонами, травами, специями. Содержит куриный бульон, подается с рисом и кунжутом.. Острый.", "dishCalories": 63, "dishCarbohydrates": 7, "dishFats": 2, "dishName": "Том Ям Сифуд", "dishPath": "https://eda.yandex.ru/images/3798638/b375c81b62f6c43d5c4f036b3a02baa6-216x188.jpeg", "dishPrice": 595, "dishProtein": 4, "id": "0", "restaurantName": "Menza ", "section": "Япония", "tags": "meat, fish, nuts", "weight": "340 мл"}
+        firebase.firestore().collection('favs').doc(userId)
+            .get().then((snapshot) => {
+                console.log(snapshot.exists, 'snapshot')
+                if (snapshot.exists) {
+                    console.log('SNAP EXISTS')
+                    firebase.firestore().collection('favs').doc(userId).get().then((snapshot) => {
+                        console.log('snapshot.data()', snapshot.data())
+
+                        const z = {"0": {"description": "Куриная грудка в острой панировке с соусом Карри. Острые.",
+                    "dishCalories": 189, "dishCarbohydrates": 15, "dishFats": 8, "dishName": "Куриные стрипсы",
+                    "dishPath": "https://eda.yandex.ru/images/3583740/d19822be7b4d6667a43c49084d51db86-216x188.jpeg",
+                    "dishPrice": 295, "dishProtein": 13, "id": "0", "restaurantName": "Menza ", "section": "Япония", "tags": "", "weight": "110 г"},
+                    "1": {"description": "Куриная грудка в острой панировке с соусом Карри. Острые.",
+                    "dishCalories": 189, "dishCarbohydrates": 15, "dishFats": 8, "dishName": "Куриные стрипсы",
+                    "dishPath": "https://eda.yandex.ru/images/3583740/d19822be7b4d6667a43c49084d51db86-216x188.jpeg",
+                    "dishPrice": 295, "dishProtein": 13, "id": "22", "restaurantName": "Menza ", "section": "Япония", "tags": "", "weight": "110 г"}
+                    }
+                    const array = Object.values(z);
+                    console.log('mmmmmmmmmmmmmm', array);
+                    console.log('mmmmmmmmmmmmmm length', array.length);
+                    const y = 11;
+                    var obj = {12: 'item', y: 'hhh', [y]: 'tfjuyu'}
+                    console.log('obj', obj)
+                    const zzz= 333;
+                    obj[zzz] = 'zzz333'
+                    console.log('obj', obj)
+                    
+                    const todoList = array.map((item, id)=> { 
+                        const price = item.description;
+                        console.log(id)
+                        // array.set(id, item);
+                        obj[id] = item;
+                        return {[id]: item}
+                    });
+                    console.log('obj', obj)
+                    //const ghj = Object.values(obj);
+                    //console.log('ghj', ghj)
+                    //console.log('todoList', JSON.stringify(todoList))
+
+                            /*
+                            const obj = {};
+
+                            for (const key of todoList) {
+                                obj[key] = whatever;
+                            }
+                            */
+
+
+                    })
+                    
+                    firebase.firestore().collection('favs').doc(userId)
+                        .update({0: item, 1: item})
+                        .then('RestrauntMenuScreen addToFavs added item')
+                        .catch(err => console.log('RestrauntMenuScreen addToFavs 1', err));
+                } else {
+                    firebase.firestore().collection('favs').doc(userId)
+                        .set({0: item, 1: item})
+                        .catch(err => console.log('RestrauntMenuScreen addToFavs 2', err));
+                }
+            });
+            
+
+    }
+
     useEffect(() => {
         setDishes(findDishesByRestaurant());
         //filterTags();
@@ -170,7 +236,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const ItemRender = ({ name, id }) => (
         <TouchableOpacity style={[styles.topMenuBlock, currentSectionName === name && {backgroundColor: colors.green}]}
             onPress={() => handleSectionChoice(id, name)}>
-            <Text style={styles.regularText}>{name}</Text>
+            <Text style={[styles.regularText, currentSectionName === name && {color: colors.white, fontFamily: 'SF-Pro-Medium',}]}>{name}</Text>
         </TouchableOpacity>
     );
 
@@ -179,14 +245,14 @@ export default function RestaurantMenuScreen({navigation, route}) {
             <View style={styles.topBlock}>
                 <Image source={{uri: item.dishPath}} style={styles.dishImage} resizeMode='cover' />
                 <View style={styles.imagesContainer}>
-                    <TouchableOpacity style={styles.heartImageButton}>
+                    <TouchableOpacity style={styles.heartImageButton} onPress={() => addToFavs(item.id, item)}>
                         <Image source={require('../../../assets/images/heart.png')} style={styles.heartImage} />
                     </TouchableOpacity>
                     <View style={styles.tagsContainer}>
-                        {item.tags.indexOf("vegetarianism") > -1 && <Image source={require('../../../assets/images/vegetarianismTag.png')} style={[styles.tagImage, {marginRight: 0}]} />}
-                        {item.tags.indexOf("veganism") > -1 && <Image source={require('../../../assets/images/veganismTag.png')} style={styles.tagImage} />}
-                        {item.tags.indexOf("meat") > -1 && <Image source={require('../../../assets/images/meatTag.png')} style={styles.tagImage} />}
-                        {item.tags.indexOf("fish") > -1 && <Image source={require('../../../assets/images/fishTag.png')} style={[styles.tagImage]} />}
+                        {item.tags.indexOf("vegetarianism") > -1 && <Image source={require('../../../assets/images/vegetarianismTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
+                        {item.tags.indexOf("veganism") > -1 && <Image source={require('../../../assets/images/veganismTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
+                        {item.tags.indexOf("meat") > -1 && <Image source={require('../../../assets/images/meatTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
+                        {item.tags.indexOf("fish") > -1 && <Image source={require('../../../assets/images/fishTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
                     </View>
                 </View>
 
@@ -241,10 +307,10 @@ const styles = StyleSheet.create({
         width: wp(43.59),
         borderRadius: hp(2.37),
         marginBottom: hp(2.13),
-        shadowColor: 'rgba(0, 0, 0, 0.18)',
         shadowOffset: {width: wp(0), height: hp(0.12)},
-        shadowRadius: wp(2.1),
-        shadowOpacity: 1,
+        shadowColor: colors.black,
+        shadowRadius: wp(2.05),
+        shadowOpacity: 0.15,
         marginLeft: wp(4.1),
     },
     topBlock: {
@@ -279,22 +345,18 @@ const styles = StyleSheet.create({
     },
     tagsContainer: {
         height: hp(5),
-        width: wp(28.46),
-        borderWidth: 1,
+        width: wp(23.2),
         //justifyContent: 'center',
         alignItems: 'center',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
     tagImage: {
-        borderWidth: 0.5,
         width: wp(6.92),
-        width: wp(9.23),
         height: hp(2.84),
-        height: hp(4.27),
-        //aspectRatio: 1,
+        aspectRatio: 1,
         borderColor: 'red',
-        marginLeft: wp(-6), marginRight: 'auto'
     },
     middleBlock: {
         width: wp(37.44),

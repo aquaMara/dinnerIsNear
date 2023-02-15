@@ -58,12 +58,14 @@ export default function ShoppingCartScreen() {
             totalCarbohydrates += element.dishCarbohydrates;
         });
         // COUNT NUTRITION
+        // ADD VALUE
         //setCurrentUserMeals(prev => [...prev, foodForCurrentMeal]);
         //const totalCaloriesObject = {mealId, totalCalories};
         setCaloriesCount(prev => [...prev, {mealId: mId, totalCalories}]);
         setProteinCount(prev => [...prev, {mealId: mId, totalProtein}]);
         setFatsCount(prev => [...prev, {mealId: mId, totalFats}]);
         setCarbohydratesCount(prev => [...prev, {mealId: mId, totalCarbohydrates}]);
+        //setCurrentUserMeals(prev => [...prev, {mealId: mId, meal}])
         
         console.log("CART !", cart)
         var cart2 = cart.filter(obj => {
@@ -232,7 +234,7 @@ export default function ShoppingCartScreen() {
             </View>
         </View>
         ))}
-        <TouchableOpacity onPress={() => addToEaten(meal.id)} style={globalStyles.mainButton}>
+        <TouchableOpacity onPress={() => addToEaten(meal.id, meal)} style={globalStyles.mainButton}>
             <Text style={styles.buttonText}>Добавить в съеденное</Text>
         </TouchableOpacity>
         </View>)}

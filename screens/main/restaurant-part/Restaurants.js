@@ -62,7 +62,7 @@ useEffect(() => {
   const renderRestaurant = ({item}) => (
     <TouchableOpacity style={styles.restaurantBlock} onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
       <View style={styles.topBlock}>
-        <Image source={item.image} style={styles.restaurantImage} />
+        <Image source={{uri: item.image}} style={styles.restaurantImage} />
         <View style={{marginRight: wp(2.31), marginLeft: 'auto', marginBottom: hp(1.07), marginTop: 'auto'}}>
           <Text style={styles.restrauntDestinationText}>~ в {item.destination} км от меня</Text>
         </View>

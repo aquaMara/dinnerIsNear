@@ -29,6 +29,8 @@ export default function RestaurantScreen() {
     const { currentUser, currentUserData } = useAuth();
     const { mealsCount, setMealsCount } = useAuth();
     const { calories, setCalories } = useAuth();
+    const { currentUserMeals } = useAuth();
+    const { caloriesCount } = useAuth();
     //const id = currentUser.uid;
     //console.log(currentUser.uid)
     const id = 'iLQD9PDWB1d6u5UI5vk6QNYvrwy';
@@ -41,17 +43,13 @@ export default function RestaurantScreen() {
     const [eatenBottomBlockVisibility, setEatenBottomBlockVisibility] = useState(false);
 
     const addMeal = () => {
-      console.log('addMeal 1mealsCount ', mealsCount)
       if (mealsCount < 6) {
         setMealsCount(prev => mealsCount + 1);
-        console.log('jhhhhhhh')
         setMeals( prev => countMeals(mealsCount + 1, calories) );
       }
-      console.log('addMeal mealsCount, meals also', mealsCount, meals)
     }
 
     const changeBlockVisibility = (givenId) => {
-      console.log(givenId)
       const changedMeals = meals.map(meal => {
         if (meal.id === givenId) {
           return {
@@ -67,7 +65,18 @@ export default function RestaurantScreen() {
 
     const changeEatenBlockVisibility = () => {
       setEatenBottomBlockVisibility(prevCheck => !prevCheck);
-      console.log(eatenBottomBlockVisibility);
+    }
+
+    const getMealsForCertainMealFromCurrentUserMeals = (mId, meal) => {
+      console.log('getMealsForCertainMealFromCurrentUserMeals currentUserMeals', currentUserMeals)
+      console.log('getMealsForCertainMealFromCurrentUserMeals mId', mId, meal)
+      var foodForCurrentMeal = currentUserMeals.filter(obj => {
+        console.log('obj', obj.dishCalories, obj.mealId, mId)
+        console.log(Object.values(obj))
+        return obj.mealId === mId
+      })
+      console.log('getMealsForCertainMealFromCurrentUserMeals foodForCurrentMeal', foodForCurrentMeal)
+      return foodForCurrentMeal;
     }
 
     useEffect(() => {
@@ -127,19 +136,22 @@ export default function RestaurantScreen() {
                       style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />}
                   </TouchableOpacity>
                 </View>
+                
                 {
                   eatenBottomBlockVisibility && (
-                  <View style={styles.eatenBlock}>
+                  <View style={styles.alreadyEatenBlock}>
+                    {getMealsForCertainMealFromCurrentUserMeals(meal.id, meal).length > 0 && <Text>{currentUserMeals.length}hhhjhh</Text>}
                     <Text style={[styles.greyText, {width: wp(65.9), textAlign: 'center'}]}>Вы ещё ничего не заказали или не добавили, поэтому тут пусто</Text>
                   </View>
-                  )
-                }
+                )}
+                
               </View>
             </View>  
           )}
           </View>
+          
         )}
-
+        
         <TouchableOpacity onPress={addMeal}
           style={[globalStyles.mainButton, styles.whiteButton]}>
           <Text style={styles.buttonText}>Добавить перекус</Text>
@@ -147,7 +159,15 @@ export default function RestaurantScreen() {
     </ScrollView>
   )
 }
-
+/*
+{
+                  eatenBottomBlockVisibility && (
+                  <View style={styles.eatenBlock}>
+                    <Text style={[styles.greyText, {width: wp(65.9), textAlign: 'center'}]}>Вы ещё ничего не заказали или не добавили, поэтому тут пусто</Text>
+                  </View>
+                  )
+                }
+*/
 const styles = StyleSheet.create({
     mealBlock: {
         height: hp(9.01),
@@ -239,6 +259,14 @@ const styles = StyleSheet.create({
   eatenBlock: {
     width: wp(100),
     height: hp(3.8),
+    marginTop: hp(1.84),
+    marginBottom: hp(1.78),
+    marginHorizontal: 0,
+    alignItems: 'center',
+  },
+  alreadyEatenBlock: {
+    width: wp(100),
+    height: hp(8.8),
     marginTop: hp(1.84),
     marginBottom: hp(1.78),
     marginHorizontal: 0,

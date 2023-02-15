@@ -108,9 +108,6 @@ export default function MapMainScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-		<Text>hggggggggggggggg</Text>
-		
-		{visibility && <Text>h</Text>}
 		<MapView
 			showsMyLocationButton={true}
 			showsCompass={true}
@@ -137,21 +134,21 @@ export default function MapMainScreen({navigation}) {
 				description={marker.description}
 				>
 					<Image source={require('../../assets/images/whitePin.png')} style={styles.whitePin} />
-					<Callout style={styles.restrauntSquare} onPress={() => chooseMessage(marker, true)}>
+					<Callout style={[styles.restrauntSquare]} onPress={() => chooseMessage(marker, true)}>
 						<Image source={{uri: marker.path}} style={styles.restrauntPicture} />
 							<View style={styles.restrauntTextBlock}>
 								<Text style={styles.restrauntText}>{marker.name}</Text>
-							</View>
+						</View>
 					</Callout>
 					
 				</Marker>
 			  ))}
-			  <AppearingRestrauntDescriptionModal chooseMessage={chooseMessage} visibility={visibility} activeRestaurant={activeRestaurant} />
-		</MapView>
+			  </MapView>
 	</View>
   )
 }
-
+// <AppearingRestrauntDescriptionModal chooseMessage={chooseMessage} visibility={visibility} activeRestaurant={activeRestaurant} />
+		
 /*
 <Marker
 				coordinate={{ latitude : 55.663750 , longitude : 37.484914 }}
@@ -211,13 +208,13 @@ const styles = StyleSheet.create({
 		width: wp(38.46),
 		height: hp(15.78),
 		alignItems: 'center',
-		//borderWidth: 1,
+		borderWidth: 1,
+		borderRadius: wp(200),
 	},
 	restrauntPicture: {
 		width: wp(33.33),
 		height: hp(15.4),
 		aspectRatio: 1,
-		//borderWidth: 0.3,
 	},
 	restrauntTextBlock: {
 		height: hp(7.46),
@@ -230,7 +227,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 	},
 	restrauntText: {
-		color: colors.black,
+		color: colors.white,
 		fontSize: RFValue(17, height),
 		lineHeight: hp(2.4),
 		fontFamily: 'SF-Pro-Medium',

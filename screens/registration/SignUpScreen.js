@@ -41,8 +41,6 @@ useEffect(() => {
   
   
   const [fontsLoaded] = useFonts({
-    //'SF-Pro-Regular': require('../../assets/fonts/SF-Pro-Regular.otf'),
-    //'SF-Pro-Bold': require('../../assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf'),
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
     'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
     'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),

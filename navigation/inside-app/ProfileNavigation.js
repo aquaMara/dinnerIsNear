@@ -16,6 +16,7 @@ import ProConfigFirstScreen from '../../screens/profile/pro/ProConfigFirstScreen
 import UndesirableProductsScreen from '../../screens/profile/pro/UndesirableProductsScreen';
 import WeekTagsScreen from '../../screens/profile/pro/WeekTagsScreen';
 import ModesScreen from '../../screens/profile/pro/ModesScreen';
+import PasswordScreen from '../../screens/profile/pro/PasswordScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -53,6 +54,10 @@ export default function ProfileNavigation() {
                    headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}
                 }} />
       <Stack.Screen name="Modes" component={ModesScreen}
+        options={{ title: 'Настройка PRO', headerShown: true,
+                   headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}
+                }} />
+      <Stack.Screen name="Password" component={PasswordScreen}
         options={{ title: 'Настройка PRO', headerShown: true,
                    headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}
                 }} />

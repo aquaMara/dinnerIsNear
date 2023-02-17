@@ -7,7 +7,8 @@ import { colors } from '../../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { Switch } from 'react-native'
-import firebase from "firebase/compat";;
+import firebase from "firebase/compat";
+import { globalStyles } from '../../../styles/styles';
 
 const { height } = Dimensions.get('screen');
 
@@ -64,6 +65,8 @@ export default function UndesirableProductsScreen() {
   const [deepFried, setDeepFried] = useState(false);
   const [roasted, setRoasted] = useState(false);
   const [dried, setDried] = useState(false);
+
+  const navigation = useNavigation();
 
 
   // 4
@@ -368,6 +371,22 @@ export default function UndesirableProductsScreen() {
       .update({ 'dried': !dried })
       .catch(err => console.log(err));
     setDried(previousState => !previousState);
+  }
+
+  const navigateAndSave = () => {
+
+    const undesirableProducts = {pork, beef, meat, chicken,
+      seafood, salmon, mussels,
+      nuts, peanut, sesame, cashew, almond, walnut, sunflowerSeeds,
+      lactose, cottageCheese, egg,
+      orange, banana, frutsBerries,
+      avocado, beans, white, red, yellow, blue, green, vegetables,
+      buckwheat, rice, oats, cereals,
+      mushrooms, honey, gluten, sugar,
+      steamed, boiled, stewed, fried, deepFried, roasted, dried
+    }
+    navigation.navigate('Password', {tableName: 'tags', data: undesirableProducts});
+
   }
 
   return (
@@ -726,7 +745,9 @@ export default function UndesirableProductsScreen() {
                 thumbColor={colors.white} />
         </View>
       </View>
-
+      <TouchableOpacity style={[globalStyles.mainButton, styles.mainButtonPlace]} onPress={() => navigateAndSave()}>
+        <Text style={styles.buttonText}>Сохранить</Text>
+      </TouchableOpacity>
     </ScrollView>
   )
 }
@@ -772,4 +793,14 @@ const styles = StyleSheet.create({
   allToggleBlockMarginTop: {
     marginTop: hp(1.07),
   },
+  buttonText: {
+    color: colors.white,
+    fontSize: RFValue(17, height),
+    lineHeight: hp(2.4),
+    fontFamily: 'SF-Pro-Medium',
+    textAlign: 'center',
+  },
+  mainButtonPlace: {
+    marginVertical: hp(3.2)
+  }
 })

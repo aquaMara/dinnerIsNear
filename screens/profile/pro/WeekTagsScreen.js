@@ -7,6 +7,7 @@ import { colors } from '../../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { Switch } from 'react-native';
+import { globalStyles } from '../../../styles/styles';
 
 const { height } = Dimensions.get('screen');
 
@@ -809,7 +810,9 @@ export default function WeekTagsScreen() {
             </View>
         </View>
       </View>
-
+      <TouchableOpacity style={[globalStyles.mainButton, styles.mainButtonPlace]}>
+        <Text style={styles.buttonText}>Сохранить</Text>
+      </TouchableOpacity>
     </ScrollView>
   )
 }
@@ -878,4 +881,14 @@ const styles = StyleSheet.create({
   allToggleBlockMarginTop: {
     marginTop: hp(1.07),
   },
+  buttonText: {
+    color: colors.white,
+    fontSize: RFValue(17, height),
+    lineHeight: hp(2.4),
+    fontFamily: 'SF-Pro-Medium',
+    textAlign: 'center',
+  },
+  mainButtonPlace: {
+    marginVertical: hp(3.2)
+  }
 })

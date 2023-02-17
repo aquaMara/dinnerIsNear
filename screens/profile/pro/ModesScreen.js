@@ -8,11 +8,13 @@ import { useNavigation } from '@react-navigation/native';
 import { Linking } from 'react-native';
 import { useState } from 'react';
 import { Switch } from 'react-native';
+import { globalStyles } from '../../../styles/styles';
 
 const { height } = Dimensions.get('screen');
 
 export default function ModesScreen() {
 
+  const [PMS, setPMS] = useState(false);
   const [poisoning, setPoisoning] = useState(false);
   const [malaiseMode, setMalaiseMode] = useState(false);  
 
@@ -23,8 +25,15 @@ export default function ModesScreen() {
           <Text style={styles.labelText}>Режимы работы приложения</Text>
         </View>
         <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
+          <Text style={[styles.listText, {width: wp(77)}]}>ПМС</Text>
+          <Switch value={poisoning} onValueChange={() => setPMS(previousState => !previousState)}
+            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+            thumbColor={colors.white} />
+        </View>
+        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Отравление</Text>
-          <Switch value={poisoning} onValueChange={() => setPoisoning(previousState => !previousState)}
+          <Switch value={malaiseMode} onValueChange={() => setPoisoning(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -40,6 +49,9 @@ export default function ModesScreen() {
       <View style={styles.smallBlock}>
         <Text style={[styles.smallText]}>Включая данные настройки мы помогаем вам изменить рацион, чтобы вы быстрее поправились.</Text>
       </View>
+      <TouchableOpacity style={[globalStyles.mainButton, styles.mainButtonPlace]}>
+        <Text style={styles.buttonText}>Сохранить</Text>
+      </TouchableOpacity>
     </ScrollView>
   )
 }
@@ -92,5 +104,15 @@ const styles = StyleSheet.create({
     lineHeight: hp(1.84),
     color: colors.grey,
     textAlign: 'center'
+  },
+  buttonText: {
+    color: colors.white,
+    fontSize: RFValue(17, height),
+    lineHeight: hp(2.4),
+    fontFamily: 'SF-Pro-Medium',
+    textAlign: 'center',
+  },
+  mainButtonPlace: {
+    marginTop: hp(3.2)
   }
 })

@@ -12,15 +12,16 @@ import Dishes from './components/Dishes';
 
 const { height } = Dimensions.get('screen');
 
-export default function FavouritesScreen() {
+export default function FavouritesScreen({route}) {
 
     const [meals, setMeals] = useState();
     const [dishes, setDishes] = useState([{}]);
     let numberOfMeals = 4;
     let calorieIntake = 1700;
+    
+    console.log('dyyhfy', route.params)
 
     const changeBlockVisibility = (givenId) => {
-        console.log(givenId)
         const changedMeals = meals.map(meal => {
             if (meal.id === givenId) {
             return {
@@ -59,7 +60,6 @@ export default function FavouritesScreen() {
     const render1 = ({ item }) => (
         
         <View style={!item.visible && styles.mealInvisible} >
-            {console.log('MEL', item)}
         <View style={styles.topLine}>
             <Text style={[ item.visible ? styles.titleTextVisible : styles.titleText ]}>{item.name}</Text>
             <TouchableOpacity onPress={() => changeBlockVisibility(item.id)} style={[styles.arrowButton, !item.visible && styles.arrowButtonInvisible]}>
@@ -79,7 +79,6 @@ export default function FavouritesScreen() {
     useEffect(() => {
         setMeals(countMeals(numberOfMeals, calorieIntake));
         setDishes(data);
-        console.log('hjhjhjh', meals)
     }, []);
 
     const [fontsLoaded] = useFonts({

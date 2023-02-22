@@ -14,21 +14,18 @@ export default function AppearingDishDescriptionModal({activeItem, mealId, choos
 
   const [modalVisibleIntro, setModalVisibleIntro] = useState(false);
   const { cart, setCart } = useShoppingCart();
-  console.log('h', mealId);
-  //console.log('itemitem', item);
   
   const handleCartChoice = () => {
       setModalVisibleIntro(!modalVisibleIntro);
       console.log(activeItem)
       chooseMessage(activeItem, false);
-      // !!!
-      //const mealId = 1;
-      const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice, dishPath} = activeItem;
+
+      const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+        dishPath, dishPrice, description, weight} = activeItem;
       // dishId = 1 in newElement заменить !!!
-      const cartItem = {mealId, id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice, dishPath}
-      console.log('cartItem', cartItem)
+      const cartItem = {mealId, id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+        dishPath, dishPrice, description, weight}
       setCart(cart => [...cart, cartItem]);
-      console.log(cart)
   }
 
   useEffect(() => {

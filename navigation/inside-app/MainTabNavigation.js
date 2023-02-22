@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image, Dimensions, StyleSheet } from 'react-native';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RecommendationScreen from '../../screens/main/RecommendationScreen';
 import MenuScreen from '../../screens/main/MenuScreen';
@@ -19,6 +19,8 @@ import RestaurantScreen from '../../screens/main/RestaurantScreen';
 import Restaurants from '../../screens/main/restaurant-part/Restaurants';
 import RestaurantMenuScreen from '../../screens/main/restaurant-part/RestaurantMenuScreen';
 
+import firebase from 'firebase/compat';
+
 const { height } = Dimensions.get('screen');
 
 const Stack = createNativeStackNavigator();
@@ -29,12 +31,48 @@ export default function MainTabNavigation() {
   const [address, setAddress] = useState('проспект Толстова, 237');
   const [isHomeScreen, setIsHomeScreen] = useState(true);
   const [screenNumber, setScreenNumber] = useState(1);
+  const [favs0, setFavs0] = useState({});
+
+  const getFavsFromFirebase = async () => {
+    const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
+    const tableName = 'favs0';
+    await firebase.firestore().collection(tableName).doc(userId)
+      .get().then((snapshot) => {
+        if (snapshot.exists) {
+          const array = Object.values(snapshot.data());
+          console.log('array', array)
+          var newData = {};
+          array.map((item, id)=> { 
+            newData[item.id] = item;
+          });
+          console.log('newData', newData)
+          return {'newData': 'j'};
+        }
+    });
+    return 'getFavsFromFirebasex';
+  }
 
   const setScreen = (val) => {
-    console.log('hhhhhh', val);
     setIsHomeScreen(val)
     val ? navigation.navigate('Recommendation') : navigation.navigate('Restaurant')
   }
+
+  useEffect(() => {
+    const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
+    const tableName = 'favs0';
+  
+    firebase.firestore().collection('tags0')
+        .doc(userId).get()
+        .then((snapshot) => {
+          if (snapshot) {
+              setFavs0(snapshot.data());
+              return snapshot.data();
+              //setTags(prev => ([...prev, ...snapshot.data()]));
+          }
+          
+      }).catch((err) => {console.log('FAVS0 ERR', err)})
+      
+    }, [])
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),

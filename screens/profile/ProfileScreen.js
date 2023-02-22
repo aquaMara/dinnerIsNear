@@ -12,9 +12,12 @@ import { useAuth } from '../../auth/AuthProvoder';
 
 const { height } = Dimensions.get('screen');
 
+import firebase from 'firebase/compat';
+import { RefreshControl } from 'react-native';
+
 export default function ProfileScreen() {
 
-    const [dayStatisticsVisible, setDayStatisticsVisible] = useState(false);
+    const [dayStatisticsVisible, setDayStatisticsVisible] = useState(true);
     const [elevenDaysStatisticsVisible, setElevenDaysStatisticsVisible] = useState(false);
 
     const {name, setName} = useAuth();
@@ -28,6 +31,11 @@ export default function ProfileScreen() {
     const {proteinCount, setProteinCount} = useAuth();
     const {fatsCount, setFatsCount} = useAuth();
     const {carbohydratesCount, setCarbohydratesCount} = useAuth();
+    // Eaten this day
+    const [caloriesCountFb, setCaloriesCountFb] = useState(0);
+    const [proteinCountFb, setProteinCountFb] = useState(0);
+    const [fatsCountFb, setFatsCountFb] = useState(0);
+    const [carbohydratesCountFb, setCarbohydratesCountFb] = useState(0);
 
     const countCaloriesEaten = () => {
         let eatenCalories = 0;
@@ -126,6 +134,56 @@ export default function ProfileScreen() {
         return bgColor;
     }
 
+        // do that in cart block after a user bought something
+    const getEatenFromFirebase = async () => {
+        const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
+        let caloriesFb = 0, proteinFb = 0, fatsFb = 0, carbohydratesFb = 0;
+        await firebase.firestore().collection('today').doc(userId)
+            .get().then((snapshot) => {
+                if (snapshot.exists) {
+                    let arrayOfMealsWithCalories = Object.values(snapshot.data())
+                    console.log(arrayOfMealsWithCalories.length)
+                    for (let i = 0; i < arrayOfMealsWithCalories.length; i++) {
+                        caloriesFb += arrayOfMealsWithCalories[i].totalCalories;
+                        proteinFb += arrayOfMealsWithCalories[i].totalProtein;
+                        fatsFb += arrayOfMealsWithCalories[i].totalFats;
+                        carbohydratesFb += arrayOfMealsWithCalories[i].totalCarbohydrates;
+                    }
+                    setCaloriesCountFb(() => caloriesFb);
+                    //setCaloriesCount(caloriesFb)
+                    setProteinCountFb(proteinFb);
+                    setFatsCountFb(fatsFb);
+                    setCarbohydratesCountFb(carbohydratesFb);
+                    console.log(caloriesFb, caloriesCountFb, proteinCountFb, fatsCountFb, caloriesCountFb, 'hhh');
+                    console.log(caloriesFb, proteinFb, fatsFb, carbohydratesFb)
+                    //return {caloriesFb, proteinFb, fatsFb, carbohydratesFb};
+                    return {caloriesFb, proteinFb, fatsFb, carbohydratesFb};
+                }
+            });
+    }
+
+    const setData = async () => {
+        const x = await getEatenFromFirebase();
+        console.log('xxx', x)
+        //const {caloriesFb, proteinFb, fatsFb, carbohydratesFb} = getEatenFromFirebase();
+        //console.log(caloriesFb, proteinFb, fatsFb, carbohydratesFb)
+    }
+
+    
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = () => {
+      setRefreshing(true);
+      setData();
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }
+
+    useEffect(() => {
+        setData();
+    }, [caloriesCountFb]);
+
     const [fontsLoaded] = useFonts({
         'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
         'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
@@ -137,7 +195,9 @@ export default function ProfileScreen() {
       }
       
   return (
-    <ScrollView style={{flex: 1, backgroundColor: colors.white}}>
+    <ScrollView style={{flex: 1, backgroundColor: colors.white}} refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
         <View style={styles.nameBlock}>
             <Text style={[styles.titleText, styles.regular]}>{name}</Text>
         </View>
@@ -168,6 +228,7 @@ export default function ProfileScreen() {
             <View style={styles.statisticsBlocks}>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Калории</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countCaloriesWidth()), backgroundColor: countCaloriesColor()}]}>
                             <Text style={styles.statisticsText}>Калории</Text>
@@ -179,6 +240,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Белки</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countProteinWidth()), backgroundColor: countProteinColor()}]}>
                             <Text style={styles.statisticsText}>Белки</Text>
@@ -190,6 +252,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Жиры</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countFatsWidth()), backgroundColor: countFatsColor()}]}>
                             <Text style={styles.statisticsText}>Жиры</Text>
@@ -201,6 +264,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Углеводы</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countCarbohydratesWidth()), backgroundColor: countCarbohydratesColor()}]}>
                             <Text style={styles.statisticsText}>Углеводы</Text>
@@ -238,6 +302,7 @@ export default function ProfileScreen() {
             <View style={styles.statisticsBlocks}>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Калории</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countCaloriesWidth()), backgroundColor: countCaloriesColor()}]}>
                             <Text style={styles.statisticsText}>Калории</Text>
@@ -249,6 +314,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Белки</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countProteinWidth()), backgroundColor: countProteinColor()}]}>
                             <Text style={styles.statisticsText}>Белки</Text>
@@ -260,6 +326,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Жиры</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countFatsWidth()), backgroundColor: countFatsColor()}]}>
                             <Text style={styles.statisticsText}>Жиры</Text>
@@ -271,6 +338,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles.outerStatisticsBlock}>
                     <View style={styles.innerStatisticsBlock}>
+                        <Text style={styles.statisticsText}>Углеводы</Text>
                         <View style={[styles.statisticsResultBlock, 
                             {width: wp(countCarbohydratesWidth()), backgroundColor: countCarbohydratesColor()}]}>
                             <Text style={styles.statisticsText}>Углеводы</Text>
@@ -401,7 +469,8 @@ const styles = StyleSheet.create({
         height: hp(2.13),
         borderRadius: wp(13.08),
         shadowColor: colors.black,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        position: 'absolute',    
     },
     statisticsText: {
         fontFamily: 'SF-Pro-Regular',

@@ -18,7 +18,6 @@ const { height } = Dimensions.get('screen');
 export default function ROrderPart({ mealId }) {
 
     const navigation = useNavigation();
-    console.log(mealId, 'jhh87069856hhhhhhhhhhhh')
     const [dishesIntro, setDishesIntro] = useState([]);
 
     useEffect(() => {

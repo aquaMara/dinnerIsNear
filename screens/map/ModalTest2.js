@@ -10,10 +10,7 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 const { height } = Dimensions.get('screen');
 
 export default function ModalTest2({chooseMessage, visibility, activeRestaurant}) {
-    
-  console.log('visibility is  ', visibility, ' is visibility');
-  console.log('ModalTest2 activeRestaurant is ', activeRestaurant)
-  
+      
   return (
     <GestureRecognizer onSwipeDown={() => chooseMessage(activeRestaurant, false)}>
         <Modal 

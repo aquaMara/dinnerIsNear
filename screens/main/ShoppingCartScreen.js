@@ -8,6 +8,7 @@ import { countMeals } from '../../functions/CountMeals';
 import { useShoppingCart } from '../../auth/ShoppingCartProvider';
 import { useAuth } from '../../auth/AuthProvoder';
 import { globalStyles } from '../../styles/styles';
+import firebase from 'firebase/compat';
 
 const { height } = Dimensions.get('screen');
 
@@ -32,10 +33,63 @@ export default function ShoppingCartScreen() {
                 visible: !meal.visible, 
             }
             } else {
-            return meal;
+                return meal;
             }
         })
         setMeals(changedMeals);
+    }
+
+    const saveEatenToFirebase = (totalCalories, totalProtein, totalFats, totalCarbohydrates, mealId) => {
+        const date = new Date();
+        const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
+        firebase.firestore().collection('today').doc(userId)
+            .get().then((snapshot) => {
+                if (snapshot.exists) {
+                    firebase.firestore().collection('today').doc(userId).get().then((snapshot) => {
+                        const array = Object.values(snapshot.data());
+                        var newData = {};
+                        for (let i = 0; i < array.length; i++) {
+                            newData[array[i].mealId] = array[i];
+                        }
+                        newData[mealId] = {totalCalories, totalProtein, totalFats, totalCarbohydrates, mealId, 'date': new Date()};
+                        firebase.firestore().collection('today').doc(userId)
+                            .set(newData)
+                            .then('saveEatenToFirebase added item')
+                            .catch(err => console.log('saveEatenToFirebase 1', err));
+                    })
+                } else {
+                    firebase.firestore().collection('today').doc(userId)
+                        .set({[mealId]: {totalCalories, totalProtein, totalFats, totalCarbohydrates, mealId} })
+                        .catch(err => console.log('saveEatenToFirebase 2', err));
+                }
+            });
+            getEatenFromFirebase();
+    }
+    const getEatenFromFirebase = () => {
+        const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
+        let caloriesFb = 0, proteinFb = 0, fatsFb = 0, carbohydratesFb = 0;
+        firebase.firestore().collection('today').doc(userId)
+            .get().then((snapshot) => {
+                if (snapshot.exists) {
+                    let arrayOfMealsWithCalories = Object.values(snapshot.data())
+                    console.log(arrayOfMealsWithCalories.length)
+                    for (let i = 0; i < arrayOfMealsWithCalories.length; i++) {
+                        caloriesFb += arrayOfMealsWithCalories[i].totalCalories;
+                        proteinFb += arrayOfMealsWithCalories[i].totalProtein;
+                        fatsFb += arrayOfMealsWithCalories[i].totalFats;
+                        carbohydratesFb += arrayOfMealsWithCalories[i].totalCarbohydrates;
+                    }
+                    //setCaloriesCount(caloriesFb);
+                    /*
+                    setCaloriesCountFb(() => caloriesFb);
+                    setProteinCountFb(proteinFb);
+                    setFatsCountFb(fatsFb);
+                    setCarbohydratesCountFb(carbohydratesFb);
+                    console.log(caloriesFb, caloriesCountFb, proteinCountFb, fatsCountFb, caloriesCountFb, 'hhh');
+                    console.log(caloriesFb, proteinFb, fatsFb, carbohydratesFb)
+                    */
+                }
+            });
     }
 
     // dishId = 1 in newElement заменить !!!
@@ -66,13 +120,11 @@ export default function ShoppingCartScreen() {
         setFatsCount(prev => [...prev, {mealId: mId, totalFats}]);
         setCarbohydratesCount(prev => [...prev, {mealId: mId, totalCarbohydrates}]);
         //setCurrentUserMeals(prev => [...prev, {mealId: mId, meal}])
-        
-        console.log("CART !", cart)
+        saveEatenToFirebase(totalCalories, totalProtein, totalFats, totalCarbohydrates, mId);
         var cart2 = cart.filter(obj => {
             return obj.mealId != mId
         })
         setCart(cart2);
-        console.log("CART !2", cart2)
     }
 
     const filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal = (mId) => {
@@ -149,6 +201,24 @@ export default function ShoppingCartScreen() {
         return amountOfDishInAMeal;
     }
 
+    const countMinHeight = (mealId) => {
+        if (mealId === 0) {
+            return hp(74)
+        } if (mealId === 1) {
+            return hp(62.5)
+        } if (mealId === 2) {
+            return hp(51)
+        } if (mealId === 3) {
+            return hp(39.5)
+        } if (mealId === 4) {
+            return hp(28)
+        } if (mealId === 5) {
+            return hp(16.5)
+        } else {
+            return hp(5)
+        }
+    }
+
     useEffect(() => {
         setMeals(countMeals(numberOfMeals, calorieIntake));
     }, []);
@@ -177,7 +247,7 @@ export default function ShoppingCartScreen() {
             </TouchableOpacity>
         </View>
         {meal.visible && (
-        <View>
+        <View style={{ minHeight: countMinHeight(meal.id) }}>
         <View style={styles.middleLine}>
             <View style={styles.middleBlock}>
                 <Text style={styles.middleBlockText}>
@@ -234,7 +304,7 @@ export default function ShoppingCartScreen() {
             </View>
         </View>
         ))}
-        <TouchableOpacity onPress={() => addToEaten(meal.id, meal)} style={globalStyles.mainButton}>
+        <TouchableOpacity onPress={() => addToEaten(meal.id, meal)} style={[globalStyles.mainButton, styles.buttonMargin]}>
             <Text style={styles.buttonText}>Добавить в съеденное</Text>
         </TouchableOpacity>
         </View>)}
@@ -263,10 +333,10 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         borderRadius: hp(1.54),
         alignSelf: 'center',
-        shadowColor: 'rgba(0, 0, 0, 0.18)',
+        shadowColor: colors.black,
         shadowOffset: {width: wp(0), height: hp(0.12)},
         shadowRadius: hp(2.13),
-        shadowOpacity: 1,
+        shadowOpacity: 0.18,
     },
     topLine: {
         width: wp(91.8),
@@ -366,5 +436,10 @@ const styles = StyleSheet.create({
         fontFamily: 'SF-Pro-Medium',
         textAlign: 'center',
       },
+    buttonMargin: {
+        marginTop: 'auto',
+        marginBottom: 0,
+
+    }
 
 })

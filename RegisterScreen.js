@@ -13,12 +13,9 @@ export default function RegisterScreen() {
     const handleCreateAccount = () => {
         createUserWithEmailAndPassword(auth, 'aquamarina.na@gmail.com', 'aquaM63')
         .then((userCredential) => {
-            console.log('Account created');
             const user = userCredential.user;
-            console.log(user);
         })
         .catch(error => {
-            console.log(error);
             Alert.alert(error.message)
         })
     }
@@ -26,9 +23,7 @@ export default function RegisterScreen() {
     const handleSignIn = () => {
         signInWithEmailAndPassword(auth, 'aquamarina.na@gmail.com', 'aquaM63')
         .then((userCredential) => {
-            console.log('Signed in');
             const user = userCredential.user;
-            console.log(user);
         })
         .catch(error => {
             console.log(error);

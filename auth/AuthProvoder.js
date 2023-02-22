@@ -7,7 +7,7 @@ import firebase from "firebase/compat";
 export const AuthContext = createContext();
 
 export const AuthProvider = ( { children } ) => {
-    // id, name
+    // id, name + Stable values for every day
     const [currentUser, setCurrentUser] = useState(null);
     const [mealsCount, setMealsCount] = useState(4);
     const [name, setName] = useState('');
@@ -61,6 +61,7 @@ export const AuthProvider = ( { children } ) => {
             {children}
 
             {console.log('Auth Provider, USER : ', currentUser)}
+            {console.log('Auth Provider, mealsCount : ', mealsCount)}
             {console.log('Auth Provider, caloriesCount : ', caloriesCount)}
             {console.log('Auth Provider, proteinCount : ', proteinCount)}
             {console.log('Auth Provider, fatsCount : ', fatsCount)}

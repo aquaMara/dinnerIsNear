@@ -17,7 +17,7 @@ export default function AppearingDishDescription({ item }) {
 
     const handleCartChoice = (item) => {
         setModalVisibleIntro(!modalVisibleIntro);
-        console.log(item);
+        console.log('handleCartChoice', item);
         setCart(cart => [...cart, item])
     }
 

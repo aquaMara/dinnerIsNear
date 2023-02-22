@@ -54,7 +54,6 @@ export default function RecommendationScreen() {
     }
 
     const changeBlockVisibility = (givenId) => {
-      console.log(givenId)
       const changedMeals = meals.map(meal => {
         if (meal.id === givenId) {
           return {
@@ -70,7 +69,6 @@ export default function RecommendationScreen() {
 
     const changeEatenBlockVisibility = () => {
       setEatenBottomBlockVisibility(prevCheck => !prevCheck);
-      console.log(eatenBottomBlockVisibility);
     }
 
     const db = getFirestore();
@@ -89,11 +87,9 @@ export default function RecommendationScreen() {
         snapshot.docs.forEach((doc) => {
           arr.push({...doc.data(), id: doc.id})
         })
-        console.log(arr);
       }).catch(err => console.log(err));
 
       getDoc(docRef).then((doc) => {
-        console.log('DATAAAAAAAAAAAAAAAAA ', doc.data())
         setCalorieIntake(doc.data().calorieIntake)
         setProtein(doc.data().protein)
         setFats(doc.data().fats)

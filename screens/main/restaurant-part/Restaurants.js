@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View, Dimensions, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Dimensions, Image, TouchableOpacity, TouchableWithoutFeedback, ImageBackground } from 'react-native';
 import { Keyboard } from 'react-native';
 import React from 'react';
 import { colors } from '../../../styles/colors';
@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
 import app from '../../../firebase-config';
 import firebase from 'firebase/compat';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { height } = Dimensions.get('screen');
 
@@ -24,47 +25,39 @@ export default function Restaurants({route}) {
   const [tags, setTags] = useState({});
 
   const moveToRestaurant = async  (id, name, mealId) => {
-    console.log('moveToRestaurant', id, name, mealId);
     // no: find dishes by restaurant name
     // yes: get user tags
     
-    console.log('SNAPSHOT DATA TAGS ssss ', tags);
-
     navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId, tags: tags});
   }
 
-  const TagsSearch = async  () => {
-    
-}
-
 useEffect(() => {
   const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
-    console.log('USERID ', userId);
 
   firebase.firestore().collection('tags')
       .doc(userId).get()
       .then((snapshot) => {
         if (snapshot) {
             setTags(snapshot.data());
-            console.log('SNAPSHOT DATA TAGS ', tags);
             return snapshot.data();
             //setTags(prev => ([...prev, ...snapshot.data()]));
         }
         
-        console.log('SNAPSHOT DATA TAGS 2 ', tags);
     }).catch((err) => {console.log('TAGS ERR', err)})
     
-    console.log('SNAPSHOT DATA TAGS 3 ', tags);
-
-
-}, [])
+  }, [])
 
   const renderRestaurant = ({item}) => (
     <TouchableOpacity style={styles.restaurantBlock} onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
       <View style={styles.topBlock}>
-        <Image source={{uri: item.image}} style={styles.restaurantImage} />
+        <ImageBackground source={{uri: item.image}} style={styles.restaurantImage} imageStyle={{borderRadius: hp(2.37)}} >
+          <LinearGradient 
+            colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.4)']}
+            locations={[0, 1]}
+            style={styles.restaurantImage} />
+        </ImageBackground>
         <View style={{marginRight: wp(2.31), marginLeft: 'auto', marginBottom: hp(1.07), marginTop: 'auto'}}>
-          <Text style={styles.restrauntDestinationText}>~ в {item.destination} км от меня</Text>
+          <Text style={styles.restrauntDestinationText}>~ в 1 км от меня</Text>
         </View>
       </View>
       <View style={styles.bottomBlock}>

@@ -9,7 +9,7 @@ const Stack = createNativeStackNavigator();
 
 export default function MapNavigation() {
   return (
-    <Stack.Navigator initialRouteName='MapF'>
+    <Stack.Navigator initialRouteName='MapMain'>
       <Stack.Screen name="MapMain" component={MapMainScreen} options={{
         headerShown: true, headerBackTitleVisible: true, headerBackTitle: 'Назад',
         title: 'Рестораны поблизости', headerBackButtonMenuEnabled: true }} />

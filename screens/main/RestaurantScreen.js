@@ -22,12 +22,16 @@ import { useNavigation } from '@react-navigation/native';
 
 const { height } = Dimensions.get('screen');
 
+
+import { RefreshControl } from 'react-native';
+import MealEatenDishes from './components/MealEatenDishes';
+
 export default function RestaurantScreen() {
 
     const navigation = useNavigation();
 
     const { currentUser, currentUserData } = useAuth();
-    const { mealsCount, setMealsCount } = useAuth();
+    const {mealsCount, setMealsCount} = useAuth();
     const { calories, setCalories } = useAuth();
     const { currentUserMeals } = useAuth();
     const { caloriesCount } = useAuth();
@@ -39,6 +43,8 @@ export default function RestaurantScreen() {
     const [meals, setMeals] = useState([{}]);
     const [isMainBlockHidden, setIsMainBlockHidden] = useState(false);
     const [orderVisibility, setOrderVisibility] = useState(true);
+
+    const { eatenMealsBlockMealsVisible, setEatenMealsBlockMealsVisible } = useState(true);
 
     const [eatenBottomBlockVisibility, setEatenBottomBlockVisibility] = useState(false);
 
@@ -68,15 +74,22 @@ export default function RestaurantScreen() {
     }
 
     const getMealsForCertainMealFromCurrentUserMeals = (mId, meal) => {
-      console.log('getMealsForCertainMealFromCurrentUserMeals currentUserMeals', currentUserMeals)
-      console.log('getMealsForCertainMealFromCurrentUserMeals mId', mId, meal)
       var foodForCurrentMeal = currentUserMeals.filter(obj => {
         console.log('obj', obj.dishCalories, obj.mealId, mId)
         console.log(Object.values(obj))
         return obj.mealId === mId
       })
-      console.log('getMealsForCertainMealFromCurrentUserMeals foodForCurrentMeal', foodForCurrentMeal)
       return foodForCurrentMeal;
+    }
+
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = () => {
+      setRefreshing(true);
+      setMeals(countMeals(mealsCount, calories));
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
     }
 
     useEffect(() => {
@@ -94,7 +107,10 @@ export default function RestaurantScreen() {
     }
 
   return (
-    <ScrollView style={{backgroundColor: colors.white}}>
+    <ScrollView style={{backgroundColor: colors.white}} 
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }>
       <RecommendationNorm />
       {
           meals.length > 0 && meals.map((meal) =>
@@ -139,10 +155,9 @@ export default function RestaurantScreen() {
                 
                 {
                   eatenBottomBlockVisibility && (
-                  <View style={styles.alreadyEatenBlock}>
-                    {getMealsForCertainMealFromCurrentUserMeals(meal.id, meal).length > 0 && <Text>{currentUserMeals.length}hhhjhh</Text>}
-                    <Text style={[styles.greyText, {width: wp(65.9), textAlign: 'center'}]}>Вы ещё ничего не заказали или не добавили, поэтому тут пусто</Text>
-                  </View>
+                    <View style={styles.eatenBlock}>
+                      <Text style={[styles.greyText, {width: wp(65.9), textAlign: 'center'}]}>Вы ещё ничего не заказали или не добавили, поэтому тут пусто</Text>
+                    </View>
                 )}
                 
               </View>
@@ -177,10 +192,10 @@ const styles = StyleSheet.create({
         borderRadius: hp(1.54),
         alignSelf: 'center',
         alignItems: 'center',
-        shadowColor: 'rgba(0, 0, 0, 0.18)',
+        shadowColor: colors.black,
         shadowOffset: {width: wp(0), height: hp(0.12)},
-        shadowRadius: hp(2.13),
-        shadowOpacity: 1,
+        shadowRadius: wp(2.05),
+        shadowOpacity: 0.18,
     },
     topLine: {
         width: wp(76.7),
@@ -222,7 +237,8 @@ const styles = StyleSheet.create({
     appearedBlock: {
       // width: wp(91.8),
       width: wp(100),
-      height: hp(31.04),
+      //minHeight: hp(31.04),
+      height: hp(50),
       marginTop: hp(2.37),
       alignItems: 'center',
     },
@@ -266,7 +282,9 @@ const styles = StyleSheet.create({
   },
   alreadyEatenBlock: {
     width: wp(100),
-    height: hp(8.8),
+    height: hp(6.8),
+    //minHeight: hp(7.12),
+    //height: hp(30),
     marginTop: hp(1.84),
     marginBottom: hp(1.78),
     marginHorizontal: 0,

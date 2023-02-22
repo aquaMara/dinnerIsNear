@@ -26,27 +26,19 @@ export default function MenuScreen({ navigation, route }) {
     const [currentSectionId, setCurrentSectionId] = useState(null);
     const db = getFirestore();
     const colRef = collection(db, 'dishes');
-    console.log('dd', data);
 
     const [visibility, setVisibility] = useState(false);
     const chooseMessage = (message) => {
         setVisibility(message);
     };
-    
-    console.log('jjjjjjj', route.params.title)
 
     const handleSectionChoice = (id, name) => {
-        console.log('handleSectionChoice id ', id);
         setCurrentSectionId(id);
         navigation.setOptions({
             title: name,
           });
     }
-
-    const handleDishChoice = (id) => {
-        console.log('handleDishChoice id ', id);
-    }
-
+    
     // <View style={[styles.topMenuBlock]}>
     const ItemRender = ({ name, id }) => (
         <TouchableOpacity style={[styles.topMenuBlock, currentSectionId === id && {backgroundColor: colors.green}]}

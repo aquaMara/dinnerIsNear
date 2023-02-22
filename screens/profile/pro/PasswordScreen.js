@@ -61,8 +61,6 @@ export default function PasswordScreen({ route }) {
       <TextInput style={styles.inputBox}
         value={propassword} onChangeText={p => setPropassword(p)} 
         editable={true} keyboardType='number-pad' />
-
-
       <View style={styles.conditionBox}>
         <Text style={styles.conditionText}>Введите код, который вам сообщил специалист для сохранения настроек.</Text>        
       </View>
@@ -124,6 +122,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    textAlign: 'center'
   },
   buttonUp: {
     marginTop: hp(9.24),

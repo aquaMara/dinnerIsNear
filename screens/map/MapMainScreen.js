@@ -33,17 +33,13 @@ export default function MapMainScreen({navigation}) {
 	const [visibility, setVisibility] = useState(false);
 
 	const setupVisibility = (marker) => {
-		console.log('visibility before ', visibility);
 		setVisibility(!visibility);
 		setActiveRestaurant(marker);
-		console.log('marker ', marker)
-		console.log('visibility after ', visibility);
 	}
 
     const chooseMessage = (marker,message) => {
         setActiveRestaurant(marker);
 		setVisibility(message);
-		console.log('ar', activeRestaurant)
     };
 
     const [ pin, setPin ] = React.useState({

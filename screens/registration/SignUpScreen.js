@@ -52,7 +52,6 @@ useEffect(() => {
   
 const sendVerification = () => {
     const phoneProvider = new firebase.auth.PhoneAuthProvider();
-    console.log(phoneNumber);
     let pn = '+375' + phoneNumber;
     phoneProvider
         .verifyPhoneNumber(pn, recaptchaVerifier.current)
@@ -115,26 +114,29 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     width: wp(76.92),
-    height: hp(3.43),
+    height: hp(4.43),
     borderBottomWidth: wp(0.26),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth:1
   },
   countryCodeInput: {
     width: wp(5.37),
     height: hp(3.43),
-    marginLeft: wp(5.13),
+    //marginLeft: wp(5.13),
+    marginLeft: wp(25),
     lineHeight: hp(2.4),
-    fontSize: RFValue(17, height),
-    fontFamily: 'SF-Pro-Regular',
+    fontSize: RFValue(18, height),
+    fontFamily: 'SF-Pro-Medium',
+
   },
   phoneInput: {
     width: wp(65.9),
     height: hp(3.43),
     lineHeight: hp(2.4),
-    fontSize: RFValue(17, height),
-    fontFamily: 'SF-Pro-Regular',
+    fontSize: RFValue(18, height),
+    fontFamily: 'SF-Pro-Medium',
     //alignSelf: 'center',
     //smarginLeft: wp(1),
   },

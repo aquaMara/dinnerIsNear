@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions, Image, ImageBackground } from 'react-native';
 import { useState, useEffect } from 'react';
 import React from 'react';
 import AppearingDishDescription from '../components/AppearingDishDescription';
@@ -21,6 +21,8 @@ import { TagsSearch } from '../../../functions/TagsSearch';
 import { arrayUnion } from '@firebase/firestore';
 import { map } from '@firebase/util';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 const { height } = Dimensions.get('screen');  
 
 export default function RestaurantMenuScreen({navigation, route}) {
@@ -33,7 +35,6 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const [activeItem, setActiveItem] = useState({});
     const [visibility, setVisibility] = useState(false);
     const currentRestaurantName = route.params.title;
-    const currentMealId = route.params.mealId;
 
     const chooseMessage = (item, message) => {
         setActiveItem(item);
@@ -66,20 +67,22 @@ export default function RestaurantMenuScreen({navigation, route}) {
 
     const addToFavs = (id, item) => {
         const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
-        firebase.firestore().collection('favs').doc(userId)
+        const tableName = 'favs' + [route.params.mealId];
+        console.log(tableName)
+        firebase.firestore().collection(tableName).doc(userId)
             .get().then((snapshot) => {
                 if (snapshot.exists) {
-                    firebase.firestore().collection('favs').doc(userId).get().then((snapshot) => {
+                    firebase.firestore().collection(tableName).doc(userId).get().then((snapshot) => {
                         const array = Object.values(snapshot.data());
                         var newData = {};
                         array.map((item, id)=> { 
                             newData[item.id] = item;
                         });
                         const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein,
-                            dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight, mealId: currentMealId} = item;
+                            dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight} = item;
                         newData[id] = {id, dishName, restaurantName, section, tags, dishCalories, dishProtein,
                             dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight, mealId: route.params.mealId};
-                        firebase.firestore().collection('favs').doc(userId)
+                        firebase.firestore().collection(tableName).doc(userId)
                             .set(newData)
                             .then('RestrauntMenuScreen addToFavs added item')
                             .catch(err => console.log('RestrauntMenuScreen addToFavs 1', err));
@@ -89,7 +92,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
                         dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight, mealId: currentMealId} = item;
                     const newItem = {id, dishName, restaurantName, section, tags, dishCalories, dishProtein,
                         dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight, mealId: route.params.mealId};
-                    firebase.firestore().collection('favs').doc(userId)
+                    firebase.firestore().collection(tableName).doc(userId)
                         .set({[id]: newItem })
                         .catch(err => console.log('RestrauntMenuScreen addToFavs 2', err));
                 }
@@ -120,9 +123,15 @@ export default function RestaurantMenuScreen({navigation, route}) {
     );
 
     const RenderItem = ({ item }) => (
-        <TouchableOpacity style={styles.block} onPress={() => chooseMessage(item, true)}>
+        <TouchableOpacity style={styles.block} onPress={() => chooseMessage(item, true)}>    
             <View style={styles.topBlock}>
-                <Image source={{uri: item.dishPath}} style={styles.dishImage} resizeMode='cover' />
+                <ImageBackground source={{uri: item.dishPath}} 
+                    style={styles.dishImage} imageStyle={{borderRadius: hp(2.37)}} resizeMode='cover' >
+                    <LinearGradient 
+                        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.4)']}
+                        locations={[0.3677, 1]}
+                        style={styles.dishImage}></LinearGradient>
+                </ImageBackground>
                 <View style={styles.imagesContainer}>
                     <TouchableOpacity style={styles.heartImageButton} onPress={() => addToFavs(item.id, item)}>
                         <Image source={require('../../../assets/images/heart.png')} style={styles.heartImage} />
@@ -134,7 +143,6 @@ export default function RestaurantMenuScreen({navigation, route}) {
                         {item.tags.indexOf("fish") > -1 && <Image source={require('../../../assets/images/fishTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
                     </View>
                 </View>
-
                 <View style={styles.middleBlock}>
                     <View style={{width: wp(23.08), height: hp(5.92)}}>
                         <Text style={styles.dishText} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
@@ -157,7 +165,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
     );
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.white}} >
         <View style={styles.topMenu}>
             <View style={{width: wp(11.8)}}>
                 <TouchableOpacity>
@@ -209,7 +217,7 @@ const styles = StyleSheet.create({
         marginTop: hp(-19.1),
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     heartImageButton: {
         height: hp(5),
@@ -245,7 +253,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     bottomBlock: {
         width: wp(43.59),
@@ -331,5 +339,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignContent: 'center',
         alignSelf: 'center',
-    },
+    }
 })

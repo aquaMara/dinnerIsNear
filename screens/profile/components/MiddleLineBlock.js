@@ -28,6 +28,16 @@ export default function MiddleLineBlock() {
         <View style={styles.middleLineBlock}>
             <Text style={styles.regularText}>Дополнительно</Text>
         </View>
+        <View style={[styles.block, styles.veryTopBlockHeight]}>
+            <View style={styles.textBlock}>
+                <Text style={styles.titleText}>Режимы и особенности</Text>
+            </View>
+            <TouchableOpacity style={styles.arrowBlock} 
+                onPress={() => navigation.navigate('Modes')}>
+            <Image source={require('../../../assets/images/chevronLeft.png')}
+                    style={styles.arrowImage} />
+            </TouchableOpacity>
+        </View>
         <View style={[styles.block, styles.topBlockHeight]}>
             <View style={[styles.textBlocks, styles.topTextBlockHeight]}>
                 <Text style={styles.titleText}>Полезные статьи</Text>
@@ -90,6 +100,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    veryTopBlockHeight: {
+        height: hp(7.82)
+    },
     topBlockHeight: {
         height: hp(7.82),
     },
@@ -123,5 +136,10 @@ const styles = StyleSheet.create({
         //width: wp(4.41),
         height: hp(2.36),
         //height: hp(3.54),
-    }
+    },
+    textBlock: {
+        width: wp(76.92),
+        marginLeft: wp(3.33),
+        height: hp(2.4),
+    },
 })

@@ -24,7 +24,6 @@ export default function ArticleBlock({ item }) {
     
   return (
     <View style={styles.articleBlock}>
-        {console.log(item)}
         <View style={styles.textBlocks}>
             <Text style={styles.titleText}>{item.topic}</Text>
             <Text style={styles.bodyText}>{item.description}</Text>

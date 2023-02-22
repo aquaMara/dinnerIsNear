@@ -109,21 +109,27 @@ export default function ProfileConfigScreen() {
     setAim(createAim());
     setLifestyle(createLifestyle());
 
-    const calorieIntake = countCalories(gender, weight, height, dateOfBirth, lifestyle, aim, aimRhytm);
-    const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
-    const {proteinIntake, fatsIntake, carbohydratesIntake} = countPFC(aim, calorieIntake);
+    console.log(nameData, weight, height)
+    if (nameData.trim() === '' || height.trim() === '' || weight.trim() === '') {
+      console.log(nameData.length, weight.length, height.length, ' name.length, weight.length, height.length')
+    } else {
+      const calorieIntake = countCalories(gender, weight, height, dateOfBirth, lifestyle, aim, aimRhytm);
+      const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
+      const {proteinIntake, fatsIntake, carbohydratesIntake} = countPFC(aim, calorieIntake);
 
-    setCalories(calorieIntake);
-    setProtein(proteinIntake);
-    setFats(fatsIntake);
-    setCarbohydrates(carbohydratesIntake);
-    setMealsCount(numberOfMeals);
-    setName(nameData);
+      setCalories(calorieIntake);
+      setProtein(proteinIntake);
+      setFats(fatsIntake);
+      setCarbohydrates(carbohydratesIntake);
+      setMealsCount(mealsCount);
+      console.log('setMealsCount(numberOfMeals)', numberOfMeals, mealsCount)
+      setName(nameData);
 
-    sendToFirebase(calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake,
-      name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
-      veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-      steamed, boiled, stewed, fried, deepFried, roasted, dried );
+      sendToFirebase(calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake,
+        name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
+        veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+        steamed, boiled, stewed, fried, deepFried, roasted, dried );
+    }
 
     //return {calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle}
   }
@@ -141,6 +147,7 @@ export default function ProfileConfigScreen() {
     console.log('********************************************************')
     console.log(calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle);
 
+    // SEND DATA
     navigation.navigate('Profile');
   }
 
@@ -294,19 +301,19 @@ export default function ProfileConfigScreen() {
         <View style={styles.counterContainer}>
           <Text style={[styles.listText, {width: wp(60)}]}>Приёмы пищи</Text>
           <View style={styles.counterInner}>
-            <TouchableOpacity onPress={() => setNumberOfMeals(previousState => previousState - 1)}
+            <TouchableOpacity onPress={() => {setNumberOfMeals(previousState => previousState - 1); setMealsCount(previousState => previousState - 1)}}
               style={styles.signButton}
-              disabled={numberOfMeals <= 1}>
-                {numberOfMeals <= 1 
+              disabled={mealsCount <= 1}>
+                {mealsCount <= 1 
                   ? (<Image style={styles.sign} source={require('../../assets/images/minusGray.png')}/>) 
                   : (<Image style={styles.sign} source={require('../../assets/images/minusGreen.png')}/>) }
             </TouchableOpacity>
             <View style={styles.counterText}>
-                <Text style={styles.listText}>{numberOfMeals}</Text>
+                <Text style={styles.listText}>{mealsCount}</Text>
             </View>
-            <TouchableOpacity onPress={() => setNumberOfMeals(previousState => previousState + 1)}
-              disabled={numberOfMeals >= 6} style={styles.signButton}>
-              {numberOfMeals >= 6 
+            <TouchableOpacity onPress={() => {setNumberOfMeals(previousState => previousState + 1); setMealsCount(previousState => previousState + 1)}}
+              disabled={mealsCount >= 6} style={styles.signButton}>
+              {mealsCount >= 6 
                 ? (<Image style={styles.sign} source={require('../../assets/images/plusGray.png')}/>) 
                 : (<Image style={styles.sign} source={require('../../assets/images/plusGreen.png')}/>) }
             </TouchableOpacity>

@@ -18,13 +18,13 @@ import { Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import SwitchSelector from "react-native-switch-selector";
+import { Alert } from 'react-native';
 
 const { height } = Dimensions.get('screen');
 
 export default function ProfileStepOne({ navigation, route }) {
 
   const userId = route.params.userId;
-  console.log('USERID ProfileStepOne ', userId)
   //const userId = 'ff';
   //const phoneNumber = 6;
   const phoneNumber = route.params.phoneNumber;
@@ -68,8 +68,20 @@ export default function ProfileStepOne({ navigation, route }) {
 
   const toNextStep = () => {
     const stepOne = {userId, phoneNumber, 'name': nameData, gender, dateOfBirthFormatted, weight, height, 'lifestyle': lifestyle};
-    console.log(userId, phoneNumber, 'name', nameData, gender, dateOfBirth, weight, height, 'lifestyle', lifestyle);
-    navigation.navigate('StepTwo', {stepOne: stepOne})
+    if (nameData.trim() === '' && weight.trim() === '' && height.trim() === '') {
+      Alert.alert(
+        'Незаполненные поля ввода',
+        'Проверьте, пожалуйста, заполнили ли вы имя и фамилию, рост, вес',
+        [
+          {
+            text: 'OK',
+            style: 'default',
+          },
+        ],
+      );
+    } else {
+      navigation.navigate('StepTwo', {stepOne: stepOne})
+    }
   }
 
   useEffect(() => {

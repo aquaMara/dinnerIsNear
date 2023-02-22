@@ -153,7 +153,7 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
         keyboardType='phone-pad'
         />
       <View style={styles.conditionBox}>
-        <Text style={styles.condition}>Введите код, который мы вам отправили, чтобы пройти регистрацию</Text>        
+        <Text style={styles.conditionText}>Введите код, который мы вам отправили, чтобы пройти регистрацию</Text>        
       </View>
       <TouchableOpacity onPress={confirmCode}
         style={[globalStyles.mainButton, isKeyboardShown ? styles.buttonUp : styles.buttonRegular ]}>
@@ -186,10 +186,11 @@ const styles = StyleSheet.create({
     width: wp(76.9),
     height: hp(3.43),
     lineHeight: hp(2.4),
-    fontSize: RFValue(17, height),
-    fontFamily: 'SF-Pro-Regular',
+    fontSize: RFValue(19, height),
+    fontFamily: 'SF-Pro-Medium',
     borderBottomColor: '#000000',
     borderBottomWidth: wp(0.26),
+    textAlign: 'center'
     //paddingBottom: wp(1.8),
   },
   conditionBox:{
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     height: hp(5.69),
     marginTop: hp(1.06),
   },
-  condition: {
+  conditionText: {
     fontSize: RFValue(13, height),
     lineHeight: hp(1.84),
     fontFamily: 'SF-Pro-Regular',

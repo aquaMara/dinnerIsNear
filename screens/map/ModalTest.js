@@ -4,7 +4,6 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 import React from 'react'
 
 export default function ModalTest({chooseMessage, visibility}) {
-  console.log('visibility is  ', visibility, ' is visibility');
   const [modalVisible, setModalVisible] = useState(visibility);
 // <Text>Swipe Down Please</Text>
   return (

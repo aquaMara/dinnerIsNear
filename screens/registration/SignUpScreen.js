@@ -13,6 +13,8 @@ import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { signInWithPhoneNumber } from 'firebase/auth';
 
+import * as SecureStore from 'expo-secure-store';
+
 const { height } = Dimensions.get('screen');
 
 export default function SignUpScreen({ navigation }) {
@@ -25,7 +27,22 @@ export default function SignUpScreen({ navigation }) {
   const recaptchaVerifier = useRef(null);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
  
+  async function save() {
+    console.log('save')
+    //await SecureStore.setItemAsync("key", 'hi');
+    await SecureStore.setItemAsync("key3", "value");
+  }
   
+  async function getValueFor() {
+    console.log('getValueFor')
+    let v3 = await SecureStore.getItemAsync("key3");
+    if (v3) {
+      console.log("🔐 Here's your value 🔐 \n" + v3);
+    } else {
+      console.log('No values stored under that key.');
+    }
+  }
+
 useEffect(() => {
     const showKeyboard = Keyboard.addListener('keyboardDidShow', () => {
       setIsKeyboardShown(true);
@@ -89,6 +106,7 @@ const sendVerification = () => {
         style={[globalStyles.mainButton, isKeyboardShown ? styles.buttonUp : styles.buttonRegular ]}>
         <Text style={styles.buttonText}>Войти</Text>
       </TouchableOpacity>
+      
     </SafeAreaView>
     </TouchableWithoutFeedback>
   )
@@ -119,7 +137,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth:1
   },
   countryCodeInput: {
     width: wp(5.37),

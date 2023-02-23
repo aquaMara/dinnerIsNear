@@ -1,4 +1,4 @@
-package com.dinnerisnear.newarchitecture;
+package com.aquam.dinnerIsNear.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.dinnerisnear.BuildConfig;
-import com.dinnerisnear.newarchitecture.components.MainComponentsRegistry;
-import com.dinnerisnear.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.aquam.dinnerIsNear.BuildConfig;
+import com.aquam.dinnerIsNear.newarchitecture.components.MainComponentsRegistry;
+import com.aquam.dinnerIsNear.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

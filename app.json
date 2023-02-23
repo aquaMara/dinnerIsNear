@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "dinnerIsNear",
+    "name": "Dinner is Near",
     "slug": "dinnerIsNear",
+    "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -14,9 +15,9 @@
     "updates": {
       "url": "https://u.expo.dev/ebd1cd4a-db27-4392-8770-80784c4401e4"
     },
-    "android": {},
+    "android": {
+      "package": "com.aquam.dinnerIsNear"
+    },
     "ios": {}
-    
-  },
-  "name": "dinnerIsNear"
+  }
 }

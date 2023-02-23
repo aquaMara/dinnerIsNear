@@ -1,4 +1,4 @@
-package com.dinnerisnear;
+package com.aquam.dinnerIsNear;
 
 import android.os.Build;
 import android.os.Bundle;

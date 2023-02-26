@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useFonts } from 'expo-font';
 import { RFValue } from 'react-native-responsive-fontsize'
@@ -6,22 +6,21 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { colors } from '../../styles/colors';
 import { countMeals } from '../../functions/CountMeals';
 import { FlatList } from 'react-native';
-import data from '../chat/data';
-import { globalStyles } from '../../styles/styles';
 import Dishes from './components/Dishes';
+import { useAuth } from '../../auth/AuthProvoder';
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function FavouritesScreen({route}) {
 
     const [meals, setMeals] = useState();
-    const [dishes, setDishes] = useState([{}]);
-    let numberOfMeals = 4;
-    let calorieIntake = 1700;
-    
-    console.log('dyyhfy', route.params)
+    const { mealsCount, calories }= useAuth();
+    const [arrayOfFavs, setArrayOfFavs] = useState([]);
 
-    const changeBlockVisibility = (givenId) => {
+    const changeBlockVisibility = async (givenId) => {
+        let zx = await setFavourites(givenId);
+        setArrayOfFavs(zx);
         const changedMeals = meals.map(meal => {
             if (meal.id === givenId) {
             return {
@@ -29,37 +28,26 @@ export default function FavouritesScreen({route}) {
                 visible: !meal.visible, 
             }
             } else {
-            return meal;
+                return meal;
             }
         })
         setMeals(changedMeals);
     }
 
-    const renderItem = ({ item }) => (
-        <View style={styles.block}>
-            <View style={{  }}>
-                <Image source={require('../../assets/images/dish.png')} style={styles.image} resizeMode='cover' />
-            </View>
-            <View style={[styles.dishName]}>
-                <View style={{width: wp(23.08), height: hp(6)}}>
-                    <Text style={styles.dishText} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
-                </View>
-                <View style={{width: wp(12)}}>
-                    <Text style={[styles.dishText, {textAlign: 'center'}]}>{item.dishCalories}</Text>
-                    <Text style={[styles.dishText, {textAlign: 'center'}]}>ккал</Text>
-                </View>
-            </View>
-            <View style={styles.pfcBlock}>
-                <View><Text style={styles.regularText}>{item.dishProtein} Б</Text></View>
-                <View style={{marginHorizontal: wp(2.56)}}><Text style={styles.regularText}>{item.dishFats} Ж</Text></View>
-                <View><Text style={styles.regularText}>{item.dishCarbohydrates} У</Text></View>
-            </View>
-        </View>
-    );
+    const setFavourites = async (givenId) => {
+        let arrayOfFavs = JSON.parse( await SecureStore.getItemAsync('arrayOfFavourites'));
+        let arrayOfFavourites = [];
+        for (let i = 0; i < arrayOfFavs.length; i++) {
+            if (arrayOfFavs[i].mealId == givenId) {
+                arrayOfFavourites.push(arrayOfFavs[i]);
+            }
+        }
+        setArrayOfFavs(arrayOfFavourites);
+        return arrayOfFavourites;
+    }
 
-    const render1 = ({ item }) => (
-        
-        <View style={!item.visible && styles.mealInvisible} >
+    const renderBlock = ({ item }) => (
+        <View style={!item.visible && styles.mealInvisible}>
         <View style={styles.topLine}>
             <Text style={[ item.visible ? styles.titleTextVisible : styles.titleText ]}>{item.name}</Text>
             <TouchableOpacity onPress={() => changeBlockVisibility(item.id)} style={[styles.arrowButton, !item.visible && styles.arrowButtonInvisible]}>
@@ -71,14 +59,13 @@ export default function FavouritesScreen({route}) {
         </View>
         {item.visible && (
         <View style={styles.favsBlock}>
-            <Dishes />
+            <Dishes arrayOfFavourites={arrayOfFavs} />
         </View>)}
     </View>
     )
 
     useEffect(() => {
-        setMeals(countMeals(numberOfMeals, calorieIntake));
-        setDishes(data);
+        setMeals(countMeals(6, calories));
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -93,7 +80,7 @@ export default function FavouritesScreen({route}) {
 
   return (
     <FlatList numColumns={1} data={meals} style={{backgroundColor: colors.white, flex: 1}}
-            renderItem={render1} keyExtractor={meal => meal.id} />
+            renderItem={renderBlock} keyExtractor={meal => meal.id} />
   )
 }
 
@@ -154,6 +141,21 @@ const styles = StyleSheet.create({
         width: wp(100),
         marginTop: hp(2.49),
         alignSelf: 'center',
+    },
+    tagsContainer: {
+        height: hp(5),
+        width: wp(23.2),
+        //justifyContent: 'center',
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    tagImage: {
+        width: wp(6.92),
+        height: hp(2.84),
+        aspectRatio: 1,
+        borderColor: 'red',
     },
 
     

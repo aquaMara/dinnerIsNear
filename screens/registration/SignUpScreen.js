@@ -1,4 +1,4 @@
-import { Dimensions, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Keyboard } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useFonts } from 'expo-font';
@@ -10,40 +10,17 @@ import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { signInWithPhoneNumber } from 'firebase/auth';
-
-import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function SignUpScreen({ navigation }) {
 
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryCode, setCountryCode] = useState('+7')
-  //const countryCode = '+7';
-  const [code, setCode] = useState('');
-  const [verificationId, setVerificationId] = useState(null);
+  const [countryCode, setCountryCode] = useState('+7');
   const recaptchaVerifier = useRef(null);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
- 
-  async function save() {
-    console.log('save')
-    //await SecureStore.setItemAsync("key", 'hi');
-    await SecureStore.setItemAsync("key3", "value");
-  }
-  
-  async function getValueFor() {
-    console.log('getValueFor')
-    let v3 = await SecureStore.getItemAsync("key3");
-    if (v3) {
-      console.log("🔐 Here's your value 🔐 \n" + v3);
-    } else {
-      console.log('No values stored under that key.');
-    }
-  }
 
-useEffect(() => {
+  useEffect(() => {
     const showKeyboard = Keyboard.addListener('keyboardDidShow', () => {
       setIsKeyboardShown(true);
     });
@@ -56,20 +33,15 @@ useEffect(() => {
     }
   }, []);
   
-  
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
     'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
     'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),
   });
-
-  if (!fontsLoaded) {
-    return null;
-  }
   
 const sendVerification = () => {
     const phoneProvider = new firebase.auth.PhoneAuthProvider();
-    let pn = '+375' + phoneNumber;
+    let pn = '+7' + phoneNumber;
     phoneProvider
         .verifyPhoneNumber(pn, recaptchaVerifier.current)
         .then(res => {navigation.navigate('ConfirmSignUp', {verificationId: res, phoneNumber: phoneNumber})})
@@ -106,7 +78,6 @@ const sendVerification = () => {
         style={[globalStyles.mainButton, isKeyboardShown ? styles.buttonUp : styles.buttonRegular ]}>
         <Text style={styles.buttonText}>Войти</Text>
       </TouchableOpacity>
-      
     </SafeAreaView>
     </TouchableWithoutFeedback>
   )

@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions, Image, ImageBackground } from 'react-native';
 import { useState, useEffect } from 'react';
 import React from 'react';
-import AppearingDishDescription from '../components/AppearingDishDescription';
 import { useFonts } from 'expo-font';
 import { FlatList } from 'react-native';
 import { colors } from '../../../styles/colors';
@@ -9,26 +8,14 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import dishesSections from '../../../data/dishesSections';
 import AppearingDishDescriptionModal from '../modals/AppearingDishDescriptionModal';
-import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 import dishesList from '../../../data/dishesList';
-import { useAuth } from '../../../auth/AuthProvoder';
-
-import { getAuth } from 'firebase/auth';
-import app from '../../../firebase-config';
-import firebase from 'firebase/compat';
-
-import { TagsSearch } from '../../../functions/TagsSearch';
-import { arrayUnion } from '@firebase/firestore';
-import { map } from '@firebase/util';
-
 import { LinearGradient } from 'expo-linear-gradient';
+import { addToFavs } from '../../../functions_secure_store/Favourites';
 
 const { height } = Dimensions.get('screen');  
 
 export default function RestaurantMenuScreen({navigation, route}) {
 
-    const [tags, setTags] = useState();
-    //const {currentUser, setCurrentUser} = useAuth();
     const [dishes, setDishes] = useState([{}]);
     const [dishesIntro, setDishesIntro] = useState([]);
     const [currentSectionName, setCurrentSectionName] = useState(null);
@@ -63,57 +50,23 @@ export default function RestaurantMenuScreen({navigation, route}) {
             return obj.restaurantName === currentRestaurantName;
         })
         return result;
-    }
-
-    const addToFavs = (id, item) => {
-        const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
-        const tableName = 'favs' + [route.params.mealId];
-        console.log(tableName)
-        firebase.firestore().collection(tableName).doc(userId)
-            .get().then((snapshot) => {
-                if (snapshot.exists) {
-                    firebase.firestore().collection(tableName).doc(userId).get().then((snapshot) => {
-                        const array = Object.values(snapshot.data());
-                        var newData = {};
-                        array.map((item, id)=> { 
-                            newData[item.id] = item;
-                        });
-                        const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein,
-                            dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight} = item;
-                        newData[id] = {id, dishName, restaurantName, section, tags, dishCalories, dishProtein,
-                            dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight, mealId: route.params.mealId};
-                        firebase.firestore().collection(tableName).doc(userId)
-                            .set(newData)
-                            .then('RestrauntMenuScreen addToFavs added item')
-                            .catch(err => console.log('RestrauntMenuScreen addToFavs 1', err));
-                    })
-                } else {
-                    const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein,
-                        dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight, mealId: currentMealId} = item;
-                    const newItem = {id, dishName, restaurantName, section, tags, dishCalories, dishProtein,
-                        dishFats, dishCarbohydrates, dishPath, dishPrice, description, weight, mealId: route.params.mealId};
-                    firebase.firestore().collection(tableName).doc(userId)
-                        .set({[id]: newItem })
-                        .catch(err => console.log('RestrauntMenuScreen addToFavs 2', err));
-                }
-            });
-    }
+    }    
 
     useEffect(() => {
-        setDishes(findDishesByRestaurant());
-        setDishesIntro(dishesSections);
-        setCurrentSectionName('Все');
+      setDishes(findDishesByRestaurant());
+      setDishesIntro(dishesSections);
+      setCurrentSectionName('Все');
     }, []);
 
     const [fontsLoaded] = useFonts({
-        'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
-        'SF-Pro-Medium': require('../../../assets/fonts/SFPro500.otf'),
-        'SF-Pro-Bold': require('../../../assets/fonts/SFPro700.otf'),
-      });
+      'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
+      'SF-Pro-Medium': require('../../../assets/fonts/SFPro500.otf'),
+      'SF-Pro-Bold': require('../../../assets/fonts/SFPro700.otf'),
+    });
       
-      if (!fontsLoaded) {
-        return null;
-      }
+    if (!fontsLoaded) {
+      return null;
+    }
 
     const ItemRender = ({ name, id }) => (
         <TouchableOpacity style={[styles.topMenuBlock, currentSectionName === name && {backgroundColor: colors.green}]}
@@ -133,7 +86,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
                         style={styles.dishImage}></LinearGradient>
                 </ImageBackground>
                 <View style={styles.imagesContainer}>
-                    <TouchableOpacity style={styles.heartImageButton} onPress={() => addToFavs(item.id, item)}>
+                    <TouchableOpacity style={styles.heartImageButton} onPress={() => addToFavs(route.params.mealId, item)}>
                         <Image source={require('../../../assets/images/heart.png')} style={styles.heartImage} />
                     </TouchableOpacity>
                     <View style={styles.tagsContainer}>

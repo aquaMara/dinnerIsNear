@@ -1,14 +1,7 @@
-import { ScrollView, Dimensions, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Keyboard } from 'react-native';
+import { ScrollView, Dimensions, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Platform } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
-// import SwitchSelector from "react-native-switch-selector";
-// import ScrollPicker from 'react-native-wheel-scrollview-picker';
-// import ScrollPicker from 'react-native-scroll-wheel-picker';
+import React, { useState } from 'react';
 import { useFonts } from 'expo-font';
-import { Linking } from 'react-native';
-import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
 import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -16,18 +9,14 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Picker } from 'react-native-wheel-pick';
 import { Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import SwitchSelector from "react-native-switch-selector";
 import { Alert } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function ProfileStepOne({ navigation, route }) {
 
-  const userId = route.params.userId;
-  //const userId = 'ff';
-  //const phoneNumber = 6;
-  const phoneNumber = route.params.phoneNumber;
   const [nameData, setNameData] = useState('');
   const [gender, setGender] = useState('female');
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
@@ -60,6 +49,15 @@ export default function ProfileStepOne({ navigation, route }) {
     return lf;
   }
 
+  const saveData = async (nameData, gender, dateOfBirthFormatted, weight, height, lifestyle) => {
+    await SecureStore.setItemAsync('name', nameData);
+    await SecureStore.setItemAsync('gender', gender);
+    await SecureStore.setItemAsync('dateOfBirth', dateOfBirthFormatted);
+    await SecureStore.setItemAsync('weight', weight);
+    await SecureStore.setItemAsync('height', height);
+    await SecureStore.setItemAsync('lifestyle', lifestyle);
+  }
+
   const setDate = (event, date) => {
     var mm = date.getMonth() + 1;
     setDateOfBirth(date);
@@ -67,7 +65,6 @@ export default function ProfileStepOne({ navigation, route }) {
   };
 
   const toNextStep = () => {
-    const stepOne = {userId, phoneNumber, 'name': nameData, gender, dateOfBirthFormatted, weight, height, 'lifestyle': lifestyle};
     if (nameData.trim() === '' && weight.trim() === '' && height.trim() === '') {
       Alert.alert(
         'Незаполненные поля ввода',
@@ -80,13 +77,11 @@ export default function ProfileStepOne({ navigation, route }) {
         ],
       );
     } else {
+      saveData(nameData, gender, dateOfBirthFormatted, weight, height, lifestyle);
+      const stepOne = {'name': nameData, gender, dateOfBirthFormatted, weight, height, 'lifestyle': lifestyle};
       navigation.navigate('StepTwo', {stepOne: stepOne})
     }
   }
-
-  useEffect(() => {
-
-  }, [])
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -139,9 +134,8 @@ export default function ProfileStepOne({ navigation, route }) {
             <Modal animationType="slide" transparent={true} visible={birthdayModalVisible}>
               <View style={styles.modalStyle}>
                 <DateTimePicker value={dateOfBirth} display='spinner' mode='date'
-                  style={{backgroundColor: 'white'}} textColor={colors.black}
+                  style={{backgroundColor: 'white', borderRadius: wp(5.13)}} textColor={colors.black}
                   themeVariant='light' locale='rus-RUS'
-                  style={{borderRadius: wp(5.13)}}
                   minimumDate={new Date(1950, 0, 1)} maximumDate={new Date(2030, 10, 20)}
                   onChange={setDate} dateFormat="dayofweek day month" />
                 <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}
@@ -205,7 +199,6 @@ export default function ProfileStepOne({ navigation, route }) {
 
 const styles = StyleSheet.create({
     block: {
-        // borderWidth: 1,
         marginTop: hp(3.56),
         marginLeft: wp(4),
       },

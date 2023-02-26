@@ -1,8 +1,7 @@
-import { Dimensions, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Keyboard } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import { Linking } from 'react-native';
 import { firebaseConfig } from '../../firebase-config';
 import firebase from "firebase/compat";
 import { globalStyles } from '../../styles/styles';
@@ -10,51 +9,21 @@ import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
-import { getAuth } from 'firebase/auth';
-import app from '../../firebase-config';
 import { useAuth } from '../../auth/AuthProvoder';
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function SignUpConfirmationScreen({ route, navigation }) {
 
-  const auth = getAuth(app);
   const verificationId = route.params.verificationId;
   const phoneNumber = route.params.phoneNumber;
   const [code, setCode] = useState(null);
   const recaptchaVerifier = useRef(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
-
-  const {mealsCount, setMealsCount} = useAuth();
-  const {name, setName} = useAuth();
-  const {calories, setCalories} =  useAuth();
-  const {protein, setProtein} =  useAuth();
-  const {fats, setFats} =  useAuth();
-  const {carbohydrates, setCarbohydrates} =  useAuth();
-
-  /*
-  firebase.auth().onAuthStateChanged((user) => {
-    //navigation.navigate('LittleMore', {uid: auth.currentUser.uid})
-    if (user != null && code != null) {
-      console.log('UID ', auth.currentUser.uid)
-      const userCheck = firebase.firestore().collection('users').doc(auth.currentUser.uid)
-      userCheck.get().then((userInfo) => {
-        if (userInfo.exists) {
-          console.log('EXISTS')
-        } else {
-          console.log('EMPTY')
-          const idd = auth.currentUser.uid;
-          navigation.navigate('LittleMore', {uid: idd})
-        }
-      }).catch(err => console.log('problem in adressing users collection', err))
-    } else {
-      setIsLoggedIn(false);
-      console.log(false)
-    }
-  })
-  */
   
+  const { setCalories, setProtein, setFats, setCarbohydrates, setName, setMealsCount } = useAuth();
  
   useEffect(() => {
     const showKeyboard = Keyboard.addListener('keyboardDidShow', () => {
@@ -64,11 +33,10 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
       setIsKeyboardShown(false);
     });
 
-  return () => {
-    showKeyboard.remove();
-    hideKeyboard.remove();
-  }
-  //return () => unsubscribe();
+    return () => {
+      showKeyboard.remove();
+      hideKeyboard.remove();
+    }
   }, []);
   
   const [fontsLoaded] = useFonts({
@@ -90,50 +58,54 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     firebase.auth().signInWithCredential(credential)
     .then(() => {
       const usid = firebase.auth().currentUser.uid;
-      console.log('IDIDIDIDIDIID ', usid);
       const userCheck = firebase.firestore().collection('users').doc(usid)
       if (usid != null && code != null) {
         userCheck.get().then((userInfo) => {
-          console.log(userInfo)
-          console.log(userInfo.exists)
           if (userInfo.exists) {
-            // todo : navigate to some other page
-            // todo: get user data
-            getInfoFromFirebase(usid);
+            getData();
             navigation.navigate('Tab');
           } else {
-            navigation.navigate('LittleMore', {usid, phoneNumber})
+            saveData(usid, phoneNumber);
+            cleanEatenMealsByDate();
+            navigation.navigate('LittleMore')
           }
-        }).catch(err => console.log('problem in adressing users collection', err))
+        }).catch(err => console.log('SignUpConfirmationScreen confirmCode 1', err))
       } else {
         setIsLoggedIn(false);
-        console.log(false)
       }
     })
     .catch((error) => {
-        console.log("ERROR ", error);
+        console.log('SignUpConfirmationScreen confirmCode 2', error);
     });
   }
 
-  const getInfoFromFirebase = (userId) => {
-    firebase.firestore().collection('calorie_plan')
-      .doc(userId).get().then((snapshot) => {
-        if (snapshot) {
-          console.log(snapshot.data());
-          setCalories(snapshot.data().calories);
-          setProtein(snapshot.data().protein);
-          setFats(snapshot.data().fats);
-          setCarbohydrates(snapshot.data().carbohydrates);
-          setMealsCount(snapshot.data().mealsCount)
-        }
-    })
-    firebase.firestore().collection('users')
-      .doc(userId).get().then((snapshot) => {
-        if (snapshot) {
-          console.log(snapshot.data());
-          setName(snapshot.data().name);
-        }
-    })
+  const saveData = async (userId) => {
+    const phoneNumber = '+7' + route.params.phoneNumber;
+    await SecureStore.setItemAsync('userId', userId);
+    await SecureStore.setItemAsync('phoneNumber', phoneNumber);
+  }
+
+  const getData = async () => {
+    let dayCalories = parseInt(await SecureStore.getItemAsync('dayCalories'));
+    let dayProtein = parseInt(await SecureStore.getItemAsync('dayProtein'));
+    let dayFats = parseInt(await SecureStore.getItemAsync('dayFats'));
+    let dayCarbohydrates = parseInt(await SecureStore.getItemAsync('dayCarbohydrates'));
+    let mealAmount = parseInt(await SecureStore.getItemAsync('mealAmount'));
+    let name = await SecureStore.getItemAsync('name');
+
+    setCalories(dayCalories);
+    setProtein(dayProtein);
+    setFats(dayFats);
+    setCarbohydrates(dayCarbohydrates);
+    setMealsCount(mealAmount)
+    setName(name);
+  }
+
+  const cleanEatenMealsByDate = () => {
+    console.log('SignUpConfirmationScreen cleanEatenMealsByDate');
+    const dateToday = new Date();
+    var mm = dateToday.getMonth() + 1;
+    console.log(dateToday.getFullYear() + '/' + mm + '/' + dateToday.getDate());
   }
   
   return (
@@ -180,7 +152,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(34, height),
     fontFamily: 'SF-Pro-Bold',
     textAlign: 'center',
-    color: '#000',
+    color: colors.black,
   },
   phoneInput: {
     width: wp(76.9),
@@ -188,7 +160,7 @@ const styles = StyleSheet.create({
     lineHeight: hp(2.4),
     fontSize: RFValue(19, height),
     fontFamily: 'SF-Pro-Medium',
-    borderBottomColor: '#000000',
+    borderBottomColor: colors.black,
     borderBottomWidth: wp(0.26),
     textAlign: 'center'
     //paddingBottom: wp(1.8),
@@ -203,7 +175,7 @@ const styles = StyleSheet.create({
     lineHeight: hp(1.84),
     fontFamily: 'SF-Pro-Regular',
     textAlign: 'center',
-    color: '#6D6D72',
+    color: colors.grey,
   },
   buttonUp: {
     marginBottom: hp(1.54),
@@ -214,27 +186,10 @@ const styles = StyleSheet.create({
     marginBottom: hp(5.57),
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: RFValue(17, height),
     lineHeight: hp(2.4),
     fontFamily: 'SF-Pro-Medium',
     textAlign: 'center',
   }
 })
-
-/*
-const userCheck = firebase.firestore().collection('users').doc(auth.currentUser.uid)
-      userCheck.get()
-      .then((userInfo) => {
-        if (userInfo.exists) {
-          console.log('EXISTS')
-        } else {
-          console.log('EMPTY')
-          firebase.firestore().collection('users').add({
-            _id: auth.currentUser.uid,
-            name: 'Maverick' 
-          })
-        }
-      })
-      .catch(err => console.log('problem in adressing users collection', err))
-*/

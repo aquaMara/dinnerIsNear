@@ -1,20 +1,16 @@
-import { Dimensions, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Keyboard } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import { Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
 import { useFonts } from 'expo-font';
-import { Linking } from 'react-native';
-import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
 import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
+import checkSecureStore from '../../functions/checkSecureStore';
+
 const { height } = Dimensions.get('screen');
 
 export default function LittleMoreScreen({ route, navigation }) {
-
-  const userId = route.params.usid;
   
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -35,19 +31,19 @@ export default function LittleMoreScreen({ route, navigation }) {
         <Text style={styles.bodyText}>Нобходимо ввести некоторые данные о тебе и выбрать параметры сортировки блюд,
          чтобы мы смогли представить тебе сбалансированные блюда.</Text>        
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('StepOne', {userId})}
+      <TouchableOpacity onPress={() => navigation.navigate('StepOne')}
         style={[globalStyles.mainButton, styles.buttonRegular]}>
         <Text style={styles.buttonText}>Настроить профиль</Text>
       </TouchableOpacity>
     </SafeAreaView>
   )
 }
-
+//() => navigation.navigate('StepOne')
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: colors.white,
   },
   titleBox: {
     width: wp(66.67),

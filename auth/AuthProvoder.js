@@ -9,7 +9,6 @@ export const AuthContext = createContext();
 export const AuthProvider = ( { children } ) => {
     // id, name + Stable values for every day
     const [currentUser, setCurrentUser] = useState(null);
-    const [mealsCount, setMealsCount] = useState(4);
     const [name, setName] = useState('');
 
     // Stable values for every day
@@ -17,8 +16,11 @@ export const AuthProvider = ( { children } ) => {
     const [protein, setProtein] = useState(null);
     const [fats, setFats] = useState(null);
     const [carbohydrates, setCarbohydrates] = useState(null);
+    const [mealsCount, setMealsCount] = useState(null);
 
     // Eaten this day
+    const [todayEatenMeals, setTodayEatenMeals] = useState([{}]);
+    
     const [caloriesCount, setCaloriesCount] = useState([{}]);
     const [proteinCount, setProteinCount] = useState([{}]);
     const [fatsCount, setFatsCount] = useState([{}]);

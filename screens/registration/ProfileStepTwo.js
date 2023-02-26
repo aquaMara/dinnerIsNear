@@ -1,49 +1,31 @@
-import { ScrollView, Dimensions, KeyboardAvoidingView, SafeAreaView, Image, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Keyboard } from 'react-native';
-import { Platform } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import { ScrollView, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState, } from 'react';
 import SwitchSelector from "react-native-switch-selector";
 import { Switch } from 'react-native';
-//import ScrollPicker from 'react-native-wheel-scrollview-picker';
-//import ScrollPicker from 'react-native-scroll-wheel-picker';
-//import WheelPickerExpo from 'react-native-wheel-picker-expo';
-//import { Picker } from 'react-native-wheel-pick';
-//import {Picker} from '@react-native-picker/picker';
 import { useFonts } from 'expo-font';
-import { Linking } from 'react-native';
-import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
 import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
 import { Picker } from 'react-native-wheel-pick';
 import { Modal } from 'react-native';
 import { countCalories } from '../../functions/CountCalories';
 import { countPFC } from '../../functions/CountPFC';
 import { useAuth } from '../../auth/AuthProvoder';
+import * as SecureStore from 'expo-secure-store';
+import firebase from "firebase/compat";
   
 const { height } = Dimensions.get('screen');
 
 export default function ProfileStepTwo({ navigation, route }) {
 
-    const stepOne = route.params.stepOne;
-    //const stepOne = 'route.params.stepOne';
-
-    // AUTH PROVIDER
-    const {mealsCount, setMealsCount} = useAuth();
-    const {name, setName} = useAuth();
-    // Stable values for every day
-    const {calories, setCalories} = useAuth();
-    const {protein, setProtein} = useAuth();
-    const {fats, setFats} = useAuth();
-    const {carbohydrates, setCarbohydrates} = useAuth();
+    const { setCalories, setProtein, setFats, setCarbohydrates, setName, setMealsCount} = useAuth();
 
     const [aim, setAim] = useState('maintainWeight');
     const [aimFormatted, setAimFormatted] = useState('Поддержать форму');
     const [aimRhytm, setAimRhytm] = useState('regular');
-    const [numberOfMeals, setNumberOfMeals] = useState(1);const [aimModalVisible, setAimModalVisible] = useState(false);
+    const [numberOfMeals, setNumberOfMeals] = useState(1);
+    const [aimModalVisible, setAimModalVisible] = useState(false);
 
     const [veganism, setVeganism] = useState(false);
     const [vegetarianism, setVegetarianism] = useState(false);
@@ -75,80 +57,85 @@ export default function ProfileStepTwo({ navigation, route }) {
         }
         return am;
     }
-
+      
     const countProfileStatistics = () => {
         
-        const {userId, phoneNumber, name, gender, dateOfBirthFormatted, weight, height, lifestyle} = stepOne;
-        console.log('FROM STEP 1: ', userId, phoneNumber, name, gender, dateOfBirthFormatted, weight, height, lifestyle)
-        
-        setAim(createAim());
-        const calorieIntake = countCalories(gender, weight, height, dateOfBirthFormatted, lifestyle, aim, aimRhytm);
-        const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
-        const {proteinIntake, fatsIntake, carbohydratesIntake} = countPFC(aim, calorieIntake);
+      const {name, gender, dateOfBirthFormatted, weight, height, lifestyle} = route.params.stepOne;
+      
+      setAim(createAim());
+      const calorieIntake = countCalories(gender, weight, height, dateOfBirthFormatted, lifestyle, aim, aimRhytm);
+      const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
+      const {proteinIntake, fatsIntake, carbohydratesIntake} = countPFC(aim, calorieIntake);
     
-        setCalories(calorieIntake);
-        setProtein(proteinIntake);
-        setFats(fatsIntake);
-        setCarbohydrates(carbohydratesIntake);
-        setMealsCount(numberOfMeals);
-        setName(name);
+      setCalories(calorieIntake);
+      setProtein(proteinIntake);
+      setFats(fatsIntake);
+      setCarbohydrates(carbohydratesIntake);
+      setMealsCount(numberOfMeals);
+      setName(name);
     
-        sendToFirebase(userId, calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
-          name, gender, dateOfBirthFormatted, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
-          veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-          steamed, boiled, stewed, fried, deepFried, roasted, dried );
-    
-        //return {calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle}
-      }
-    
-      const sendToFirebase = (userId, calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
-                            name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
-                            veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-                            steamed, boiled, stewed, fried, deepFried, roasted, dried ) => {
-        console.log('sendToFirebase ********************************************************')
-        console.log(userId, calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake)
-        console.log(name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals);
-        console.log("veganism", veganism, "vegetarianism", vegetarianism);
-        console.log("fish", fish,"meat", meat, "nuts", nuts, "sugar", sugar, "gluten", gluten, "lactose", lactose, "mushrooms", mushrooms);
-        console.log(steamed, boiled, stewed, fried, deepFried, roasted, dried);
-        console.log('********************************************************')
-        console.log(calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle);
-    
-        // navigation.navigate('Profile');
-        firebase.firestore().collection('users').doc(userId)
-            .set({ name, gender, dateOfBirth, weight, height,
-                lifestyle, aim, aimRhytm, numberOfMeals,
-                veganism, vegetarianism,
-                fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-                steamed, boiled, stewed, fried, deepFried, roasted, dried
-            }) 
-            .then(() => {
-              firebase.firestore().collection('tags').doc(userId)
-                .set({ veganism, vegetarianism,
-                    fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-                    steamed, boiled, stewed, fried, deepFried, roasted, dried
-                })
-                .then(() => {
-                  console.log('User is added to firestore');
-                  firebase.firestore().collection('calorie_plan').doc(userId)
-                    .set({ "calories": calorieIntake, "mealsCount": numberOfMeals, caloriesForEachMeal,
-                        "protein": proteinIntake, "fats": fatsIntake, "carbohydrates": carbohydratesIntake
-                  })
-                  .then(() => navigation.navigate('CalorieCount'))
-                  .catch(err => console.log('ProfileStepTwo caloriePlan error ')) })
-            }).catch(err => console.log('ProfileStepTwo tags ', err))
-            .catch(err => console.log('ProfileStepTwo users ', err));
-      }
+      saveData(calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
+        aim, aimRhytm, numberOfMeals, 
+        veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+        steamed, boiled, stewed, fried, deepFried, roasted, dried);
+    }
 
-    const [fontsLoaded] = useFonts({
-        'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
-        'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
-        'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),
-      });
+    const saveData = async (calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
+                              aim, aimRhytm, numberOfMeals, 
+                              veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+                              steamed, boiled, stewed, fried, deepFried, roasted, dried) => {
+
+        await SecureStore.setItemAsync('dayCalories', calorieIntake.toString());
+        await SecureStore.setItemAsync('dayProtein', proteinIntake.toString());
+        await SecureStore.setItemAsync('dayFats', fatsIntake.toString());
+        await SecureStore.setItemAsync('dayCarbohydrates', carbohydratesIntake.toString());
+        await SecureStore.setItemAsync('oneMealCalories', caloriesForEachMeal.toString());
+        await SecureStore.setItemAsync('aim', aim);
+        await SecureStore.setItemAsync('aimRhytm', aimRhytm);
+        await SecureStore.setItemAsync('mealAmount', numberOfMeals.toString());
+
+        await SecureStore.setItemAsync('veganism', veganism == true ? '1' : '0');
+        await SecureStore.setItemAsync('vegetarianism', vegetarianism == true ? '1' : '0');
+        await SecureStore.setItemAsync('fish', fish == true ? '1' : '0');
+        await SecureStore.setItemAsync('meat', meat == true ? '1' : '0');
+        await SecureStore.setItemAsync('nuts', nuts == true ? '1' : '0');
+        await SecureStore.setItemAsync('sugar', sugar == true ? '1' : '0');
+        await SecureStore.setItemAsync('gluten', gluten == true ? '1' : '0');
+        await SecureStore.setItemAsync('lactose', lactose == true ? '1' : '0');
+        await SecureStore.setItemAsync('mushrooms', mushrooms == true ? '1' : '0');
+        await SecureStore.setItemAsync('steamed', steamed == true ? '1' : '0');
+
+        await SecureStore.setItemAsync('boiled', boiled == true ? '1' : '0');
+        await SecureStore.setItemAsync('stewed', stewed == true ? '1' : '0');
+        await SecureStore.setItemAsync('fried', fried == true ? '1' : '0');
+        await SecureStore.setItemAsync('deepFried', deepFried == true ? '1' : '0');
+        await SecureStore.setItemAsync('roasted', roasted == true ? '1' : '0');
+        await SecureStore.setItemAsync('dried', dried == true ? '1' : '0');
+
+        saveDataFirebase();
+
+        navigation.navigate('CalorieCount');
+    }
+
+  const saveDataFirebase = async () => {
+    const userId = await SecureStore.getItemAsync('userId');
+    const name = await SecureStore.getItemAsync('name');
+    firebase.firestore().collection('users').doc(userId)
+      .set({ name })
+      .then(() => console.log('SUCCESS', name))
+      .catch(err => console.log('ProfileStepTwo saveDataFirebase', err));
+  }
+
+
+  const [fontsLoaded] = useFonts({
+    'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
+    'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
+    'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),
+  });
         
-      if (!fontsLoaded) {
-        return null;
-      }
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.white }}>
@@ -350,7 +337,7 @@ export default function ProfileStepTwo({ navigation, route }) {
         <Text style={styles.buttonText}>Следующий шаг</Text>
       </TouchableOpacity>
       <View style={styles.stepBox}>
-        <Text style={[styles.labelText, styles.stepText]}>Шаг 1 из 2</Text>
+        <Text style={[styles.labelText, styles.stepText]}>Шаг 2 из 2</Text>
       </View>
     </ScrollView>
   )
@@ -358,30 +345,29 @@ export default function ProfileStepTwo({ navigation, route }) {
 
 const styles = StyleSheet.create({
     block: {
-        // borderWidth: 1,
-        marginTop: hp(3.56),
-        marginLeft: wp(4),
-      },
+      marginTop: hp(3.56),
+      marginLeft: wp(4),
+    },
       labelBlock: {
-        height: hp(1.9),
-      },
-      labelText: {
-        fontFamily: 'SF-Pro-Regular',
-        fontSize: RFValue(13, height),
-        lineHeight: hp(1.84),
-        color: colors.grey,
-        textAlign: 'left'
-      },
-      textInput : {
-        width: wp(95.9),
-        height: hp(5.45),
-        marginTop: hp(1.78),
-        lineHeight: hp(2.4),
-        fontSize: RFValue(17, height),
-        fontFamily: 'SF-Pro-Regular',
-        borderBottomColor: colors.separator,
-        borderBottomWidth: wp(0.26),
-      },
+      height: hp(1.9),
+    },
+    labelText: {
+      fontFamily: 'SF-Pro-Regular',
+      fontSize: RFValue(13, height),
+      lineHeight: hp(1.84),
+      color: colors.grey,
+      textAlign: 'left'
+    },
+    textInput : {
+      width: wp(95.9),
+      height: hp(5.45),
+      marginTop: hp(1.78),
+      lineHeight: hp(2.4),
+      fontSize: RFValue(17, height),
+      fontFamily: 'SF-Pro-Regular',
+      borderBottomColor: colors.separator,
+      borderBottomWidth: wp(0.26),
+    },
       listText: {
         fontSize: RFValue(17, height),
         fontFamily: 'SF-Pro-Regular',
@@ -482,17 +468,3 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 })
-/*
-<TouchableOpacity onPress={() => setHidden(prev => !prev)} >
-        { hidden &&
-        (
-            <Picker
-            style={{ backgroundColor: 'white', width: wp(60), height: hp(8.98), marginTop: -50}}
-            selectedValue='item4'
-            pickerData={['item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'item7']}
-            onValueChange={value => { console.log(value) }}
-            />
-        )
-        }
-        </TouchableOpacity>
-        */

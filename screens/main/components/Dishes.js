@@ -1,25 +1,34 @@
-import { ScrollView, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native'
+import { ImageBackground, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useFonts } from 'expo-font';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { colors } from '../../../styles/colors';
 import { FlatList } from 'react-native';
-import { globalStyles } from '../../../styles/styles';
-import data from '../../chat/data';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { height } = Dimensions.get('screen');
 
-export default function Dishes() {
+export default function Dishes({ arrayOfFavourites }) {
 
-    
-    const [dishes, setDishes] = useState([{}]);
+    const [dishes, setDishes] = useState([]);
 
     const renderItem = ({ item }) => (
         <View style={styles.block}>
-            <View style={{  }}>
-                <Image source={require('../../../assets/images/dish.png')} style={styles.image} resizeMode='cover' />
-            </View>
+            <ImageBackground source={{uri: item.dishPath}} 
+                    style={styles.image} imageStyle={{borderRadius: hp(2.37)}} resizeMode='cover' >
+                    <LinearGradient 
+                        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.4)']}
+                        locations={[0.3677, 1]}
+                        style={styles.image}></LinearGradient>
+                </ImageBackground>
+                <View style={styles.imagesContainer}>
+                    {item.tags.indexOf("vegetarianism") > -1 && <Image source={require('../../../assets/images/vegetarianismTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
+                    {item.tags.indexOf("veganism") > -1 && <Image source={require('../../../assets/images/veganismTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
+                    {item.tags.indexOf("meat") > -1 && <Image source={require('../../../assets/images/meatTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
+                    {item.tags.indexOf("fish") > -1 && <Image source={require('../../../assets/images/fishTag.png')} style={[styles.tagImage, {marginLeft: -wp(1.79)}]} />}
+                </View>
+
             <View style={[styles.dishName]}>
                 <View style={{width: wp(23.08), height: hp(6)}}>
                     <Text style={styles.dishText} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
@@ -39,12 +48,8 @@ export default function Dishes() {
         </TouchableOpacity>
         </View>);
 
-
     useEffect(() => {
-        //console.log('modalVisible ', modalVisible);
-        //setModalVisibleIntro(modalVisible);
-        console.log('data', data)
-        setDishes(data);
+        setDishes(arrayOfFavourites);
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -107,19 +112,37 @@ const styles = StyleSheet.create({
     },
     dishName: {
         width: wp(37.44),
-        height: hp(4.74),
-        marginTop: -hp(5.92),
+        height: hp(5.92),
+        marginBottom: hp(0),
+        marginTop: hp(8),
+        alignSelf: 'center',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     pfcBlock: {
-        marginTop: hp(1.19),
-        width: wp(37.44),
-        height: hp(4.38),
+        width: wp(43.59),
+        height: hp(3),
+        marginTop: hp(1.18),
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
+    },
+    imagesContainer: {
+        height: hp(5),
+        width: wp(38.46),
+        alignItems: 'center',
+        //marginHorizontal: wp(2.82),
+        alignSelf: 'center',
+        marginTop: hp(-19.1),
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    tagImage: {
+        width: wp(6.92),
+        height: hp(2.84),
+        aspectRatio: 1,
+        borderColor: 'red',
     },
 })

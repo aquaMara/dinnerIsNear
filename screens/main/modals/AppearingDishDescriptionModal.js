@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Modal, StyleSheet, Text, Dimensions, Pressable, View, TouchableOpacity, Image } from "react-native";
+import { Modal, StyleSheet, Text, Dimensions, Pressable, View, TouchableOpacity, Image } from "react-native";
 import { colors } from '../../../styles/colors';
 import { useFonts } from "expo-font";
 import { RFValue } from 'react-native-responsive-fontsize'
@@ -16,16 +16,16 @@ export default function AppearingDishDescriptionModal({activeItem, mealId, choos
   const { cart, setCart } = useShoppingCart();
   
   const handleCartChoice = () => {
-      setModalVisibleIntro(!modalVisibleIntro);
-      console.log(activeItem)
-      chooseMessage(activeItem, false);
+    setModalVisibleIntro(!modalVisibleIntro);
+    chooseMessage(activeItem, false);
 
-      const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+    const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
         dishPath, dishPrice, description, weight} = activeItem;
-      // dishId = 1 in newElement заменить !!!
-      const cartItem = {mealId, id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
-        dishPath, dishPrice, description, weight}
-      setCart(cart => [...cart, cartItem]);
+    
+    const cartItem = {mealId, id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+        dishPath, dishPrice, description, weight, amount: 1}
+    
+    setCart(cart => [...cart, cartItem]);
   }
 
   useEffect(() => {

@@ -14,13 +14,9 @@ const { height } = Dimensions.get('screen');
 
 export default function RecommendationNorm({navigation, route}) {
 
-    const { currentUser, currentUserData } = useAuth();
-    const { currentUserMeals, setCurrentUserMeals} = useAuth();
     // EATEN
-    const { caloriesCount, setCaloriesCount } = useAuth();  // eaten
-    const { proteinCount, setProteinCount } = useAuth();
-    const { fatsCount, setFatsCount } = useAuth();
-    const { carbohydratesCount, setCarbohydratesCount } = useAuth();
+    const { caloriesCount, proteinCount, fatsCount, carbohydratesCount } = useAuth();
+    const {calories, protein, fats, carbohydrates} = useAuth();
 
     const countEatenGlobalCalories = () => {
         let eatenCalories = 0;
@@ -58,11 +54,6 @@ export default function RecommendationNorm({navigation, route}) {
         });
         return eatenCarbohydrates;
     }
-
-    const {calories, setCalories} = useAuth();
-    const {protein, setProtein} = useAuth();
-    const {fats, setFats} = useAuth();
-    const {carbohydrates, setCarbohydrates} = useAuth();
 
     const [fontsLoaded] = useFonts({
         'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),

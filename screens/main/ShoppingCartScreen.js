@@ -9,23 +9,21 @@ import { useShoppingCart } from '../../auth/ShoppingCartProvider';
 import { useAuth } from '../../auth/AuthProvoder';
 import { globalStyles } from '../../styles/styles';
 import firebase from 'firebase/compat';
+import * as SecureStore from 'expo-secure-store';
+import { countCaloriesInCart, countProteinInCart } from '../../functions_secure_store/Cart';
+import { countFatsInCart, countCarbohydratesInCart } from '../../functions_secure_store/Cart';
 
 const { height } = Dimensions.get('screen');
 
 export default function ShoppingCartScreen() {
 
     const [meals, setMeals] = useState();
-    let numberOfMeals = 4;
     let calorieIntake = 1700;
     const { cart, setCart } = useShoppingCart();
     const { currentUserMeals, setCurrentUserMeals} = useAuth();
-    const { caloriesCount, setCaloriesCount } = useAuth();
-    const { proteinCount, setProteinCount } = useAuth();
-    const { fatsCount, setFatsCount } = useAuth();
-    const { carbohydratesCount, setCarbohydratesCount } = useAuth();
+    const { setCaloriesCount, setProteinCount, setFatsCount, setCarbohydratesCount } = useAuth();
 
     const changeBlockVisibility = (givenId) => {
-        console.log(givenId)
         const changedMeals = meals.map(meal => {
             if (meal.id === givenId) {
             return {
@@ -39,65 +37,12 @@ export default function ShoppingCartScreen() {
         setMeals(changedMeals);
     }
 
-    const saveEatenToFirebase = (totalCalories, totalProtein, totalFats, totalCarbohydrates, mealId) => {
-        const date = new Date();
-        const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
-        firebase.firestore().collection('today').doc(userId)
-            .get().then((snapshot) => {
-                if (snapshot.exists) {
-                    firebase.firestore().collection('today').doc(userId).get().then((snapshot) => {
-                        const array = Object.values(snapshot.data());
-                        var newData = {};
-                        for (let i = 0; i < array.length; i++) {
-                            newData[array[i].mealId] = array[i];
-                        }
-                        newData[mealId] = {totalCalories, totalProtein, totalFats, totalCarbohydrates, mealId, 'date': new Date()};
-                        firebase.firestore().collection('today').doc(userId)
-                            .set(newData)
-                            .then('saveEatenToFirebase added item')
-                            .catch(err => console.log('saveEatenToFirebase 1', err));
-                    })
-                } else {
-                    firebase.firestore().collection('today').doc(userId)
-                        .set({[mealId]: {totalCalories, totalProtein, totalFats, totalCarbohydrates, mealId} })
-                        .catch(err => console.log('saveEatenToFirebase 2', err));
-                }
-            });
-            getEatenFromFirebase();
-    }
-    const getEatenFromFirebase = () => {
-        const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
-        let caloriesFb = 0, proteinFb = 0, fatsFb = 0, carbohydratesFb = 0;
-        firebase.firestore().collection('today').doc(userId)
-            .get().then((snapshot) => {
-                if (snapshot.exists) {
-                    let arrayOfMealsWithCalories = Object.values(snapshot.data())
-                    console.log(arrayOfMealsWithCalories.length)
-                    for (let i = 0; i < arrayOfMealsWithCalories.length; i++) {
-                        caloriesFb += arrayOfMealsWithCalories[i].totalCalories;
-                        proteinFb += arrayOfMealsWithCalories[i].totalProtein;
-                        fatsFb += arrayOfMealsWithCalories[i].totalFats;
-                        carbohydratesFb += arrayOfMealsWithCalories[i].totalCarbohydrates;
-                    }
-                    //setCaloriesCount(caloriesFb);
-                    /*
-                    setCaloriesCountFb(() => caloriesFb);
-                    setProteinCountFb(proteinFb);
-                    setFatsCountFb(fatsFb);
-                    setCarbohydratesCountFb(carbohydratesFb);
-                    console.log(caloriesFb, caloriesCountFb, proteinCountFb, fatsCountFb, caloriesCountFb, 'hhh');
-                    console.log(caloriesFb, proteinFb, fatsFb, carbohydratesFb)
-                    */
-                }
-            });
-    }
-
     // dishId = 1 in newElement заменить !!!
     const addToEaten = (mId) => {
-        console.log(mId, 'mealId');
         var foodForCurrentMeal = cart.filter(obj => {
             return obj.mealId === mId
         })
+        // LOOK AT amount VALUE IN DISH
         let totalCalories = 0, totalProtein = 0, totalFats = 0, totalCarbohydrates = 0;
         foodForCurrentMeal.forEach(element => {
             totalCalories += element.dishCalories;
@@ -120,85 +65,12 @@ export default function ShoppingCartScreen() {
         setFatsCount(prev => [...prev, {mealId: mId, totalFats}]);
         setCarbohydratesCount(prev => [...prev, {mealId: mId, totalCarbohydrates}]);
         //setCurrentUserMeals(prev => [...prev, {mealId: mId, meal}])
-        saveEatenToFirebase(totalCalories, totalProtein, totalFats, totalCarbohydrates, mId);
+        //saveEatenToFirebase(totalCalories, totalProtein, totalFats, totalCarbohydrates, mId);
+        // TODO: save to secure store
         var cart2 = cart.filter(obj => {
             return obj.mealId != mId
         })
         setCart(cart2);
-    }
-
-    const filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal = (mId) => {
-        var result = cart.filter(obj => {
-            return obj.mealId === mId
-        })
-        const uniqueResult = [...result.reduce((a,c)=>{
-            a.set(c.id, c);
-            return a;
-        }, new Map()).values()];
-          
-        return uniqueResult;
-    }
-
-    const filterFunctionForTotalCaloriesCount = (mId) => {
-        var caloriesForThisMealFromGlobal = caloriesCount.filter(obj => {
-            return obj.mealId === mId
-        })
-        let totalCalories = 0;
-        caloriesForThisMealFromGlobal.forEach(element => {
-            totalCalories += element.totalCalories;
-        });
-        return totalCalories;
-    }
-    const filterFunctionForTotalProteinCount = (mId) => {
-        var proteinForThisMealFromGlobal = proteinCount.filter(obj => {
-            return obj.mealId === mId
-        });
-        let totalProtein = 0;
-        proteinForThisMealFromGlobal.forEach(element => {
-            totalProtein += element.totalProtein;
-        });
-        return totalProtein;
-    }
-    const filterFunctionForTotalFatsCount = (mId) => {
-        var fatsForThisMealFromGlobal = fatsCount.filter(obj => {
-            return obj.mealId === mId
-        });
-        let  totalFats = 0;
-        fatsForThisMealFromGlobal.forEach(element => {
-            totalFats += element.totalFats;
-        });
-        return totalFats;
-    }
-    const filterFunctionForTotalCarbohydratesCount = (mId) => {
-        var carbohydratesForThisMealFromGlobal = carbohydratesCount.filter(obj => {
-            return obj.mealId === mId
-        });
-        let totalCarbohydrates = 0;
-        carbohydratesForThisMealFromGlobal.forEach(element => {
-            totalCarbohydrates += element.totalCarbohydrates;
-        });
-        return totalCarbohydrates;
-    }
-
-    const addDishToCart = (mId, item) => {
-      const {id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice} = item;
-      const newElement = {mealId: mId, id, dishName, dishCalories, dishProtein, dishFats, dishCarbohydrates, dishPrice}
-      setCart(cart => [...cart, newElement]);
-    }
-
-    const countNumberOfDishesInAMeal = (mId, ff) => {
-        // get all dishes for this meal by meal id
-        var result = cart.filter(obj => {
-            return obj.mealId === mId
-        })
-        const idToFind = ff.id;
-        let amountOfDishInAMeal = 0;
-        result.forEach(element => {
-            if(element.id === idToFind) {
-                ++amountOfDishInAMeal;
-            }
-        });
-        return amountOfDishInAMeal;
     }
 
     const countMinHeight = (mealId) => {
@@ -219,8 +91,35 @@ export default function ShoppingCartScreen() {
         }
     }
 
+    const decreseDishAmount = (mealId, dishId) => {
+        var cart2 = cart.filter((obj) => {
+            if (obj.mealId == mealId && obj.id == dishId) {
+                obj.amount = obj.amount - 1;
+                if (obj.amount > 0) {
+                    return obj;
+                }
+            } else {
+                return obj;
+            }
+        })
+        setCart(cart2);
+    }
+
+    const increaseDishAmount = (mealId, dishId) => {
+        console.log('increaseDishAmount')
+        var cart2 = cart.filter((obj) => {
+            if (obj.mealId == mealId && obj.id == dishId) {
+                obj.amount = obj.amount + 1;
+                return obj;
+            } else {
+                return obj;
+            }
+        })
+        setCart(cart2);
+    }
+
     useEffect(() => {
-        setMeals(countMeals(numberOfMeals, calorieIntake));
+        setMeals(countMeals(6, calorieIntake));
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -248,63 +147,64 @@ export default function ShoppingCartScreen() {
         </View>
         {meal.visible && (
         <View style={{ minHeight: countMinHeight(meal.id) }}>
+
         <View style={styles.middleLine}>
             <View style={styles.middleBlock}>
                 <Text style={styles.middleBlockText}>
-                    {filterFunctionForTotalProteinCount(meal.id)} Б
+                {countProteinInCart(cart, meal.id)} Б
                 </Text>
             </View>
             <View style={[styles.middleBlock, {marginHorizontal: wp(10)}]}>
                 <Text style={styles.middleBlockText}>
-                {filterFunctionForTotalFatsCount(meal.id)} Ж
+                {countFatsInCart(cart, meal.id)} Ж
                 </Text>
             </View>
             <View style={styles.middleBlock}>
                 <Text style={styles.middleBlockText}>
-                {filterFunctionForTotalCarbohydratesCount(meal.id)} У
+                {countCarbohydratesInCart(cart, meal.id)} У
                 </Text>
             </View>
             <View style={styles.middleBlockCalories}>
                 <Text style={styles.titleText}>
-                {filterFunctionForTotalCaloriesCount(meal.id)} ккал
+                {countCaloriesInCart(cart, meal.id)} ккал
                 </Text>
             </View>
         </View>
         <Image source={require('../../assets/images/rectangle12.png')}
-                style={{width: wp(91.8), height: hp(0.47), marginTop: hp(0.59), alignSelf: 'center'}}/>
-        
-        { filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal(meal.id).length > 0 && filterFunctionToGetOnlyUniqueDishesByIdForCurrentMeal(meal.id).map((ff) =>(
-            <View style={styles.mealBlock} key={ff.id} >
+        style={{width: wp(91.8), height: hp(0.47), marginTop: hp(0.59), alignSelf: 'center'}}/>
+        { cart.map((dish) =>(
+            dish.mealId == meal.id && ( 
+            <View style={styles.mealBlock} key={dish.id} >
             <View>
-                <Image source={{uri: ff.dishPath}}
+                <Image source={{uri: dish.dishPath}}
                     style={styles.image}/>
             </View>
             <View style={styles.dishBlock}>
-                <View><Text style={styles.dishTitle}>{ff.dishName}</Text></View>
+                <View><Text style={styles.dishTitle}>{dish.dishName}</Text></View>
                 <View style={{display: 'flex', flexDirection: 'row', marginBottom: 0, marginTop: 'auto'}}>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={[styles.dishInfo]}>К{ff.dishCalories}</Text></View>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Б{ff.dishProtein}</Text></View>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Ж{ff.dishFats}</Text></View>
-                    <View style={{width: wp(9.2)}}><Text style={styles.dishInfo}>У{ff.dishCarbohydrates}</Text></View>
+                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={[styles.dishInfo]}>К{dish.dishCalories}</Text></View>
+                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Б{dish.dishProtein}</Text></View>
+                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Ж{dish.dishFats}</Text></View>
+                    <View style={{width: wp(9.2)}}><Text style={styles.dishInfo}>У{dish.dishCarbohydrates}</Text></View>
                 </View>
             </View>
             <View style={{display: 'flex', flexDirection: 'row', marginRight: 0, marginLeft: 'auto'}}>
-                <TouchableOpacity style={styles.counterButton}>
+                <TouchableOpacity style={styles.counterButton} onPress={() => decreseDishAmount(meal.id, dish.id)}>
                     <Image source={require('../../assets/images/counterMinus.png')}
                         style={styles.counterImage}/>
                 </TouchableOpacity>
                 <View style={{width: wp(6.13), alignItems: 'center', alignSelf: 'center'}}>
-                    {console.log('ff', ff)}
-                    <Text style={styles.counterText}>{countNumberOfDishesInAMeal(meal.id, ff)}</Text>
+                    <Text style={styles.counterText}>{dish.amount}</Text>
                 </View>
-                <TouchableOpacity style={styles.counterButton} onPress={() => addDishToCart(meal.id, ff)}>
+                <TouchableOpacity style={styles.counterButton} onPress={() => increaseDishAmount(meal.id, dish.id)}>
                     <Image source={require('../../assets/images/counterPlus.png')}
                         style={styles.counterImage}/>
                 </TouchableOpacity>
             </View>
         </View>
+        )
         ))}
-        <TouchableOpacity onPress={() => addToEaten(meal.id, meal)} style={[globalStyles.mainButton, styles.buttonMargin]}>
+        <TouchableOpacity onPress={() => addToEaten(meal.id)} style={[globalStyles.mainButton, styles.buttonMargin]}>
             <Text style={styles.buttonText}>Добавить в съеденное</Text>
         </TouchableOpacity>
         </View>)}
@@ -358,27 +258,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         height: hp(2.98),
         width: wp(7),
-    },
-    middleLine: {
-        width: wp(91.8),
-        height: hp(2.6),
-        marginTop: hp(2.31),
-        alignSelf: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    middleBlock: {
-        width: wp(13.5),
-    },
-    middleBlockCalories: {
-        width: wp(22),
-        marginLeft: 'auto',
-        marginRight: 0,
-    },
-    middleBlockText: {
-        fontSize: RFValue(18, height),
-        fontFamily: 'SF-Pro-Regular',
-        lineHeight: hp(2.58),
     },
     mealBlock: {        // no height !!!
         width: wp(91.8),
@@ -439,7 +318,32 @@ const styles = StyleSheet.create({
     buttonMargin: {
         marginTop: 'auto',
         marginBottom: 0,
-
-    }
+    },
+    middleLine: {
+        width: wp(91.8),
+        height: hp(2.6),
+        marginTop: hp(2.31),
+        alignSelf: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    middleBlock: {
+        width: wp(13.5),
+    },
+    middleBlockCalories: {
+        width: wp(22),
+        marginLeft: 'auto',
+        marginRight: 0,
+    },
+    middleBlockText: {
+        fontSize: RFValue(18, height),
+        fontFamily: 'SF-Pro-Regular',
+        lineHeight: hp(2.58),
+    },
+    titleText: {
+        fontSize: RFValue(17, height),
+        fontFamily: 'SF-Pro-Bold',
+        lineHeight: hp(2.4),
+    },
 
 })

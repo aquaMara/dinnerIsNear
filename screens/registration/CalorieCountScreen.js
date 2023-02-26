@@ -1,24 +1,18 @@
-import { Dimensions, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Keyboard } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import { Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React from 'react';
 import { useFonts } from 'expo-font';
-import { Linking } from 'react-native';
-import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
 import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { signInWithPhoneNumber } from 'firebase/auth';
 import { useAuth } from '../../auth/AuthProvoder';
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function Screen({ navigation, route }) {
 
-  const { calories, setCalories } = useAuth();
+  const { calories } = useAuth();
   
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -52,7 +46,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: colors.white,
   },
   intake: {
     fontSize: RFValue(34, height),
@@ -65,10 +59,10 @@ const styles = StyleSheet.create({
     lineHeight: hp(2.12),
     alignSelf: 'center',
     textAlign: 'center',
-    color: '#000',
+    color: colors.black,
   },
   intakeInfoBox:{
-    color: '#6D6D72',
+    color: colors.grey,
     marginTop: hp(1.54),
     height: hp(6.4),
     width: wp(58.98)
@@ -82,7 +76,7 @@ const styles = StyleSheet.create({
     //lineHeight: hp(4.74),
   },
   buttonText: { // 600
-    color: '#fff',
+    color: colors.white,
     fontSize: RFValue(17, height),
     lineHeight: hp(2.4),
     fontFamily: 'SF-Pro-Medium',

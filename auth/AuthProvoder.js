@@ -19,19 +19,20 @@ export const AuthProvider = ( { children } ) => {
     const [mealsCount, setMealsCount] = useState(null);
 
     // Eaten this day
-    const [todayEatenMeals, setTodayEatenMeals] = useState([{}]);
+    const [todayEatenMeals, setTodayEatenMeals] = useState([]);
     
-    const [caloriesCount, setCaloriesCount] = useState([{}]);
-    const [proteinCount, setProteinCount] = useState([{}]);
-    const [fatsCount, setFatsCount] = useState([{}]);
-    const [carbohydratesCount, setCarbohydratesCount] = useState([{}]);
+    const [caloriesCount, setCaloriesCount] = useState([]);
+    const [proteinCount, setProteinCount] = useState([]);
+    const [fatsCount, setFatsCount] = useState([]);
+    const [carbohydratesCount, setCarbohydratesCount] = useState([]);
     const [mealsNumber, setMealsNumber] = useState(null);
 
     const [loading, setLoading] = useState(true);
 
     // For Cart
-    const [currentUserMeals, setCurrentUserMeals] = useState([{}]);
+    const [currentUserMeals, setCurrentUserMeals] = useState([]);
 
+    /*
     useEffect(() => {
         firebase.auth().onAuthStateChanged(user => {
             setCurrentUser(user);
@@ -40,6 +41,7 @@ export const AuthProvider = ( { children } ) => {
             console.log('Auth Provider, user : ', currentUser)
         });
     }, []);
+    */
 
     return (
         <AuthContext.Provider value={{
@@ -62,21 +64,22 @@ export const AuthProvider = ( { children } ) => {
         }}>
             {children}
 
-            {console.log('Auth Provider, USER : ', currentUser)}
-            {console.log('Auth Provider, mealsCount : ', mealsCount)}
-            {console.log('Auth Provider, caloriesCount : ', caloriesCount)}
-            {console.log('Auth Provider, proteinCount : ', proteinCount)}
-            {console.log('Auth Provider, fatsCount : ', fatsCount)}
-            {console.log('Auth Provider, carbohydratesCount : ', carbohydratesCount)}
-            {console.log('Auth Provider, mealsNumber : ', mealsNumber)}
-            {console.log('Auth Provider, currentUserMeals : ', currentUserMeals)}
+            
         </AuthContext.Provider>
     )
 };
 
 export const useAuth = () => useContext(AuthContext)
 
-
+/*
+{console.log('Auth Provider, mealsCount : ', mealsCount)}
+            {console.log('Auth Provider, caloriesCount : ', caloriesCount)}
+            {console.log('Auth Provider, proteinCount : ', proteinCount)}
+            {console.log('Auth Provider, fatsCount : ', fatsCount)}
+            {console.log('Auth Provider, carbohydratesCount : ', carbohydratesCount)}
+            {console.log('Auth Provider, mealsNumber : ', mealsNumber)}
+            {console.log('Auth Provider, currentUserMeals : ', currentUserMeals)}
+*/
 
 
     //if (!currentUser) {

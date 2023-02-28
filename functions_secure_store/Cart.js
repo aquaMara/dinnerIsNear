@@ -10,7 +10,6 @@ export const countCaloriesInCart = (cart, mealId) => {
 }
 
 export const countProteinInCart = (cart, mealId) => {
-    console.log(cart, mealId)
     var cartProtein = 0;
     for (let i = 0; i < cart.length; i++) {
         if (cart[i].mealId == mealId) {
@@ -31,7 +30,6 @@ export const countFatsInCart = (cart, mealId) => {
 }
 
 export const countCarbohydratesInCart = (cart, mealId) => {
-    console.log(cart, mealId)
     var cartCarbohydrates = 0;
     for (let i = 0; i < cart.length; i++) {
         if (cart[i].mealId == mealId) {

@@ -53,25 +53,7 @@ export default function MainNavigation() {
         */
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='SignUp'>
-        <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="ConfirmSignUp" component={SignUpConfirmationScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="LittleMore" component={LittleMoreScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="StepOne" component={ProfileStepOne} 
-            options={{
-            title: 'Настройка профиля', 
-            headerStyle: { backgroundColor: '#fff' }, headerTintColor: '#000', headerTitleAlign: 'center',
-            headerTitleStyle: { fontSize: RFValue(17, height), lineHeight: hp(2.4), fontFamily: 'SF-Pro-Medium', },
-            headerBackTitle: 'Назад',
-        }} />
-        <Stack.Screen name="StepTwo" component={ProfileStepTwo}
-            options={{ 
-            title: 'Настройка профиля', 
-            headerStyle: { backgroundColor: '#fff' }, headerTintColor: '#000', headerTitleAlign: 'center',
-            headerTitleStyle: { fontSize: RFValue(17, height), lineHeight: hp(2.4), fontFamily: 'SF-Pro-Medium', },
-            headerBackTitle: 'Назад',
-        }} />
-        <Stack.Screen name="CalorieCount" component={CalorieCountScreen} options={{ headerShown: false }} />
+      <Stack.Navigator>
         <Stack.Screen name="Tab" component={TabNavigation} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

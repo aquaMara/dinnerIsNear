@@ -2,7 +2,7 @@
   "expo": {
     "name": "Dinner is Near",
     "slug": "dinnerIsNear",
-    "version": "1.0.0",
+    "version": "2.5.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "assetBundlePatterns": [

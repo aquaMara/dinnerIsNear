@@ -38,7 +38,7 @@ export default function ShoppingCartScreen() {
     }
 
     // dishId = 1 in newElement заменить !!!
-    const addToEaten = (mId) => {
+    const addToEaten2 = (mId) => {
         var foodForCurrentMeal = cart.filter(obj => {
             return obj.mealId === mId
         })
@@ -106,7 +106,6 @@ export default function ShoppingCartScreen() {
     }
 
     const increaseDishAmount = (mealId, dishId) => {
-        console.log('increaseDishAmount')
         var cart2 = cart.filter((obj) => {
             if (obj.mealId == mealId && obj.id == dishId) {
                 obj.amount = obj.amount + 1;
@@ -114,6 +113,95 @@ export default function ShoppingCartScreen() {
             } else {
                 return obj;
             }
+        })
+        setCart(cart2);
+    }
+/*
+const {amount, description, dishCalories, dishCarbohydrates, dishFats,
+                    dishName, dishPath, dishProtein, id, mealId, restaurantName,
+                    section, tags, weight} = obj;
+                const newObj = {amount, description, dishCalories, dishCarbohydrates, dishFats,
+                    dishName, dishPath, dishProtein, id, mealId, restaurantName,
+                    section, tags, weight, date};
+                console.log(date, newObj.date, newObj)
+                return newObj;
+*/
+    const addToEaten = async (mealId) => {
+        const date = FormattedDate();
+        var foodForCurrentMeal = cart.filter(obj => {
+            if (obj.mealId === mealId) {
+                obj.date = date;
+                return obj;
+            }
+        });
+        // SAVE THERE TO EATEN FOR THE FIRST SCREEN
+        await saveTodayFood(foodForCurrentMeal);
+
+        let totalCalories = 0, totalProtein = 0, totalFats = 0, totalCarbohydrates = 0;
+        foodForCurrentMeal.forEach(dish => {
+            totalCalories += (dish.dishCalories * dish.amount);
+        });
+        foodForCurrentMeal.forEach(dish => {
+            totalProtein += (dish.dishProtein * dish.amount);
+        });
+        foodForCurrentMeal.forEach(dish => {
+            totalFats += (dish.dishFats * dish.amount);
+        });
+        foodForCurrentMeal.forEach(dish => {
+            totalCarbohydrates += (dish.dishCarbohydrates * dish.amount);
+        });
+        setCaloriesCount(prev => [...prev, {mealId, totalCalories}]);
+        setProteinCount(prev => [...prev, {mealId, totalProtein}]);
+        setFatsCount(prev => [...prev, {mealId, totalFats}]);
+        setCarbohydratesCount(prev => [...prev, {mealId, totalCarbohydrates}]);
+
+        await saveNutrition(mealId, date, totalCalories, totalProtein, totalFats, totalCarbohydrates);
+        deleteEatenFromCart(mealId);
+    }
+
+    const saveTodayFood = async (foodForCurrentMeal) => {
+        const today = FormattedDate();
+        //const today = '2023-2-28';
+        let exists = await SecureStore.getItemAsync('todayFood');
+        let todayFood = [];
+        if (exists) {
+            todayFood = JSON.parse(exists)
+            // delete outdated food
+            todayFood = todayFood.filter(obj => {
+                if (obj.date == today) {
+                    return obj;
+                }
+            })
+        }
+        for (let i = 0; i < foodForCurrentMeal.length; i++) {
+            todayFood.push(foodForCurrentMeal[i]);
+        }
+        const data = JSON.stringify(todayFood);
+        await SecureStore.setItemAsync('todayFood', data);
+    }
+
+    const saveNutrition = async (mealId, date, totalCalories, totalProtein, totalFats, totalCarbohydrates) => {
+        //await SecureStore.deleteItemAsync(date);
+        let exists = await SecureStore.getItemAsync(date);
+        const newObject = {mealId, date, totalCalories, totalProtein, totalFats, totalCarbohydrates};
+        let eatenMeals = [];
+        if (exists) {
+            eatenMeals = JSON.parse(exists)
+        }
+        eatenMeals.push(newObject);
+        const data = JSON.stringify(eatenMeals);
+        await SecureStore.setItemAsync(date, data);
+    }
+
+    const FormattedDate = () => {
+        const dateToday = new Date();
+        var mm = dateToday.getMonth() + 1;
+        return dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate();
+    }
+
+    const deleteEatenFromCart = (mealId) => {
+        var cart2 = cart.filter(obj => {
+            return obj.mealId != mealId
         })
         setCart(cart2);
     }

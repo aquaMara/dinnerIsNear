@@ -102,10 +102,9 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
   }
 
   const cleanEatenMealsByDate = () => {
-    console.log('SignUpConfirmationScreen cleanEatenMealsByDate');
     const dateToday = new Date();
     var mm = dateToday.getMonth() + 1;
-    console.log(dateToday.getFullYear() + '/' + mm + '/' + dateToday.getDate());
+    console.log(dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate());
   }
   
   return (

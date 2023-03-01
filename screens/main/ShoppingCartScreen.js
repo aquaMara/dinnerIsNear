@@ -8,7 +8,6 @@ import { countMeals } from '../../functions/CountMeals';
 import { useShoppingCart } from '../../auth/ShoppingCartProvider';
 import { useAuth } from '../../auth/AuthProvoder';
 import { globalStyles } from '../../styles/styles';
-import firebase from 'firebase/compat';
 import * as SecureStore from 'expo-secure-store';
 import { countCaloriesInCart, countProteinInCart } from '../../functions_secure_store/Cart';
 import { countFatsInCart, countCarbohydratesInCart } from '../../functions_secure_store/Cart';
@@ -35,42 +34,6 @@ export default function ShoppingCartScreen() {
             }
         })
         setMeals(changedMeals);
-    }
-
-    // dishId = 1 in newElement заменить !!!
-    const addToEaten2 = (mId) => {
-        var foodForCurrentMeal = cart.filter(obj => {
-            return obj.mealId === mId
-        })
-        // LOOK AT amount VALUE IN DISH
-        let totalCalories = 0, totalProtein = 0, totalFats = 0, totalCarbohydrates = 0;
-        foodForCurrentMeal.forEach(element => {
-            totalCalories += element.dishCalories;
-        });
-        foodForCurrentMeal.forEach(element => {
-            totalProtein += element.dishProtein;
-        });
-        foodForCurrentMeal.forEach(element => {
-            totalFats += element.dishFats;
-        });
-        foodForCurrentMeal.forEach(element => {
-            totalCarbohydrates += element.dishCarbohydrates;
-        });
-        // COUNT NUTRITION
-        // ADD VALUE
-        //setCurrentUserMeals(prev => [...prev, foodForCurrentMeal]);
-        //const totalCaloriesObject = {mealId, totalCalories};
-        setCaloriesCount(prev => [...prev, {mealId: mId, totalCalories}]);
-        setProteinCount(prev => [...prev, {mealId: mId, totalProtein}]);
-        setFatsCount(prev => [...prev, {mealId: mId, totalFats}]);
-        setCarbohydratesCount(prev => [...prev, {mealId: mId, totalCarbohydrates}]);
-        //setCurrentUserMeals(prev => [...prev, {mealId: mId, meal}])
-        //saveEatenToFirebase(totalCalories, totalProtein, totalFats, totalCarbohydrates, mId);
-        // TODO: save to secure store
-        var cart2 = cart.filter(obj => {
-            return obj.mealId != mId
-        })
-        setCart(cart2);
     }
 
     const countMinHeight = (mealId) => {
@@ -116,16 +79,7 @@ export default function ShoppingCartScreen() {
         })
         setCart(cart2);
     }
-/*
-const {amount, description, dishCalories, dishCarbohydrates, dishFats,
-                    dishName, dishPath, dishProtein, id, mealId, restaurantName,
-                    section, tags, weight} = obj;
-                const newObj = {amount, description, dishCalories, dishCarbohydrates, dishFats,
-                    dishName, dishPath, dishProtein, id, mealId, restaurantName,
-                    section, tags, weight, date};
-                console.log(date, newObj.date, newObj)
-                return newObj;
-*/
+
     const addToEaten = async (mealId) => {
         const date = FormattedDate();
         var foodForCurrentMeal = cart.filter(obj => {
@@ -134,7 +88,6 @@ const {amount, description, dishCalories, dishCarbohydrates, dishFats,
                 return obj;
             }
         });
-        // SAVE THERE TO EATEN FOR THE FIRST SCREEN
         await saveTodayFood(foodForCurrentMeal);
 
         let totalCalories = 0, totalProtein = 0, totalFats = 0, totalCarbohydrates = 0;
@@ -161,7 +114,6 @@ const {amount, description, dishCalories, dishCarbohydrates, dishFats,
 
     const saveTodayFood = async (foodForCurrentMeal) => {
         const today = FormattedDate();
-        //const today = '2023-2-28';
         let exists = await SecureStore.getItemAsync('todayFood');
         let todayFood = [];
         if (exists) {

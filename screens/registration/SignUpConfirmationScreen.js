@@ -49,7 +49,7 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     return null;
   }
 
-  const confirmCode = () => {
+  const confirmCode = async () => {
     setCode(code);
     const credential = firebase.auth.PhoneAuthProvider.credential(
         verificationId,
@@ -60,13 +60,13 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
       const usid = firebase.auth().currentUser.uid;
       const userCheck = firebase.firestore().collection('users').doc(usid)
       if (usid != null && code != null) {
-        userCheck.get().then((userInfo) => {
+        userCheck.get().then(async (userInfo) => {
           if (userInfo.exists) {
-            getData();
+            await getData();
+            await cleanEatenMealsByDate();
             navigation.navigate('Tab');
           } else {
-            saveData(usid, phoneNumber);
-            cleanEatenMealsByDate();
+            await saveData(usid, phoneNumber);
             navigation.navigate('LittleMore')
           }
         }).catch(err => console.log('SignUpConfirmationScreen confirmCode 1', err))
@@ -101,10 +101,28 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     setName(name);
   }
 
-  const cleanEatenMealsByDate = () => {
+  const FormattedDate = () => {
     const dateToday = new Date();
     var mm = dateToday.getMonth() + 1;
-    console.log(dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate());
+    return dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate();
+}
+
+  const cleanEatenMealsByDate = async () => {
+    const today = FormattedDate();
+    let exists = await SecureStore.getItemAsync('todayFood');
+    let todayFood = [];
+    if (exists) {
+      todayFood = JSON.parse(exists)
+      todayFood = todayFood.filter(obj => {
+        if (obj.date == today) {
+            return obj;
+        }
+      })
+      if (todayFood) {
+        const data = JSON.stringify(todayFood);
+        await SecureStore.setItemAsync('todayFood', data);
+      }
+    }
   }
   
   return (

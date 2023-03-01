@@ -35,7 +35,7 @@ export default function FavouritesScreen({route}) {
     }
 
     const setFavourites = async (givenId) => {
-        let arrayOfFavs = JSON.parse( await SecureStore.getItemAsync('arrayOfFavourites'));
+        let arrayOfFavs = JSON.parse(await SecureStore.getItemAsync('arrayOfFavourites'));
         let arrayOfFavourites = [];
         for (let i = 0; i < arrayOfFavs.length; i++) {
             if (arrayOfFavs[i].mealId == givenId) {

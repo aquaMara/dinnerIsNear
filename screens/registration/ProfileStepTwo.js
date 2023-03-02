@@ -94,6 +94,8 @@ export default function ProfileStepTwo({ navigation, route }) {
         await SecureStore.setItemAsync('aimRhytm', aimRhytm);
         await SecureStore.setItemAsync('mealAmount', numberOfMeals.toString());
 
+        await saveTrueTags();
+
         await SecureStore.setItemAsync('veganism', veganism == true ? '1' : '0');
         await SecureStore.setItemAsync('vegetarianism', vegetarianism == true ? '1' : '0');
         await SecureStore.setItemAsync('fish', fish == true ? '1' : '0');
@@ -115,6 +117,51 @@ export default function ProfileStepTwo({ navigation, route }) {
         saveDataFirebase();
 
         navigation.navigate('CalorieCount');
+    }
+
+    const saveTrueTags = async () => {
+      let tags2 = [];
+      if (veganism) {
+        tags2.push({veganism});
+      } if (vegetarianism) {
+        tags2.push({vegetarianism});
+      } if (fish) {
+        tags2.push({fish});
+      } if (meat) {
+        tags2.push({meat});
+      } if (nuts) {
+        tags2.push({nuts});
+      } if (sugar) {
+        tags2.push({sugar});
+      } if (gluten) {
+        tags2.push({gluten});
+      } if (lactose) {
+        tags2.push({lactose});
+      } if (mushrooms) {
+        tags2.push({mushrooms});
+      } if (steamed) {
+        tags2.push({steamed});
+      } if (boiled) {
+        tags2.push({boiled});
+      } if (stewed) {
+        tags2.push({stewed});
+      } if (fried) {
+        tags2.push({fried});
+      } if (deepFried) {
+        tags2.push({deepFried});
+      } if (roasted) {
+        tags2.push({roasted});
+      } if (dried) {
+        tags2.push({dried});
+      }
+
+      let trueTags = tags2.map(obj => {
+        return Object.keys(obj).at(0);
+      })
+
+      if (trueTags) {
+        await SecureStore.setItemAsync('trueTags', JSON.stringify(trueTags));
+      }    
     }
 
   const saveDataFirebase = async () => {

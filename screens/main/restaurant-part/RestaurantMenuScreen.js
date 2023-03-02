@@ -39,18 +39,39 @@ export default function RestaurantMenuScreen({navigation, route}) {
     }
 
     const findDishesByRestaurantAndBySectionName = (name) => {
-        var result = dishesList.filter(obj => {
+        let result = dishesList.filter(obj => {
             return obj.section === name && obj.restaurantName === currentRestaurantName;
         })
-        return result;
+        let withoutTags = removeProhibitedTags(result);
+        return withoutTags;
     }
 
     const findDishesByRestaurant = () => {
         var result = dishesList.filter(obj => {
             return obj.restaurantName === currentRestaurantName;
         })
-        return result;
-    }    
+        let withoutTags = removeProhibitedTags(result);
+        return withoutTags;
+    } 
+
+    const removeProhibitedTags = (result) => {
+        let trueTags = route.params.trueTags;
+        let tagExists = false;
+        
+        let withoutTags = result.filter(obj => {
+            for (let i = 0; i < trueTags.length; i++) {
+                if (obj.tags.indexOf(trueTags[i]) > -1) {
+                    tagExists = true;
+                }
+            }
+            if (!tagExists) {
+                return obj;
+            }
+            tagExists = false;
+        })
+
+        return withoutTags;        
+    }   
 
     useEffect(() => {
       setDishes(findDishesByRestaurant());

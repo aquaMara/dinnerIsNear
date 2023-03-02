@@ -47,12 +47,7 @@ export default function RecommendationScreen() {
         setMeals(countMeals(numberOfMeals, calorieIntake));
       }      
     }
-
-
-    const openMenu = () => {
-      navigation.navigate('Menu');
-    }
-
+    
     const changeBlockVisibility = (givenId) => {
       const changedMeals = meals.map(meal => {
         if (meal.id === givenId) {
@@ -71,33 +66,8 @@ export default function RecommendationScreen() {
       setEatenBottomBlockVisibility(prevCheck => !prevCheck);
     }
 
-    const db = getFirestore();
-    const db1 = firebase.firestore();
-    const colRef = collection(db, 'calorie_plan');
-    const docRef = doc(db, 'calorie_plan', id)
-    const [address, setAddress] = useState('проспект Толстова, 237');
-
     useEffect(() => {
-
       setMeals(countMeals(numberOfMeals, calorieIntake));
-      
-      
-      getDocs(colRef).then((snapshot) => {
-        let arr = [];
-        snapshot.docs.forEach((doc) => {
-          arr.push({...doc.data(), id: doc.id})
-        })
-      }).catch(err => console.log(err));
-
-      getDoc(docRef).then((doc) => {
-        setCalorieIntake(doc.data().calorieIntake)
-        setProtein(doc.data().protein)
-        setFats(doc.data().fats)
-        setCarbohydrates(doc.data().carbohydrates)
-        setCaloriesForEachMeal(doc.data().caloriesForEachMeal)
-        setNumberOfMeals(doc.data().numberOfMeals)
-      }).catch(err => console.log(err))
-      /// here countMeals
     }, []);
 
     const [fontsLoaded] = useFonts({

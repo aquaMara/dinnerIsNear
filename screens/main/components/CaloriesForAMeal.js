@@ -1,68 +1,67 @@
-import { Dimensions, View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, Image, } from 'react-native';
 import { useFonts } from 'expo-font';
 import { useState, useEffect } from 'react';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React from 'react';
 import { colors } from '../../../styles/colors';
-import { globalStyles } from '../../../styles/styles';
 import { useAuth } from '../../../auth/AuthProvoder';
-import { countCalories } from '../../../functions/CountCalories';
-import firebase from 'firebase/compat';
-import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
-import { countMeals } from '../../../functions/CountMeals';
-import { setStatusBarHidden } from 'expo-status-bar';
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function CaloriesForAMeal({ mealId }) {
 
-  const { currentUserMeals, setCurrentUserMeals} = useAuth();
-  const { caloriesCount, setCaloriesCount } = useAuth();
-  const { proteinCount, setProteinCount } = useAuth();
-  const { fatsCount, setFatsCount } = useAuth();
-  const { carbohydratesCount, setCarbohydratesCount } = useAuth();
+  const [todayMealCalories, setTodayMealCalories] = useState(0);
+  const [todayMealProtein, setTodayMealProtein] = useState(0);
+  const [todayMealFats, setTodayMealFats] = useState(0);
+  const [todayMealCarbohydrates, setTodayMealCarbohydrates] = useState(0);
 
-  const filterFunctionForTotalCaloriesCount = (mId) => {
-    var caloriesForThisMealFromGlobal = caloriesCount.filter(obj => {
-        return obj.mealId === mId
-    })
-    let totalCalories = 0;
-    caloriesForThisMealFromGlobal.forEach(element => {
-        totalCalories += element.totalCalories;
-    });
-    return totalCalories;
+  const FormatDate = (date) => {
+    var mm = date.getMonth() + 1;
+    return date.getFullYear() + '-' + mm + '-' + date.getDate();
   }
-  const filterFunctionForTotalProteinCount = (mId) => {
-      var proteinForThisMealFromGlobal = proteinCount.filter(obj => {
-          return obj.mealId === mId
-      });
-      let totalProtein = 0;
-      proteinForThisMealFromGlobal.forEach(element => {
-          totalProtein += element.totalProtein;
-      });
-      return totalProtein;
+
+  const getTodayMealStatistics = async () => {
+    const today = FormatDate(new Date())
+    const data = await SecureStore.getItemAsync(today);
+    const eatenToday = JSON.parse(data);
+    if (eatenToday) {
+      countNutrition(eatenToday, mealId);
+    }
   }
-  const filterFunctionForTotalFatsCount = (mId) => {
-      var fatsForThisMealFromGlobal = fatsCount.filter(obj => {
-          return obj.mealId === mId
-      });
-      let  totalFats = 0;
-      fatsForThisMealFromGlobal.forEach(element => {
-          totalFats += element.totalFats;
-      });
-      return totalFats;
+
+  const countNutrition = (eatenToday, mealId) => {
+    let tcl = 0, tp = 0, tf = 0, tc = 0;
+    for (let i = 0; i < eatenToday.length; i++) {
+      if (eatenToday[i].mealId == mealId) {
+        tcl += eatenToday[i].totalCalories;
+      }
+    }
+    setTodayMealCalories(tcl);
+    for (let i = 0; i < eatenToday.length; i++) {
+      if (eatenToday[i].mealId == mealId) {
+        tp += eatenToday[i].totalProtein;
+      }
+    }
+    setTodayMealProtein(tp);
+    for (let i = 0; i < eatenToday.length; i++) {
+      if (eatenToday[i].mealId == mealId) {
+        tf += eatenToday[i].totalFats;
+      }
+    }
+    setTodayMealFats(tf);
+    for (let i = 0; i < eatenToday.length; i++) {
+      if (eatenToday[i].mealId == mealId) {
+        tc += eatenToday[i].totalCarbohydrates;
+      }
+    }
+    setTodayMealCarbohydrates(tc);
   }
-  const filterFunctionForTotalCarbohydratesCount = (mId) => {
-      var carbohydratesForThisMealFromGlobal = carbohydratesCount.filter(obj => {
-          return obj.mealId === mId
-      });
-      let totalCarbohydrates = 0;
-      carbohydratesForThisMealFromGlobal.forEach(element => {
-          totalCarbohydrates += element.totalCarbohydrates;
-      });
-      return totalCarbohydrates;
-  }
+
+  useEffect(() => {
+    getTodayMealStatistics();
+  })
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
@@ -78,16 +77,16 @@ export default function CaloriesForAMeal({ mealId }) {
     <View style={{width: wp(91.8), height: hp(3.67), marginTop: hp(2.31)}}>
       <View style={styles.caloriesLine}>
         <View style={[styles.todaysBlock, {marginLeft: 0, marginRight: wp(7.3)}]}>
-          <Text style={styles.todaysText}>{filterFunctionForTotalProteinCount(mealId)} Б</Text>
+          <Text style={styles.todaysText}>{todayMealProtein} Б</Text>
         </View>
         <View style={styles.todaysBlock}>
-          <Text style={styles.todaysText}>{filterFunctionForTotalFatsCount(mealId)} Ж</Text>
+          <Text style={styles.todaysText}>{todayMealFats} Ж</Text>
         </View>
         <View style={[styles.todaysBlock, {marginRight: 0, marginLeft: wp(7.3)}]}>
-          <Text style={styles.todaysText}>{filterFunctionForTotalCarbohydratesCount(mealId)} У</Text>
+          <Text style={styles.todaysText}>{todayMealCarbohydrates} У</Text>
         </View>
         <View style={styles.todaysCaloriesBlock}>
-          <Text style={styles.todaysCaloriesText}>{filterFunctionForTotalCaloriesCount(mealId)} ккал</Text>
+          <Text style={styles.todaysCaloriesText}>{todayMealCalories} ккал</Text>
         </View>
       </View>
       <Image source={require('../../../assets/images/longLine.png')} style={{width: wp(91.8), height: hp(0.47), marginTop: hp(0.6)}}/>

@@ -1,59 +1,61 @@
-import { Dimensions, View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, Image } from 'react-native';
 import { useFonts } from 'expo-font';
 import { useState, useEffect } from 'react';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React from 'react';
 import { colors } from '../../../styles/colors';
-import { globalStyles } from '../../../styles/styles';
 import { useAuth } from '../../../auth/AuthProvoder';
-import firebase from 'firebase/compat';
-import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function RecommendationNorm({navigation, route}) {
 
-    // EATEN
-    const { caloriesCount, proteinCount, fatsCount, carbohydratesCount } = useAuth();
     const {calories, protein, fats, carbohydrates} = useAuth();
 
-    const countEatenGlobalCalories = () => {
-        let eatenCalories = 0;
-        caloriesCount.forEach(element => {
-            if (Object.keys(element).length > 0) {
-                eatenCalories += element.totalCalories;
-            }
-        });
-        return eatenCalories;
+    const [todayCalories, setTodayCalories] = useState(0);
+    const [todayProtein, setTodayProtein] = useState(0);
+    const [todayFats, setTodayFats] = useState(0);
+    const [todayCarbohydrates, setTodayCarbohydrates] = useState(0);
+
+    const FormatDate = (date) => {
+        var mm = date.getMonth() + 1;
+        return date.getFullYear() + '-' + mm + '-' + date.getDate();
     }
-    const countEatenGlobalProtein = () => {
-        let eatenProtein = 0;
-        proteinCount.forEach(element => {
-            if (Object.keys(element).length > 0) {
-                eatenProtein += element.totalProtein;
-            }
-        });
-        return eatenProtein;
+
+    const getTodayStatistics = async () => {
+        const today = FormatDate(new Date())
+        const data = await SecureStore.getItemAsync(today);
+        const eatenToday = JSON.parse(data);
+        if (eatenToday) {
+            countNutrition(eatenToday);
+        }
     }
-    const countEatenGlobalFats = () => {
-        let eatenFats = 0;
-        fatsCount.forEach(element => {
-            if (Object.keys(element).length > 0) {
-                eatenFats += element.totalFats;
-            }
-        });
-        return eatenFats;
+
+    const countNutrition = (eatenToday) => {
+        let tcl = 0, tp = 0, tf = 0, tc = 0;
+        for (let i = 0; i < eatenToday.length; i++) {
+            tcl += eatenToday[i].totalCalories;
+        }
+        setTodayCalories(tcl);
+        for (let i = 0; i < eatenToday.length; i++) {
+            tp += eatenToday[i].totalProtein;
+        }
+        setTodayProtein(tp);
+        for (let i = 0; i < eatenToday.length; i++) {
+            tf += eatenToday[i].totalFats;
+        }
+        setTodayFats(tf);
+        for (let i = 0; i < eatenToday.length; i++) {
+            tc += eatenToday[i].totalCarbohydrates;
+        }
+        setTodayCarbohydrates(tc);
     }
-    const countEatenGlobalCarbohydrates = () => {
-        let eatenCarbohydrates = 0;
-        carbohydratesCount.forEach(element => {
-            if (Object.keys(element).length > 0) {
-                eatenCarbohydrates += element.totalCarbohydrates;
-            }
-        });
-        return eatenCarbohydrates;
-    }
+
+    useEffect(() => {
+        getTodayStatistics();
+    })
 
     const [fontsLoaded] = useFonts({
         'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
@@ -86,16 +88,16 @@ export default function RecommendationNorm({navigation, route}) {
             <Image source={require('../../../assets/images/topLine.png')} style={{width: wp(83.08), height: hp(0.19)}}/>
             <View style={styles.todaysBlocks}>
                 <View style={[styles.todaysBlock, {marginLeft: 0, marginRight: wp(7.3)}]}>
-                    <Text style={styles.todaysText}>{countEatenGlobalProtein()} Б</Text>
+                    <Text style={styles.todaysText}>{todayProtein} Б</Text>
                 </View>
                 <View style={styles.todaysBlock}>
-                    <Text style={styles.todaysText}>{countEatenGlobalFats()} Ж</Text>
+                    <Text style={styles.todaysText}>{todayFats} Ж</Text>
                 </View>
                 <View style={[styles.todaysBlock, {marginRight: 0, marginLeft: wp(7.3)}]}>
-                    <Text style={styles.todaysText}>{countEatenGlobalCarbohydrates()} У</Text>
+                    <Text style={styles.todaysText}>{todayCarbohydrates} У</Text>
                 </View>
                 <View style={styles.todaysCaloriesBlock}>
-                    <Text style={styles.todaysCaloriesText}>{countEatenGlobalCalories()} ккал</Text>
+                    <Text style={styles.todaysCaloriesText}>{todayCalories} ккал</Text>
                 </View>
             </View>
             <Image source={require('../../../assets/images/topLine.png')} style={{width: wp(83.08), height: hp(0.47)}}/>

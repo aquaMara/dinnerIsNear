@@ -1,5 +1,4 @@
-import { StyleSheet, Text, TextInput, View, Dimensions, Image, TouchableOpacity, TouchableWithoutFeedback, ImageBackground } from 'react-native';
-import { Keyboard } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Dimensions, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import React from 'react';
 import { colors } from '../../../styles/colors';
 import { useFonts } from 'expo-font';
@@ -9,11 +8,9 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import restsIntroduction from '../../../data/restsIntroduction';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-import { getAuth } from 'firebase/auth';
-import app from '../../../firebase-config';
-import firebase from 'firebase/compat';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
@@ -22,30 +19,17 @@ export default function Restaurants({route}) {
   const navigation = useNavigation();
   const [search, setSearch] = useState('');
   const [restaurants, setRestaurants] = useState([]);
-  const [tags, setTags] = useState({});
 
   const moveToRestaurant = async  (id, name, mealId) => {
-    // no: find dishes by restaurant name
-    // yes: get user tags
-    
-    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId, tags: tags});
+    let trueTags = await getTags();
+    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId, trueTags: trueTags});
   }
 
-useEffect(() => {
-  const userId = 'LAS3S528apZ5J627SwEfsIn6oke2';
-
-  firebase.firestore().collection('tags')
-      .doc(userId).get()
-      .then((snapshot) => {
-        if (snapshot) {
-            setTags(snapshot.data());
-            return snapshot.data();
-            //setTags(prev => ([...prev, ...snapshot.data()]));
-        }
-        
-    }).catch((err) => {console.log('TAGS ERR', err)})
-    
-  }, [])
+  const getTags = async () => {
+    let trueTagsData = await SecureStore.getItemAsync('trueTags');
+    let trueTags = JSON.parse(trueTagsData)
+    return trueTags;
+  }
 
   const renderRestaurant = ({item}) => (
     <TouchableOpacity style={styles.restaurantBlock} onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
@@ -70,7 +54,6 @@ useEffect(() => {
 
   useEffect(() => {
     setRestaurants(restsIntroduction);
-    console.log(restaurants)
   }, []);
 
   const [fontsLoaded] = useFonts({

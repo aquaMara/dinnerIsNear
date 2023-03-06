@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TextInput, Modal, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TextInput, Modal, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useFonts } from 'expo-font';
 import { globalStyles } from '../../styles/styles';
@@ -16,20 +16,16 @@ import { countPFC } from '../../functions/CountPFC';
 import { useAuth } from '../../auth/AuthProvoder';
 import { useNavigation } from '@react-navigation/native';
 
+import * as SecureStore from 'expo-secure-store';
+
 const { height } = Dimensions.get('screen');
 
 export default function ProfileConfigScreen() {
 
   const navigation = useNavigation();
 
-  // AUTH PROVIDER
-  const {mealsCount, setMealsCount} = useAuth();
-  const {name, setName} = useAuth();
   // Stable values for every day
-  const {calories, setCalories} = useAuth();
-  const {protein, setProtein} = useAuth();
-  const {fats, setFats} = useAuth();
-  const {carbohydrates, setCarbohydrates} = useAuth();
+  const { setCalories, setProtein, setFats, setCarbohydrates, setName, setMealsCount, mealsCount} = useAuth();
 
   const [nameData, setNameData] = useState('');
   const [gender, setGender] = useState('female');
@@ -39,7 +35,7 @@ export default function ProfileConfigScreen() {
   const [height, setHeight] = useState('');
   const [lifestyle, setLifestyle] = useState('average');
   const [lifestyleFormatted, setLifestyleFormatted] = useState('Средняя активность');
-  const [aim, setAim] = useState('maintainWeight');
+  const [aim, setAim] = useState('maintain weight');
   const [aimFormatted, setAimFormatted] = useState('Поддержать форму');
   const [aimRhytm, setAimRhytm] = useState('regular');
   const [numberOfMeals, setNumberOfMeals] = useState(1);
@@ -90,6 +86,17 @@ export default function ProfileConfigScreen() {
     return am;
   }
 
+  const createAimFormatted = (aim) => {
+    let am;
+    switch (aim) {
+      case 'loseWeight': am = 'Сбросить вес'; break;
+      case 'maintainWeight':  am = 'Поддержать форму'; break;
+      case 'gainWeight':  am = 'Набрать вес'; break;
+      default: am = 'Поддержать форму'; break;
+    }
+    return am;
+  }
+
   const createLifestyle = (lifestyleFormatted) => {
     let lf;
     switch (lifestyleFormatted) {
@@ -100,56 +107,198 @@ export default function ProfileConfigScreen() {
         case 'Повышенная активность':  lf = 'increased'; break;
         case 'Высокая активность': lf = 'high'; break;
         case 'Очень высокая активность': lf = 'veryHigh'; break;
-        default: lf = 'min'; break;
+        default: lf = 'average'; break;
     }
     return lf;
   }
 
-  const countProfileStatistics = () => {
-    setAim(createAim());
-    setLifestyle(createLifestyle());
-
-    console.log(nameData, weight, height)
-    if (nameData.trim() === '' || height.trim() === '' || weight.trim() === '') {
-      console.log(nameData.length, weight.length, height.length, ' name.length, weight.length, height.length')
-    } else {
-      const calorieIntake = countCalories(gender, weight, height, dateOfBirth, lifestyle, aim, aimRhytm);
-      const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
-      const {proteinIntake, fatsIntake, carbohydratesIntake} = countPFC(aim, calorieIntake);
-
-      setCalories(calorieIntake);
-      setProtein(proteinIntake);
-      setFats(fatsIntake);
-      setCarbohydrates(carbohydratesIntake);
-      setMealsCount(mealsCount);
-      console.log('setMealsCount(numberOfMeals)', numberOfMeals, mealsCount)
-      setName(nameData);
-
-      sendToFirebase(calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake,
-        name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
-        veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-        steamed, boiled, stewed, fried, deepFried, roasted, dried );
+  const createLifestyleFormatted = (lifestyle) => {
+    let lf;
+    switch (lifestyle) {
+        case 'minimum': lf = 'Минимальная активность'; break;
+        case 'little':  lf = 'Небольшая активность'; break;
+        case 'average':  lf = 'Средняя активность'; break;
+        case 'higherThanAverage':  lf = 'Активность выше среднего'; break;
+        case 'increased':  lf = 'Повышенная активность'; break;
+        case 'high': lf = 'Высокая активность'; break;
+        case 'veryHigh': lf = 'Очень высокая активность'; break;
+        default: lf = 'Средняя активность'; break;
     }
-
-    //return {calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle}
+    return lf;
   }
 
-  const sendToFirebase = (calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake,
-                        name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals, 
-                        veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
-                        steamed, boiled, stewed, fried, deepFried, roasted, dried ) => {
-    console.log('sendToFirebase ********************************************************')
-    console.log(calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake)
-    console.log(name, gender, dateOfBirth, weight, height, lifestyle, aim, aimRhytm, numberOfMeals);
-    console.log("veganism", veganism, "vegetarianism", vegetarianism);
-    console.log("fish", fish,"meat", meat, "nuts", nuts, "sugar", sugar, "gluten", gluten, "lactose", lactose, "mushrooms", mushrooms);
-    console.log(steamed, boiled, stewed, fried, deepFried, roasted, dried);
-    console.log('********************************************************')
-    console.log(calories, protein, fats, carbohydrates, mealsCount, name, aim, lifestyle);
+  const countProfileStatistics = async () => {
+    await firstPartStatistics();
+  }
 
-    // SEND DATA
+  const firstPartStatistics = async () => {
+    let isContinue = false;
+    if (nameData.trim() === '' || weight.trim() === '' || height.trim() === '') {
+      Alert.alert(
+        'Незаполненные поля ввода',
+        'Проверьте, пожалуйста, заполнили ли вы имя и фамилию, рост, вес',
+        [
+          {
+            text: 'OK',
+            style: 'default',
+          },
+        ],
+      );
+    } else {
+      isContinue = true;
+      setName(nameData);
+    }
+    if (isContinue) {
+      await saveFirstPartData(nameData, gender, dateOfBirthFormatted, weight, height, lifestyle);
+      await secondPartStatistics();
+    }
+  }
+
+  const saveFirstPartData = async (nameData, gender, dateOfBirthFormatted, weight, height, lifestyle) => {
+    await SecureStore.setItemAsync('name', nameData);
+    await SecureStore.setItemAsync('gender', gender);
+    await SecureStore.setItemAsync('dateOfBirth', dateOfBirthFormatted);
+    await SecureStore.setItemAsync('weight', weight);
+    await SecureStore.setItemAsync('height', height);
+    await SecureStore.setItemAsync('lifestyle', lifestyle);
+  } 
+
+  const secondPartStatistics = async () => {
+    const calorieIntake = countCalories(gender, weight, height, dateOfBirthFormatted, lifestyle, aim, aimRhytm);
+    const caloriesForEachMeal = parseInt(calorieIntake / numberOfMeals, 10);
+    const {proteinIntake, fatsIntake, carbohydratesIntake} = countPFC(aim, calorieIntake);
+    
+    setCalories(calorieIntake);
+    setProtein(proteinIntake);
+    setFats(fatsIntake);
+    setCarbohydrates(carbohydratesIntake);
+    setMealsCount(numberOfMeals);
+    
+    await saveSecondPartData(calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
+      aim, aimRhytm, numberOfMeals, 
+      veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+      steamed, boiled, stewed, fried, deepFried, roasted, dried);
+  }
+
+  const saveSecondPartData = async (calorieIntake, proteinIntake, fatsIntake, carbohydratesIntake, caloriesForEachMeal,
+                          aim, aimRhytm, numberOfMeals, 
+                          veganism, vegetarianism, fish, meat, nuts, sugar, gluten, lactose, mushrooms,
+                          steamed, boiled, stewed, fried, deepFried, roasted, dried) => {
+
+    await SecureStore.setItemAsync('dayCalories', calorieIntake.toString());
+    await SecureStore.setItemAsync('dayProtein', proteinIntake.toString());
+    await SecureStore.setItemAsync('dayFats', fatsIntake.toString());
+    await SecureStore.setItemAsync('dayCarbohydrates', carbohydratesIntake.toString());
+    await SecureStore.setItemAsync('oneMealCalories', caloriesForEachMeal.toString());
+    await SecureStore.setItemAsync('aim', aim);
+    await SecureStore.setItemAsync('aimRhytm', aimRhytm);
+    await SecureStore.setItemAsync('mealAmount', numberOfMeals.toString());
+
+    await saveTrueTags();
+
+    await SecureStore.setItemAsync('veganism', veganism == true ? '1' : '0');
+    await SecureStore.setItemAsync('vegetarianism', vegetarianism == true ? '1' : '0');
+    await SecureStore.setItemAsync('fish', fish == true ? '1' : '0');
+    await SecureStore.setItemAsync('meat', meat == true ? '1' : '0');
+    await SecureStore.setItemAsync('nuts', nuts == true ? '1' : '0');
+    await SecureStore.setItemAsync('sugar', sugar == true ? '1' : '0');
+    await SecureStore.setItemAsync('gluten', gluten == true ? '1' : '0');
+    await SecureStore.setItemAsync('lactose', lactose == true ? '1' : '0');
+    await SecureStore.setItemAsync('mushrooms', mushrooms == true ? '1' : '0');
+    await SecureStore.setItemAsync('steamed', steamed == true ? '1' : '0');
+
+    await SecureStore.setItemAsync('boiled', boiled == true ? '1' : '0');
+    await SecureStore.setItemAsync('stewed', stewed == true ? '1' : '0');
+    await SecureStore.setItemAsync('fried', fried == true ? '1' : '0');
+    await SecureStore.setItemAsync('deepFried', deepFried == true ? '1' : '0');
+    await SecureStore.setItemAsync('roasted', roasted == true ? '1' : '0');
+    await SecureStore.setItemAsync('dried', dried == true ? '1' : '0');
+    console.log(await SecureStore.getItemAsync('lifestyle'), await SecureStore.getItemAsync('aim'))
     navigation.navigate('Profile');
   }
+
+  const saveTrueTags = async () => {
+    let tags2 = [];
+    if (veganism) {
+    tags2.push({veganism});
+    } if (vegetarianism) {
+    tags2.push({vegetarianism});
+    } if (fish) {
+    tags2.push({fish});
+    } if (meat) {
+    tags2.push({meat});
+    } if (nuts) {
+    tags2.push({nuts});
+    } if (sugar) {
+    tags2.push({sugar});
+    } if (gluten) {
+    tags2.push({gluten});
+    } if (lactose) {
+    tags2.push({lactose});
+    } if (mushrooms) {
+    tags2.push({mushrooms});
+    } if (steamed) {
+    tags2.push({steamed});
+    } if (boiled) {
+    tags2.push({boiled});
+    } if (stewed) {
+    tags2.push({stewed});
+    } if (fried) {
+    tags2.push({fried});
+    } if (deepFried) {
+    tags2.push({deepFried});
+    } if (roasted) {
+    tags2.push({roasted});
+    } if (dried) {
+    tags2.push({dried});
+    }
+
+    let trueTags = tags2.map(obj => {
+      return Object.keys(obj).toString();
+    })
+
+    if (trueTags) {
+      await SecureStore.setItemAsync('trueTags', JSON.stringify(trueTags));
+    }
+  }
+
+  useEffect(() => {
+
+    (async () => {
+      
+      setNameData(await SecureStore.getItemAsync('name'));
+      setGender(await SecureStore.getItemAsync('gender'));
+      setDateOfBirthFormatted(await SecureStore.getItemAsync('dateOfBirth'));
+      setWeight(await SecureStore.getItemAsync('weight'));
+      setHeight(await SecureStore.getItemAsync('height'));
+      setMealsCount(parseInt(await SecureStore.getItemAsync('mealAmount')));
+
+      setAim(await SecureStore.getItemAsync('aim'));
+      setAimFormatted(createAimFormatted(await SecureStore.getItemAsync('aim')));
+
+      setLifestyle(await SecureStore.getItemAsync('lifestyle'));
+      setLifestyleFormatted(createLifestyleFormatted(await SecureStore.getItemAsync('lifestyle')));
+
+      setVeganism(await SecureStore.getItemAsync('veganism') == 1 ? true : false);
+      setVegetarianism(await SecureStore.getItemAsync('vegetarianism') == 1 ? true : false);
+      setFish(await SecureStore.getItemAsync('fish') == 1 ? true : false);
+      setMeat(await SecureStore.getItemAsync('meat') == 1 ? true : false);
+      setNuts(await SecureStore.getItemAsync('nuts') == 1 ? true : false);
+      setSugar(await SecureStore.getItemAsync('sugar') == 1 ? true : false);
+      setGluten(await SecureStore.getItemAsync('gluten') == 1 ? true : false);
+      setLactose(await SecureStore.getItemAsync('lactose') == 1 ? true : false);
+      
+      setMushrooms(await SecureStore.getItemAsync('mushrooms') == 1 ? true : false);
+      setSteamed(await SecureStore.getItemAsync('steamed') == 1 ? true : false);
+      setBoiled(await SecureStore.getItemAsync('boiled') == 1 ? true : false);
+      setStewed(await SecureStore.getItemAsync('stewed') == 1 ? true : false);
+      setFried(await SecureStore.getItemAsync('fried') == 1 ? true : false);
+      setDeepFried(await SecureStore.getItemAsync('deepFried') == 1 ? true : false);
+      setRoasted(await SecureStore.getItemAsync('roasted') == 1 ? true : false);
+      setDried(await SecureStore.getItemAsync('dried') == 1 ? true : false);
+    })();
+    
+  }, []);
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),

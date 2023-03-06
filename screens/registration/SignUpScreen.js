@@ -1,10 +1,9 @@
-import { Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Keyboard } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { Linking } from 'react-native';
 import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
 import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
@@ -39,13 +38,18 @@ export default function SignUpScreen({ navigation }) {
     'SF-Pro-Bold': require('../../assets/fonts/SFPro700.otf'),
   });
   
-const sendVerification = () => {
-    const phoneProvider = new firebase.auth.PhoneAuthProvider();
-    let pn = '+7' + phoneNumber;
-    phoneProvider
-        .verifyPhoneNumber(pn, recaptchaVerifier.current)
-        .then(res => {navigation.navigate('ConfirmSignUp', {verificationId: res, phoneNumber: phoneNumber})})
-        .catch(err => console.log('Error sendVerification', err, ' phone ', phoneNumber));
+  const sendVerification = () => {
+    Alert.alert(
+      'Код подтверждения',
+      'Ваш код 123456',
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('ConfirmSignUp', {phoneNumber: phoneNumber}),
+          style: 'default',
+        },
+      ],
+    );
   };
   
   return (

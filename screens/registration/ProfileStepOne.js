@@ -44,7 +44,7 @@ export default function ProfileStepOne({ navigation, route }) {
         case 'Повышенная активность':  lf = 'increased'; break;
         case 'Высокая активность': lf = 'high'; break;
         case 'Очень высокая активность': lf = 'veryHigh'; break;
-        default: lf = 'min'; break;
+        default: lf = 'average'; break;
     }
     return lf;
   }

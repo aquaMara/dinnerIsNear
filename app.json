@@ -2,11 +2,19 @@
   "expo": {
     "name": "Dinner is Near",
     "slug": "dinnerIsNear",
-    "version": "2.5.0",
+    "version": "2.12.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "assetBundlePatterns": [
       "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
     ],
     "extra": {
       "eas": {
@@ -18,11 +26,27 @@
       "url": "https://u.expo.dev/ebd1cd4a-db27-4392-8770-80784c4401e4"
     },
     "android": {
-      "package": "com.aquam.dinnerIsNear"
+      "package": "com.aquam.dinnerIsNear",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
     },
     "ios": {
       "config": {
-        "usesNonExemptEncryption": false
+        "usesNonExemptEncryption": false,
+        "permissions": [
+          "ACCESS_COARSE_LOCATION",
+          "ACCESS_FINE_LOCATION",
+          "ACCESS_BACKGROUND_LOCATION"
+        ]
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Program requires GPS to show user's location",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Program requires GPS to show user's location",
+        "NSLocationAlwaysUsageDescription": "Program requires GPS to show user's location",
+        "UIBackgroundModes": ["location", "fetch"]
       }
     }
   }

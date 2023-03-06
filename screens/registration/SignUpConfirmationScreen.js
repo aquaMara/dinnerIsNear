@@ -1,14 +1,11 @@
-import { Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Keyboard } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
 import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import { useAuth } from '../../auth/AuthProvoder';
 import * as SecureStore from 'expo-secure-store';
 
@@ -16,11 +13,7 @@ const { height } = Dimensions.get('screen');
 
 export default function SignUpConfirmationScreen({ route, navigation }) {
 
-  const verificationId = route.params.verificationId;
-  const phoneNumber = route.params.phoneNumber;
   const [code, setCode] = useState(null);
-  const recaptchaVerifier = useRef(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   
   const { setCalories, setProtein, setFats, setCarbohydrates, setName, setMealsCount } = useAuth();
@@ -50,38 +43,32 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
   }
 
   const confirmCode = async () => {
-    setCode(code);
-    const credential = firebase.auth.PhoneAuthProvider.credential(
-        verificationId,
-        code
-    );
-    firebase.auth().signInWithCredential(credential)
-    .then(() => {
-      const usid = firebase.auth().currentUser.uid;
-      const userCheck = firebase.firestore().collection('users').doc(usid)
-      if (usid != null && code != null) {
-        userCheck.get().then(async (userInfo) => {
-          if (userInfo.exists) {
-            await getData();
-            await cleanEatenMealsByDate();
-            navigation.navigate('Tab');
-          } else {
-            await saveData(usid, phoneNumber);
-            navigation.navigate('LittleMore')
-          }
-        }).catch(err => console.log('SignUpConfirmationScreen confirmCode 1', err))
+    if (code.trim() != '123456') {
+      Alert.alert(
+        'Неверный код',
+        'Ваш код 123456',
+        [
+          {
+            text: 'OK',
+            style: 'default',
+          },
+        ],
+      );
+    } else {
+      let name = await SecureStore.getItemAsync('name');
+      if (name) { // user exists
+        await getData();
+        await cleanEatenMealsByDate();
+        navigation.navigate('Tab');
       } else {
-        setIsLoggedIn(false);
+        await saveData();
+        navigation.navigate('LittleMore');
       }
-    })
-    .catch((error) => {
-        console.log('SignUpConfirmationScreen confirmCode 2', error);
-    });
+    }
   }
 
-  const saveData = async (userId) => {
+  const saveData = async () => {
     const phoneNumber = '+7' + route.params.phoneNumber;
-    await SecureStore.setItemAsync('userId', userId);
     await SecureStore.setItemAsync('phoneNumber', phoneNumber);
   }
 
@@ -128,10 +115,6 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <SafeAreaView style={styles.container}>
-      <FirebaseRecaptchaVerifierModal 
-        ref={recaptchaVerifier}
-        firebaseConfig={firebaseConfig}
-      />
       <View style={styles.titleBox}>
         <Text style={styles.title}>Введите код</Text>
       </View>

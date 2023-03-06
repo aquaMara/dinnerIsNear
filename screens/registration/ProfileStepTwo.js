@@ -13,7 +13,6 @@ import { countCalories } from '../../functions/CountCalories';
 import { countPFC } from '../../functions/CountPFC';
 import { useAuth } from '../../auth/AuthProvoder';
 import * as SecureStore from 'expo-secure-store';
-import firebase from "firebase/compat";
   
 const { height } = Dimensions.get('screen');
 
@@ -114,8 +113,6 @@ export default function ProfileStepTwo({ navigation, route }) {
         await SecureStore.setItemAsync('roasted', roasted == true ? '1' : '0');
         await SecureStore.setItemAsync('dried', dried == true ? '1' : '0');
 
-        saveDataFirebase();
-
         navigation.navigate('CalorieCount');
     }
 
@@ -155,24 +152,17 @@ export default function ProfileStepTwo({ navigation, route }) {
         tags2.push({dried});
       }
 
-      let trueTags = tags2.map(obj => {
-        return Object.keys(obj).at(0);
-      })
-
-      if (trueTags) {
-        await SecureStore.setItemAsync('trueTags', JSON.stringify(trueTags));
-      }    
+      if (tags2[0] != null) {
+        let trueTags = tags2.map(obj => {
+          return Object.keys(obj).toString();
+        })
+  
+        if (trueTags) {
+          await SecureStore.setItemAsync('trueTags', JSON.stringify(trueTags));
+        }
+      }
+          
     }
-
-  const saveDataFirebase = async () => {
-    const userId = await SecureStore.getItemAsync('userId');
-    const name = await SecureStore.getItemAsync('name');
-    firebase.firestore().collection('users').doc(userId)
-      .set({ name })
-      .then(() => console.log('SUCCESS', name))
-      .catch(err => console.log('ProfileStepTwo saveDataFirebase', err));
-  }
-
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),

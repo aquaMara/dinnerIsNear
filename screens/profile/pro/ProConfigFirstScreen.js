@@ -46,19 +46,9 @@ export default function ProConfigFirstScreen() {
             </TouchableOpacity>
         </View>
         <View style={styles.block}>
-            <View style={styles.textBlock}>
-                <Text style={styles.titleText}>Режимы и особенности</Text>
-            </View>
-            <TouchableOpacity style={styles.arrowBlock} 
-                onPress={() => navigation.navigate('Modes')}>
-            <Image source={require('../../../assets/images/chevronLeft.png')}
-                    style={styles.arrowImage} />
-            </TouchableOpacity>
-        </View>
-        <View style={styles.block}>
             <View style={styles.textBlocks}>
                 <Text style={styles.titleText}>Консультация с нутрициологом</Text>
-                <Text style={styles.regularText}>Поможем настроить профиль идеяльно для вас</Text>
+                <Text style={styles.regularText}>Поможем настроить профиль идеально для вас</Text>
             </View>
             <TouchableOpacity style={styles.arrowBlock} 
                 onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>

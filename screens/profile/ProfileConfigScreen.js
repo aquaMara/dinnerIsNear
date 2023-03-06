@@ -213,7 +213,6 @@ export default function ProfileConfigScreen() {
     await SecureStore.setItemAsync('deepFried', deepFried == true ? '1' : '0');
     await SecureStore.setItemAsync('roasted', roasted == true ? '1' : '0');
     await SecureStore.setItemAsync('dried', dried == true ? '1' : '0');
-    console.log(await SecureStore.getItemAsync('lifestyle'), await SecureStore.getItemAsync('aim'))
     navigation.navigate('Profile');
   }
 

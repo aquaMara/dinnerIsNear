@@ -410,7 +410,7 @@ export default function UndesirableProductsScreen() {
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-          <Text style={[styles.listText, {width: wp(77)}]}>Мясо</Text>
+          <Text style={[styles.listText, {width: wp(77)}]}>Мясо (есть в обычной настройке)</Text>
           <Switch value={meat} onValueChange={() => setMeatFirebase()}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}

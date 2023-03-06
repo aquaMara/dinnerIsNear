@@ -64,7 +64,8 @@ export default function ProfileStepOne({ navigation, route }) {
     setDateOfBirthFormatted(date.getFullYear() + '/' + mm + '/' + date.getDate());
   };
 
-  const toNextStep = () => {
+  const toNextStep = async () => {
+    let isContinue = false;
     if (nameData.trim() === '' && weight.trim() === '' && height.trim() === '') {
       Alert.alert(
         'Незаполненные поля ввода',
@@ -77,7 +78,7 @@ export default function ProfileStepOne({ navigation, route }) {
         ],
       );
     } else {
-      saveData(nameData, gender, dateOfBirthFormatted, weight, height, lifestyle);
+      await saveData(nameData, gender, dateOfBirthFormatted, weight, height, lifestyle);
       const stepOne = {'name': nameData, gender, dateOfBirthFormatted, weight, height, 'lifestyle': lifestyle};
       navigation.navigate('StepTwo', {stepOne: stepOne})
     }

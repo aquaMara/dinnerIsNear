@@ -75,8 +75,6 @@ export default function RestaurantScreen() {
 
     const getMealsForCertainMealFromCurrentUserMeals = (mId, meal) => {
       var foodForCurrentMeal = currentUserMeals.filter(obj => {
-        console.log('obj', obj.dishCalories, obj.mealId, mId)
-        console.log(Object.values(obj))
         return obj.mealId === mId
       })
       return foodForCurrentMeal;

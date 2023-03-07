@@ -22,13 +22,20 @@ export default function Restaurants({route}) {
 
   const moveToRestaurant = async  (id, name, mealId) => {
     let trueTags = await getTags();
-    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId, trueTags: trueTags});
+    let trueProTags = await getProTags();
+    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId, trueTags: trueTags, trueProTags: trueProTags});
   }
 
   const getTags = async () => {
     let trueTagsData = await SecureStore.getItemAsync('trueTags');
     let trueTags = JSON.parse(trueTagsData)
     return trueTags;
+  }
+
+  const getProTags = async () => {
+    let trueTagsData = await SecureStore.getItemAsync('trueProTags');
+    let trueProTags = JSON.parse(trueTagsData)
+    return trueProTags;
   }
 
   const renderRestaurant = ({item}) => (

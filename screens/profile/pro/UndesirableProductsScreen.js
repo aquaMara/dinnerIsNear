@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useFonts } from 'expo-font';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -7,8 +7,9 @@ import { colors } from '../../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { Switch } from 'react-native'
-import firebase from "firebase/compat";
 import { globalStyles } from '../../../styles/styles';
+
+import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
@@ -16,14 +17,12 @@ export default function UndesirableProductsScreen() {
 
   const [pork, setPork] = useState(false);
   const [beef, setBeef] = useState(false);
-  const [meat, setMeat] = useState(false);
   const [chicken, setChicken] = useState(false);
 
   const [seafood, setSeafood] = useState(false);
   const [salmon, setSalmon] = useState(false);
   const [mussels, setMussels] = useState(false);
 
-  const [nuts, setNuts] = useState(false);
   const [peanut, setPeanut] = useState(false);
   const [sesame, setSesame] = useState(false);
   const [cashew, setCashew] = useState(false);
@@ -31,7 +30,6 @@ export default function UndesirableProductsScreen() {
   const [walnut, setWalnut] = useState(false);
   const [sunflowerSeeds, setSunflowerSeeds] = useState(false);
 
-  const [lactose, setLactose] = useState(false);
   const [cottageCheese, setCottageCheese] = useState(false);
   const [egg, setEgg] = useState(false);
   
@@ -52,342 +50,61 @@ export default function UndesirableProductsScreen() {
   const [rice, setRice] = useState(false);
   const [oats, setOats] = useState(false);
   const [cereals, setCereals] = useState(false);
-
-  const [mushrooms, setMushrooms] = useState(false);
   const [honey, setHoney] = useState(false);
-  const [gluten, setGluten] = useState(false);
-  const [sugar, setSugar] = useState(false);
-
-  const [steamed, setSteamed] = useState(false);
-  const [boiled, setBoiled] = useState(false);
-  const [stewed, setStewed] = useState(false);
-  const [fried, setFried] = useState(false);
-  const [deepFried, setDeepFried] = useState(false);
-  const [roasted, setRoasted] = useState(false);
-  const [dried, setDried] = useState(false);
 
   const navigation = useNavigation();
-
-
-  // 4
-  const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
   
-  const setPorkFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'pork': !pork })
-      .catch(err => console.log(err));
-    setPork(previousState => !previousState);
-  }
-
-  const setBeefFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'beef': !beef })
-      .catch(err => console.log(err));
-    setBeef(previousState => !previousState);
-  }
-
-  const setMeatFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'meat': !meat })
-      .catch(err => console.log(err));
-    setMeat(previousState => !previousState);
-  }
-
-  const setChickenFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'chicken': !chicken })
-      .catch(err => console.log(err));
-    setChicken(previousState => !previousState);
-  }
-
-  const setSeafoodFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'seafood': !seafood })
-      .catch(err => console.log(err));
-    setSeafood(previousState => !previousState);
-  }
-
-  const setSalmonFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'salmon': !salmon })
-      .catch(err => console.log(err));
-    setSalmon(previousState => !previousState);
-  }
-
-  const setMusselsFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'mussels': !mussels })
-      .catch(err => console.log(err));
-    setMussels(previousState => !previousState);
-  }
-
-  const setNutsFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'nuts': !nuts })
-      .catch(err => console.log(err));
-    setNuts(previousState => !previousState);
-  }
-
-  const setPeanutFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'peanut': !peanut })
-      .catch(err => console.log(err));
-    setPeanut(previousState => !previousState);
-  }
-
-  const setSesameFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'sesame': !sesame })
-      .catch(err => console.log(err));
-    setSesame(previousState => !previousState);
-  }
-
-  const setCashewFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'cashew': !cashew })
-      .catch(err => console.log(err));
-    setCashew(previousState => !previousState);
-  }
-
-  const setAlmondFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'almond': !almond })
-      .catch(err => console.log(err));
-    setAlmond(previousState => !previousState);
-  }
-
-  const setWalnutFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'walnut': !walnut })
-      .catch(err => console.log(err));
-    setWalnut(previousState => !previousState);
-  }
-
-  const setSunflowerSeedsFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'sunflowerSeeds': !sunflowerSeeds })
-      .catch(err => console.log(err));
-    setSunflowerSeeds(previousState => !previousState);
-  }
-
-  const setLactoseFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'lactose': !lactose })
-      .catch(err => console.log(err));
-    setLactose(previousState => !previousState);
-  }
-
-  const setCottageCheeseFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'cottageCheese': !cottageCheese })
-      .catch(err => console.log(err));
-    setCottageCheese(previousState => !previousState);
-  }
-
-  const setEggFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'egg': !egg })
-      .catch(err => console.log(err));
-    setEgg(previousState => !previousState);
-  }
-
-  const setOrangeFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'orange': !orange })
-      .catch(err => console.log(err));
-    setOrange(previousState => !previousState);
-  }
-
-  const setBananaFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'banana': !banana })
-      .catch(err => console.log(err));
-    setBanana(previousState => !previousState);
-  }
-
-  const setFrutsBerriesFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'frutsBerries': !frutsBerries })
-      .catch(err => console.log(err));
-    setFrutsBerries(previousState => !previousState);
-  }
-
-  const setAvocadoFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'avocado': !avocado })
-      .catch(err => console.log(err));
-    setAvocado(previousState => !previousState);
-  }
-
-  const setBeansFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'beans': !beans })
-      .catch(err => console.log(err));
-    setBeans(previousState => !previousState);
-  }
-
-  const setWhiteFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'white': !white })
-      .catch(err => console.log(err));
-    setWhite(previousState => !previousState);
-  }
-
-  const setRedFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'red': !red })
-      .catch(err => console.log(err));
-    setRed(previousState => !previousState);
-  }
-
-  const setYellowFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'yellow': !yellow })
-      .catch(err => console.log(err));
-    setYellow(previousState => !previousState);
-  }
-
-  const setBlueFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'blue': !blue })
-      .catch(err => console.log(err));
-    setBlue(previousState => !previousState);
-  }
-
-  const setGreenFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'green': !green })
-      .catch(err => console.log(err));
-    setGreen(previousState => !previousState);
-  }
-
-  const setVegetablesFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'vegetables': !vegetables })
-      .catch(err => console.log(err));
-    setVegetables(previousState => !previousState);
-  }
-
-  const setBuckwheatFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'buckwheat': !buckwheat })
-      .catch(err => console.log(err));
-    setBuckwheat(previousState => !previousState);
-  }
-
-  const setRiceFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'rice': !rice })
-      .catch(err => console.log(err));
-    setRice(previousState => !previousState);
-  }
-
-  const setOatsFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'oats': !oats })
-      .catch(err => console.log(err));
-    setOats(previousState => !previousState);
-  }
-
-  const setCerealsFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'cereals': !cereals })
-      .catch(err => console.log(err));
-    setCereals(previousState => !previousState);
-  }
-
-  const setMushroomsFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'mushrooms': !mushrooms })
-      .catch(err => console.log(err));
-    setMushrooms(previousState => !previousState);
-  }
-
-  const setHoneyFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'honey': !honey })
-      .catch(err => console.log(err));
-    setHoney(previousState => !previousState);
-  }
-
-  const setGlutenFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'gluten': !gluten })
-      .catch(err => console.log(err));
-    setGluten(previousState => !previousState);
-  }
-
-  const setSugarFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'sugar': !sugar })
-      .catch(err => console.log(err));
-    setSugar(previousState => !previousState);
-  }
-
-  const setSteamedFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'steamed': !steamed })
-      .catch(err => console.log(err));
-    setSteamed(previousState => !previousState);
-  }
-
-  const setBoiledFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'boiled': !boiled })
-      .catch(err => console.log(err));
-    setBoiled(previousState => !previousState);
-  }
-
-  const setStewedFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'stewed': !stewed })
-      .catch(err => console.log(err));
-    setStewed(previousState => !previousState);
-  }
-
-  const setFriedFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'fried': !fried })
-      .catch(err => console.log(err));
-    setFried(previousState => !previousState);
-  }
-  
-  const setDeepFriedFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'deepFried': !deepFried })
-      .catch(err => console.log(err));
-    setDeepFried(previousState => !previousState);
-  }
-
-  const setRoastedFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'roasted': !roasted })
-      .catch(err => console.log(err));
-    setRoasted(previousState => !previousState);
-  }
-  
-  const setDriedFirebase = () => {
-    firebase.firestore().collection('tags').doc(userId)
-      .update({ 'dried': !dried })
-      .catch(err => console.log(err));
-    setDried(previousState => !previousState);
-  }
-
   const navigateAndSave = () => {
 
-    const undesirableProducts = {pork, beef, meat, chicken,
+    const data = {pork, beef, chicken,
       seafood, salmon, mussels,
-      nuts, peanut, sesame, cashew, almond, walnut, sunflowerSeeds,
-      lactose, cottageCheese, egg,
+      peanut, sesame, cashew, almond, walnut, sunflowerSeeds,
+      cottageCheese, egg,
       orange, banana, frutsBerries,
       avocado, beans, white, red, yellow, blue, green, vegetables,
-      buckwheat, rice, oats, cereals,
-      mushrooms, honey, gluten, sugar,
-      steamed, boiled, stewed, fried, deepFried, roasted, dried
+      buckwheat, rice, oats, cereals, honey
     }
-    navigation.navigate('Password', {tableName: 'tags', data: undesirableProducts});
+    
+    navigation.navigate('Password', {screenName: 'undesirableProducts', data: data});
 
   }
+
+  useEffect(() => {
+
+    (async () => {
+      setPork(await SecureStore.getItemAsync('pork') == 1 ? true : false);
+      setBeef(await SecureStore.getItemAsync('beef') == 1 ? true : false);
+      setChicken(await SecureStore.getItemAsync('chicken') == 1 ? true : false);
+      setSeafood(await SecureStore.getItemAsync('seafood') == 1 ? true : false);
+      setSalmon(await SecureStore.getItemAsync('salmon') == 1 ? true : false);
+      setMussels(await SecureStore.getItemAsync('mussels') == 1 ? true : false);
+      setPeanut(await SecureStore.getItemAsync('peanut') == 1 ? true : false);
+      setSesame(await SecureStore.getItemAsync('sesame') == 1 ? true : false);
+      setCashew(await SecureStore.getItemAsync('cashew') == 1 ? true : false);
+      setAlmond(await SecureStore.getItemAsync('almond') == 1 ? true : false);
+      setWalnut(await SecureStore.getItemAsync('walnut') == 1 ? true : false);
+      setSunflowerSeeds(await SecureStore.getItemAsync('sunflowerSeeds') == 1 ? true : false);
+      setCottageCheese(await SecureStore.getItemAsync('cottageCheese') == 1 ? true : false);
+      setEgg(await SecureStore.getItemAsync('egg') == 1 ? true : false);
+      setOrange(await SecureStore.getItemAsync('orange') == 1 ? true : false);
+      setBanana(await SecureStore.getItemAsync('banana') == 1 ? true : false);
+      setFrutsBerries(await SecureStore.getItemAsync('frutsBerries') == 1 ? true : false);
+      setAvocado(await SecureStore.getItemAsync('avocado') == 1 ? true : false);
+      setBeans(await SecureStore.getItemAsync('beans') == 1 ? true : false);
+      setWhite(await SecureStore.getItemAsync('white') == 1 ? true : false);
+      setRed(await SecureStore.getItemAsync('red') == 1 ? true : false);
+      setYellow(await SecureStore.getItemAsync('yellow') == 1 ? true : false);
+      setBlue(await SecureStore.getItemAsync('blue') == 1 ? true : false);
+      setGreen(await SecureStore.getItemAsync('green') == 1 ? true : false);
+      setVegetables(await SecureStore.getItemAsync('vegetables') == 1 ? true : false);
+      setBuckwheat(await SecureStore.getItemAsync('buckwheat') == 1 ? true : false);
+      setRice(await SecureStore.getItemAsync('rice') == 1 ? true : false);
+      setOats(await SecureStore.getItemAsync('oats') == 1 ? true : false);
+      setCereals(await SecureStore.getItemAsync('cereals') == 1 ? true : false);
+      setHoney(await SecureStore.getItemAsync('honey') == 1 ? true : false);
+    })();
+
+  }, [])
 
   return (
     <ScrollView style={{flex: 1, backgroundColor: colors.white}}>
@@ -397,28 +114,21 @@ export default function UndesirableProductsScreen() {
         </View>
         <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Свинина</Text>
-          <Switch value={pork} onValueChange={() => setPorkFirebase()}
+          <Switch value={pork} onValueChange={() => setPork(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Говядина</Text>
-          <Switch value={beef} onValueChange={() => setBeefFirebase()}
-            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-            thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-          <Text style={[styles.listText, {width: wp(77)}]}>Мясо (есть в обычной настройке)</Text>
-          <Switch value={meat} onValueChange={() => setMeatFirebase()}
+          <Switch value={beef} onValueChange={() => setBeef(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Птица</Text>
-          <Switch value={chicken} onValueChange={() => setChickenFirebase()}
+          <Switch value={chicken} onValueChange={() => setChicken(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -431,21 +141,21 @@ export default function UndesirableProductsScreen() {
         </View>
         <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Морепродукты</Text>
-          <Switch value={seafood} onValueChange={() => setSeafoodFirebase()}
+          <Switch value={seafood} onValueChange={() => setSeafood(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Лосось</Text>
-          <Switch value={salmon} onValueChange={() => setSalmonFirebase()}
+          <Switch value={salmon} onValueChange={() => setSalmon(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Мидии</Text>
-          <Switch value={mussels} onValueChange={() => setMusselsFirebase()}
+          <Switch value={mussels} onValueChange={() => setMussels(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -456,51 +166,44 @@ export default function UndesirableProductsScreen() {
         <View style={styles.labelBlock}>
           <Text style={styles.labelText}>Орехи и семена</Text>
         </View>
-        <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
-          <Text style={[styles.listText, {width: wp(77)}]}>Орехи</Text>
-          <Switch value={nuts} onValueChange={() => setNutsFirebase()}
-            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-            thumbColor={colors.white} />
-        </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Арахис</Text>
-          <Switch value={peanut} onValueChange={() => setPeanutFirebase()}
+          <Switch value={peanut} onValueChange={() => setPeanut(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Кунжут</Text>
-          <Switch value={sesame} onValueChange={() => setSesameFirebase()}
+          <Switch value={sesame} onValueChange={() => setSesame(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Кешью</Text>
-          <Switch value={cashew} onValueChange={() => setCashewFirebase()}
+          <Switch value={cashew} onValueChange={() => setCashew(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Миндаль</Text>
-          <Switch value={almond} onValueChange={() => setAlmondFirebase()}
+          <Switch value={almond} onValueChange={() => setAlmond(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Орех грецкий</Text>
-          <Switch value={walnut} onValueChange={() => setWalnutFirebase()}
+          <Switch value={walnut} onValueChange={() => setWalnut(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Семена подсолнечника</Text>
-          <Switch value={sunflowerSeeds} onValueChange={() => setSunflowerSeedsFirebase()}
+          <Switch value={sunflowerSeeds} onValueChange={() => setSunflowerSeeds(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -511,23 +214,16 @@ export default function UndesirableProductsScreen() {
         <View style={styles.labelBlock}>
           <Text style={styles.labelText}>Молочные продукты и яйца</Text>
         </View>
-        <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
-          <Text style={[styles.listText, {width: wp(77)}]}>Лактоза (есть в обычной настройке) </Text>
-          <Switch value={lactose} onValueChange={() => setLactoseFirebase()}
-            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-            thumbColor={colors.white} />
-        </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Творог</Text>
-          <Switch value={cottageCheese} onValueChange={() => setCottageCheeseFirebase()}
+          <Switch value={cottageCheese} onValueChange={() => setCottageCheese(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Яйцо куриное</Text>
-          <Switch value={egg} onValueChange={() => setEggFirebase()}
+          <Switch value={egg} onValueChange={() => setEgg(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -540,21 +236,21 @@ export default function UndesirableProductsScreen() {
         </View>
         <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Апельсин</Text>
-          <Switch value={orange} onValueChange={() => setOrangeFirebase()}
+          <Switch value={orange} onValueChange={() => setOrange(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Банан</Text>
-          <Switch value={banana} onValueChange={() => setBananaFirebase()}
+          <Switch value={banana} onValueChange={() => setBanana(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Фрукты-ягоды</Text>
-          <Switch value={frutsBerries} onValueChange={() => setFrutsBerriesFirebase()}
+          <Switch value={frutsBerries} onValueChange={() => setFrutsBerries(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -567,56 +263,56 @@ export default function UndesirableProductsScreen() {
         </View>
         <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Авокадо</Text>
-          <Switch value={avocado} onValueChange={() => setAvocadoFirebase()}
+          <Switch value={avocado} onValueChange={() => setAvocado(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Фасоль зерновая</Text>
-          <Switch value={beans} onValueChange={() => setBeansFirebase()}
+          <Switch value={beans} onValueChange={() => setBeans(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Белый</Text>
-          <Switch value={white} onValueChange={() => setWhiteFirebase()}
+          <Switch value={white} onValueChange={() => setWhite(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Красный</Text>
-          <Switch value={red} onValueChange={() => setRedFirebase()}
+          <Switch value={red} onValueChange={() => setRed(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Жёлтый</Text>
-          <Switch value={yellow} onValueChange={() => setYellowFirebase()}
+          <Switch value={yellow} onValueChange={() => setYellow(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Синий</Text>
-          <Switch value={blue} onValueChange={() => setBlueFirebase()}
+          <Switch value={blue} onValueChange={() => setBlue(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Зелёный</Text>
-          <Switch value={green} onValueChange={() => setGreenFirebase()}
+          <Switch value={green} onValueChange={() => setGreen(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Овощи</Text>
-          <Switch value={vegetables} onValueChange={() => setVegetablesFirebase()}
+          <Switch value={vegetables} onValueChange={() => setVegetables(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -629,28 +325,28 @@ export default function UndesirableProductsScreen() {
         </View>
         <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Гречка</Text>
-          <Switch value={buckwheat} onValueChange={() => setBuckwheatFirebase()}
+          <Switch value={buckwheat} onValueChange={() => setBuckwheat(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Рис</Text>
-          <Switch value={rice} onValueChange={() => setRiceFirebase()}
+          <Switch value={rice} onValueChange={() => setRice(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Овёс</Text>
-          <Switch value={oats} onValueChange={() => setOatsFirebase()}
+          <Switch value={oats} onValueChange={() => setOats(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Зерновые</Text>
-          <Switch value={cereals} onValueChange={() => setCerealsFirebase()}
+          <Switch value={cereals} onValueChange={() => setCereals(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
@@ -661,88 +357,12 @@ export default function UndesirableProductsScreen() {
         <View style={styles.labelBlock}>
           <Text style={styles.labelText}>Прочее</Text>
         </View>
-        <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
-          <Text style={[styles.listText, {width: wp(77)}]}>Грибы сместь (есть в обычной настройке)</Text>
-          <Switch value={mushrooms} onValueChange={() => setMushroomsFirebase()}
-            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-            thumbColor={colors.white} />
-        </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Мёд</Text>
-          <Switch value={honey} onValueChange={() => setHoneyFirebase()}
+          <Switch value={honey} onValueChange={() => setHoney(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-          <Text style={[styles.listText, {width: wp(77)}]}>Глютен (есть в обычной настройке)</Text>
-          <Switch value={gluten} onValueChange={() => setGlutenFirebase()}
-            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-            thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-          <Text style={[styles.listText, {width: wp(77)}]}>Сахар (есть в обычной настройке)</Text>
-          <Switch value={sugar} onValueChange={() => setSugarFirebase()}
-            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-            thumbColor={colors.white} />
-        </View>
-      </View>
-
-      <View style={[styles.block, styles.allBlocksMarginTop]}>
-        <View style={styles.labelBlock}>
-          <Text style={styles.labelText}>Исключить способы приготовления</Text>
-        </View>
-        <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
-            <Text style={[styles.listText, {width: wp(77)}]}>На пару</Text>
-            <Switch value={steamed} onValueChange={() => setSteamedFirebase()}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-                thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-            <Text style={[styles.listText, {width: wp(77)}]}>Варёное</Text>
-            <Switch value={boiled} onValueChange={() => setBoiledFirebase()}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-                thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-            <Text style={[styles.listText, {width: wp(77)}]}>Тушёное</Text>
-            <Switch value={stewed} onValueChange={() => setStewedFirebase()}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-                thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-            <Text style={[styles.listText, {width: wp(77)}]}>Жареное</Text>
-            <Switch value={fried} onValueChange={() => setFriedFirebase()}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-                thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-            <Text style={[styles.listText, {width: wp(77)}]}>Во фритюре</Text>
-            <Switch value={deepFried} onValueChange={() => setDeepFriedFirebase()}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-                thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-            <Text style={[styles.listText, {width: wp(77)}]}>Жареное на огне</Text>
-            <Switch value={roasted} onValueChange={() => setRoastedFirebase()}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-                thumbColor={colors.white} />
-        </View>
-        <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
-            <Text style={[styles.listText, {width: wp(77)}]}>Вяленое</Text>
-            <Switch value={dried} onValueChange={() => setDriedFirebase()}
-                trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
-                style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
-                thumbColor={colors.white} />
         </View>
       </View>
       <TouchableOpacity style={[globalStyles.mainButton, styles.mainButtonPlace]} onPress={() => navigateAndSave()}>

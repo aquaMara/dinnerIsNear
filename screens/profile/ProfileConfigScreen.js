@@ -348,9 +348,8 @@ export default function ProfileConfigScreen() {
             <Modal animationType="slide" transparent={true} visible={birthdayModalVisible}>
               <View style={styles.modalStyle}>
                 <DateTimePicker value={dateOfBirth} display='spinner' mode='date'
-                  style={{backgroundColor: 'white'}} textColor={colors.black}
+                  style={{backgroundColor: 'white', borderRadius: wp(5.13)}} textColor={colors.black}
                   themeVariant='light' locale='rus-RUS'
-                  style={{borderRadius: wp(5.13)}}
                   minimumDate={new Date(1950, 0, 1)} maximumDate={new Date(2030, 10, 20)}
                   onChange={setDate} dateFormat="dayofweek day month" />
                 <TouchableOpacity style={{width: wp(20), height: hp(3), justifyContent: 'center'}}

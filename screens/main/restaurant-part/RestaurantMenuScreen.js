@@ -56,6 +56,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
 
     const removeProhibitedTags = (result) => {
         let trueTags = route.params.trueTags;
+        let trueProTags = route.params.trueProTags;
         let tagExists = false;
         
         let withoutTags = result.filter(obj => {
@@ -70,7 +71,18 @@ export default function RestaurantMenuScreen({navigation, route}) {
             tagExists = false;
         })
 
-        return withoutTags;        
+        let withoutProTags = withoutTags.filter(obj => {
+            for (let i = 0; i < trueProTags.length; i++) {
+                if (obj.tags.indexOf(trueProTags[i]) > -1) {
+                    tagExists = true;
+                }
+            }
+            if (!tagExists) {
+                return obj;
+            }
+            tagExists = false;
+        })
+        return withoutProTags;        
     }   
 
     useEffect(() => {

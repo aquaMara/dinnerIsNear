@@ -14,7 +14,7 @@ const { height } = Dimensions.get('screen');
 
 export default function ModesScreen() {
 
-  const [PMS, setPMS] = useState(false);
+  const [period, setPeriod] = useState(false);
   const [poisoning, setPoisoning] = useState(false);
   const [malaiseMode, setMalaiseMode] = useState(false);  
 
@@ -26,14 +26,14 @@ export default function ModesScreen() {
         </View>
         <View style={[styles.toggleBlock, styles.firstToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>ПМС</Text>
-          <Switch value={poisoning} onValueChange={() => setPMS(previousState => !previousState)}
+          <Switch value={period} onValueChange={() => setPeriod(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
         </View>
         <View style={[styles.toggleBlock, styles.allToggleBlockMarginTop]}>
           <Text style={[styles.listText, {width: wp(77)}]}>Отравление</Text>
-          <Switch value={malaiseMode} onValueChange={() => setPoisoning(previousState => !previousState)}
+          <Switch value={poisoning} onValueChange={() => setPoisoning(previousState => !previousState)}
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />

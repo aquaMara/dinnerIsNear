@@ -57,8 +57,27 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const removeProhibitedTags = (result) => {
         let trueTags = route.params.trueTags;
         let trueProTags = route.params.trueProTags;
+        let weekTags = route.params.weekTags;
         let tagExists = false;
-        
+
+        let arrayOfTagsOnly = [];
+        for (let i = 0; i < weekTags.length; i++) {
+            if (weekTags[i].amount > 0) {
+                arrayOfTagsOnly.push(weekTags[i].name)
+            }
+        }
+
+        for (let i = 0; i < trueTags.length; i++) {
+            if (arrayOfTagsOnly.includes(trueTags[i])) {
+                trueTags.splice(i, 1);
+            }
+        }
+        for (let i = 0; i < trueProTags.length; i++) {
+            if (arrayOfTagsOnly.includes(trueProTags[i])) {
+                trueProTags.splice(i, 1);
+            }
+        }
+
         let withoutTags = result.filter(obj => {
             for (let i = 0; i < trueTags.length; i++) {
                 if (obj.tags.indexOf(trueTags[i]) > -1) {

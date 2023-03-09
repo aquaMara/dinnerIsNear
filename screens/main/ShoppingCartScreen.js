@@ -112,7 +112,28 @@ export default function ShoppingCartScreen() {
         deleteEatenFromCart(mealId);
     }
 
+    const getWeekTags = async () => {
+        let weekTagsData = await SecureStore.getItemAsync('weekTags');
+        let weekTags = JSON.parse(weekTagsData);
+        return weekTags;
+    }
+
     const saveTodayFood = async (foodForCurrentMeal) => {
+        let weekTagsData = await SecureStore.getItemAsync('weekTags');
+        let weekTags = JSON.parse(weekTagsData);
+        for (let i = 0; i < foodForCurrentMeal.length; i++) {
+            for (let j = 0; j < weekTags.length; j++) {
+                if (foodForCurrentMeal[i].tags.includes(weekTags[j].name)) {
+                    weekTags[j].amount--;
+                }
+            }
+        }
+        weekTags = weekTags.filter(obj => {
+            return obj.amount > 0;
+        })
+
+        await SecureStore.setItemAsync('weekTags', JSON.stringify(weekTags));
+
         const today = FormattedDate();
         let exists = await SecureStore.getItemAsync('todayFood');
         let todayFood = [];

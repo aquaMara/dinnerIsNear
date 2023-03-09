@@ -66,7 +66,6 @@ export default function UndesirableProductsScreen() {
     }
     
     navigation.navigate('Password', {screenName: 'undesirableProducts', data: data});
-
   }
 
   useEffect(() => {

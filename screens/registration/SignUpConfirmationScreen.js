@@ -55,10 +55,12 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
         ],
       );
     } else {
+      //await SecureStore.deleteItemAsync('name');
       let name = await SecureStore.getItemAsync('name');
-      if (name) { // user exists
+      if (name) {
         await getData();
         await cleanEatenMealsByDate();
+        await cleanWeekTagsByDate();
         navigation.navigate('Tab');
       } else {
         await saveData();
@@ -70,6 +72,9 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
   const saveData = async () => {
     const phoneNumber = '+7' + route.params.phoneNumber;
     await SecureStore.setItemAsync('phoneNumber', phoneNumber);
+    await SecureStore.setItemAsync('trueTags', JSON.stringify([]));
+    await SecureStore.setItemAsync('trueProTags', JSON.stringify([]));
+    await SecureStore.setItemAsync('weekTags', JSON.stringify([]));
   }
 
   const getData = async () => {
@@ -92,7 +97,7 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     const dateToday = new Date();
     var mm = dateToday.getMonth() + 1;
     return dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate();
-}
+  }
 
   const cleanEatenMealsByDate = async () => {
     const today = FormattedDate();
@@ -110,6 +115,22 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
         await SecureStore.setItemAsync('todayFood', data);
       }
     }
+  }
+
+  const cleanWeekTagsByDate = async () => {
+    let today = FormattedDate();
+    let weekTagsEndDateData = await SecureStore.getItemAsync('weekTagsEndDate');
+    let weekTagsEndDate = JSON.parse(weekTagsEndDateData);
+    if (weekTagsEndDate != null) {
+      let todaySlash = today.split('-').join('/');
+      let weekTagsEndDateSlash = weekTagsEndDate.split('-').join('/');
+      let today2 = Date.parse(todaySlash);
+      let weekTagsEndDate2 = Date.parse(weekTagsEndDateSlash);
+      if (today2 >= weekTagsEndDate2) {
+        await SecureStore.deleteItemAsync('weekTags');
+        await SecureStore.deleteItemAsync('weekTagsEndDate');
+      } 
+    }   
   }
   
   return (

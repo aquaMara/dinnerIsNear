@@ -8,10 +8,13 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import * as SecureStore from 'expo-secure-store';
+import { useNavigation } from '@react-navigation/native';
 
 const { height } = Dimensions.get('screen');
 
 export default function PasswordScreen({ route }) {
+
+  const navigation = useNavigation();
 
   const [propassword, setPropassword] = useState('');
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
@@ -51,9 +54,6 @@ export default function PasswordScreen({ route }) {
   }
 
   const saveUndesirableProducts = async () => {
-    console.log('saveUndesirableProducts');
-    console.log('data', route.params.data);
-
     await SecureStore.setItemAsync('pork', route.params.data.pork == true ? '1' : '0');
     await SecureStore.setItemAsync('beef', route.params.data.beef == true ? '1' : '0');
     await SecureStore.setItemAsync('chicken', route.params.data.chicken == true ? '1' : '0');
@@ -91,7 +91,7 @@ export default function PasswordScreen({ route }) {
     
     await saveTrueProTags();
     
-    //navigation.navigate('Profile');
+    navigation.navigate('Profile');
 
   }
 
@@ -178,10 +178,97 @@ export default function PasswordScreen({ route }) {
     }
   }
 
-  const saveWeekTags = async () => {
-    console.log('saveWeekTags');
-    console.log('data', route.params.data);
+  const FormattedDate = (date) => {
+    var mm = date.getMonth() + 1;
+    return date.getFullYear() + '-' + mm + '-' + date.getDate();
   }
+
+  const saveWeekTags = async () => {
+    const startDate = FormattedDate(new Date());
+    let date = new Date();        
+    date.setDate(date.getDate() + 7);
+    const endDate = FormattedDate(date);
+            
+    const {porkNumber, beefNumber, meatNumber, chickenNumber,
+      seafoodNumber, salmonNumber, musselsNumber,
+      nutsNumber, peanutNumber, sesameNumber, cashewNumber, almondNumber, walnutNumber, sunflowerSeedsNumber,
+      lactoseNumber, cottageCheeseNumber, eggNumber,
+      orangeNumber, bananaNumber, frutsBerriesNumber,
+      avocadoNumber, beansNumber, whiteNumber, redNumber, yellowNumber, blueNumber, greenNumber, vegetablesNumber,
+      buckwheatNumber, riceNumber, oatsNumber, cerealsNumber,
+      mushroomsNumber, honeyNumber, glutenNumber, sugarNumber,
+      steamedNumber, boiledNumber, stewedNumber, friedNumber, deepFriedNumber, roastedNumber, driedNumber
+    } = route.params.data;
+    const arrayOfTags = [{'name': 'pork', 'amount': porkNumber}, {'name': 'beef', 'amount': beefNumber},
+      {'name': 'meat', 'amount': meatNumber}, {'name': 'chicken', 'amount': chickenNumber},
+      {'name': 'seafood', 'amount': seafoodNumber}, {'name': 'salmon', 'amount': salmonNumber},
+      {'name': 'mussels', 'amount': musselsNumber}, {'name': 'nuts', 'amount': nutsNumber},
+      {'name': 'peanut', 'amount': peanutNumber}, {'name': 'sesame', 'amount': sesameNumber},
+      {'name': 'cashew', 'amount': cashewNumber}, {'name': 'almond', 'amount': almondNumber},
+      {'name': 'walnut', 'amount': walnutNumber}, {'name': 'sunflowerSeeds', 'amount': sunflowerSeedsNumber},
+      {'name': 'lactose', 'amount': lactoseNumber}, {'name': 'cottageCheese', 'amount': cottageCheeseNumber},
+      {'name': 'egg', 'amount': eggNumber}, {'name': 'orange', 'amount': orangeNumber},
+      {'name': 'banana', 'amount': bananaNumber}, {'name': 'frutsBerries', 'amount': frutsBerriesNumber},
+      {'name': 'avocado', 'amount': avocadoNumber}, {'name': 'beans', 'amount': beansNumber},
+      {'name': 'white', 'amount': whiteNumber}, {'name': 'red', 'amount': redNumber},
+      {'name': 'yellow', 'amount': yellowNumber}, {'name': 'blue', 'amount': blueNumber},
+      {'name': 'green', 'amount': greenNumber}, {'name': 'vegetables', 'amount': vegetablesNumber},
+      {'name': 'buckwheat', 'amount': buckwheatNumber}, {'name': 'rice', 'amount': riceNumber},
+      {'name': 'oats', 'amount': oatsNumber}, {'name': 'cereals', 'amount': cerealsNumber},
+      {'name': 'mushrooms', 'amount': mushroomsNumber}, {'name': 'honey', 'amount': honeyNumber},
+      {'name': 'gluten', 'amount': glutenNumber}, {'name': 'sugar', 'amount': sugarNumber},
+      {'name': 'steamed', 'amount': steamedNumber}, {'name': 'boiled', 'amount': boiledNumber},
+      {'name': 'stewed', 'amount': stewedNumber}, {'name': 'fried', 'amount': friedNumber},
+      {'name': 'deepFried', 'amount': deepFriedNumber},
+      {'name': 'roasted', 'amount': roastedNumber},
+      {'name': 'dried', 'amount': driedNumber}];
+
+    let arrayOfTagsWithAmount = arrayOfTags.filter(obj => {
+      return obj.amount != 0;
+    })
+
+    await SecureStore.setItemAsync('weekTags', JSON.stringify(arrayOfTagsWithAmount));
+    await SecureStore.setItemAsync('weekTagsEndDate', JSON.stringify(endDate));
+    console.log(await SecureStore.getItemAsync('weekTagsEndDate'))
+    
+    // filter by trueTags, but DO NOT SAVE THEM
+
+    // name: pork, amount: porkNumber
+    /*
+    если name в массиве с тегами или протегами есть, то убрать оттуда на данный момент
+    (сделать временно для функции массивы тегов и протегов без тега с названием name)
+    бегу по этому массиву и если копия массива тегов includes object.name, то из копии массива тегов убрать такое имя
+
+    а когда человек заказал еду проверяю этот массив, если там есть имя тега, то количество минус один
+    если стало 0, то удаляю
+
+    при входе смотрю на конечную дату и удаляю её
+    */
+
+  }
+  /*
+  
+
+
+    let arrayOfTagsOnly = [];
+    for (let i = 0; i < arrayOfTags.length; i++) {
+      if (arrayOfTags[i].amount > 0) {
+        arrayOfTagsOnly.push(arrayOfTags[i].name)
+      }
+    }
+    console.log('arrayOfTagsOnly', arrayOfTagsOnly);
+
+    const trueTags = ['pork', 'beef', 'vegetables', 'fruitsBerries'];
+    console.log('trueTags trueTagsCopy', trueTags);
+
+    for (let i = 0; i < trueTags.length; i++) {
+      if (arrayOfTagsOnly.includes(trueTags[i])) {
+        trueTags.splice(i, 1);
+      }
+    }
+
+    console.log('trueTagsCopy 2', trueTags);
+  */
  
   useEffect(() => {
     const showKeyboard = Keyboard.addListener('keyboardDidShow', () => {

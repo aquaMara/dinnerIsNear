@@ -23,7 +23,9 @@ export default function Restaurants({route}) {
   const moveToRestaurant = async  (id, name, mealId) => {
     let trueTags = await getTags();
     let trueProTags = await getProTags();
-    navigation.navigate("RestaurantMenu", {title: name, restrauntId: id, mealId: mealId, trueTags: trueTags, trueProTags: trueProTags});
+    let weekTags = await getWeekTags();
+    navigation.navigate("RestaurantMenu",
+      {title: name, restrauntId: id, mealId: mealId, trueTags: trueTags, trueProTags: trueProTags, weekTags: weekTags});
   }
 
   const getTags = async () => {
@@ -34,8 +36,14 @@ export default function Restaurants({route}) {
 
   const getProTags = async () => {
     let trueTagsData = await SecureStore.getItemAsync('trueProTags');
-    let trueProTags = JSON.parse(trueTagsData)
+    let trueProTags = JSON.parse(trueTagsData);
     return trueProTags;
+  }
+
+  const getWeekTags = async () => {
+    let weekTagsData = await SecureStore.getItemAsync('weekTags');
+    let weekTags = JSON.parse(weekTagsData);
+    return weekTags;
   }
 
   const renderRestaurant = ({item}) => (

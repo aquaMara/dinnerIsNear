@@ -24,6 +24,7 @@ export default function Restaurants({route}) {
     let trueTags = await getTags();
     let trueProTags = await getProTags();
     let weekTags = await getWeekTags();
+    console.log('weekTags',weekTags, 'trueTags', trueTags, 'trueProTags', trueProTags)
     navigation.navigate("RestaurantMenu",
       {title: name, restrauntId: id, mealId: mealId, trueTags: trueTags, trueProTags: trueProTags, weekTags: weekTags});
   }

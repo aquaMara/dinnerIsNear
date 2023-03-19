@@ -17,15 +17,15 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.29</string>
+	<string>2.31</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Program requires GPS to show user's location</string>
+	<string>Program requires GPS to show a user their location to improve user experience while searching for the closest restaurant, it doesn't store any location data</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Program requires GPS to show user's location</string>
+	<string>Program requires GPS to show a user their location to improve user experience while searching for the closest restaurant, it doesn't store any location data</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Program requires GPS to show user's location</string>
+	<string>Program requires GPS to show a user their location to improve user experience while searching for the closest restaurant, it doesn't store any location data</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

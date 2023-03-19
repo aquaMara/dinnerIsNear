@@ -85,10 +85,25 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     let mealAmount = parseInt(await SecureStore.getItemAsync('mealAmount'));
     let name = await SecureStore.getItemAsync('name');
 
-    setCalories(dayCalories);
+    let regime = await SecureStore.getItemAsync('regime');
+    if (regime == 'period') {
+      let dayCaloriesRegime = parseInt(await SecureStore.getItemAsync('dayCaloriesRegime'));
+      setCalories(dayCaloriesRegime);
+      let dayCarbohydratesRegime = parseInt(await SecureStore.getItemAsync('dayCarbohydratesRegime'));
+      setCarbohydrates(dayCarbohydratesRegime);
+
+    } else if (regime == 'malaiseMode') {
+      let dayCaloriesRegime = parseInt(await SecureStore.getItemAsync('dayCaloriesRegime'));
+      setCalories(dayCaloriesRegime);
+      setCarbohydrates(dayCarbohydrates);
+
+    } else {
+      setCalories(dayCalories);
+      setCarbohydrates(dayCarbohydrates);
+    }
+    
     setProtein(dayProtein);
     setFats(dayFats);
-    setCarbohydrates(dayCarbohydrates);
     setMealsCount(mealAmount)
     setName(name);
   }
@@ -127,10 +142,11 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
       let today2 = Date.parse(todaySlash);
       let weekTagsEndDate2 = Date.parse(weekTagsEndDateSlash);
       if (today2 >= weekTagsEndDate2) {
-        await SecureStore.deleteItemAsync('weekTags');
         await SecureStore.deleteItemAsync('weekTagsEndDate');
+        await SecureStore.setItemAsync('weekTags', JSON.stringify([]));
       } 
-    }   
+    } 
+    console.log()  
   }
   
   return (

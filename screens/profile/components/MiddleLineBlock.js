@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useFonts } from 'expo-font';
@@ -12,6 +12,17 @@ const { height } = Dimensions.get('screen');
 export default function MiddleLineBlock() {
 
   const navigation = useNavigation();
+
+  const openWhatsApp = () => {
+    Linking.openURL('whatsapp://send?phone=+79169652789')
+        .catch((err) => console.log(err),
+            Alert.alert(
+                'Переход в WhatsApp не осуществлён',
+                'Проверьте, пожалуйста, установлен ли WhatsApp на вашем телефоне',
+                [{text: 'OK', style: 'default'}],
+              )
+        )
+  }
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
@@ -48,6 +59,16 @@ export default function MiddleLineBlock() {
                     style={styles.arrowImage} />
             </TouchableOpacity>
         </View>
+        <View style={[styles.block, styles.veryTopBlockHeight]}>
+            <View style={styles.textBlock}>
+                <Text style={styles.titleText}>Источники</Text>
+            </View>
+            <TouchableOpacity style={styles.arrowBlock} 
+                onPress={() => navigation.navigate('Sources')}>
+            <Image source={require('../../../assets/images/chevronLeft.png')}
+                    style={styles.arrowImage} />
+            </TouchableOpacity>
+        </View>
         <View style={[styles.block, styles.bottomBlock]}>
             <View style={[styles.textBlocks, styles.bottomTextBlockHeight]}>
                 <Text style={styles.titleText}>Консультация с нутрициологом</Text>
@@ -56,7 +77,7 @@ export default function MiddleLineBlock() {
                     или улучшить своё самочувствие? Запишись на консультацию</Text>
             </View>
             <TouchableOpacity style={styles.arrowBlock}
-                onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
+                onPress={openWhatsApp}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                 style={styles.arrowImage} />
             </TouchableOpacity>

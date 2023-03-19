@@ -1,5 +1,5 @@
-import { ScrollView, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState, } from 'react';
+import { ScrollView, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import React, { useEffect, useState, } from 'react';
 import SwitchSelector from "react-native-switch-selector";
 import { Switch } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -55,6 +55,22 @@ export default function ProfileStepTwo({ navigation, route }) {
           default: am = 'maintainWeight'; break;
         }
         return am;
+    }
+
+    const setAimRhytmAttention = (wl) => {
+      setAimRhytm(wl);
+      if (wl == 'active') {
+        Alert.alert(
+          'Предупреждение',
+          'Активное изменение веса может плохо сказаться на вашем физическим или психологическом состоянии, для безопасного использования данной настройки, мы рекомендуем заказать консультацию у нас.',
+          [
+            {
+              text: 'OK',
+              style: 'default',
+            },
+          ],
+        );
+      }
     }
       
     const countProfileStatistics = () => {
@@ -164,6 +180,40 @@ export default function ProfileStepTwo({ navigation, route }) {
           
     }
 
+    useEffect(() => {
+      (async () => {
+
+        let x = await SecureStore.getItemAsync('another');
+        if (x == null) {
+          await SecureStore.setItemAsync('noDiagnosis', '1');
+          await SecureStore.setItemAsync('akne', '0');
+          await SecureStore.setItemAsync('anemia', '0' );
+          await SecureStore.setItemAsync('gastrit', '0' );
+          await SecureStore.setItemAsync('defitsytVitaminov', '0' );
+          await SecureStore.setItemAsync('divertikulez', '0' );
+          await SecureStore.setItemAsync('zagibPuzyrja', '0' );
+          await SecureStore.setItemAsync('insulinorezistentnost', '0' );
+          await SecureStore.setItemAsync('metabolicheskijSindrom', '0' );
+          await SecureStore.setItemAsync('noJelchnyjPuzyr', '0' );
+          await SecureStore.setItemAsync('noChitovidnajaJeleza', '0' );
+          await SecureStore.setItemAsync('pankreatit', '0' );
+          await SecureStore.setItemAsync('pankreaticheskijDiabet', '0' );
+          await SecureStore.setItemAsync('povyshennajaKislotnost', '0' );
+          await SecureStore.setItemAsync('ponizhennajaKislotnost', '0' );
+          await SecureStore.setItemAsync('problemySKlapanami', '0' );
+          await SecureStore.setItemAsync('saharnyiDiabetOne', '0' );
+          await SecureStore.setItemAsync('saharnyiDiabetTwo', '0' );
+          await SecureStore.setItemAsync('sindromVolframa', '0' );
+          await SecureStore.setItemAsync('srk', '0' );
+          await SecureStore.setItemAsync('helicobacter', '0' );
+          await SecureStore.setItemAsync('holetsestit', '0' );
+          await SecureStore.setItemAsync('jazva', '0' );
+          await SecureStore.setItemAsync('another', '0' );
+        }      
+    
+      })();
+    }, [])
+
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
     'SF-Pro-Medium': require('../../assets/fonts/SFPro500.otf'),
@@ -204,7 +254,7 @@ export default function ProfileStepTwo({ navigation, route }) {
         (<View style={styles.block}>
           <View style={{ alignItems: 'center' }}>
             <SwitchSelector style={{width: wp(91.8), marginLeft: 0, marginRight: 'auto'}}
-              initial={0} onPress={wl => setAimRhytm(wl) }
+              initial={0} onPress={wl => setAimRhytmAttention(wl) }
               textColor={colors.black} selectedColor={colors.white} buttonColor={colors.green}
               borderColor='rgba(118, 118, 128, 0)' backgroundColor='rgba(118, 118, 128, 0.12)'
               hasPadding borderRadius={hp(1.07)} borderWidth={hp(0.1)}
@@ -243,6 +293,19 @@ export default function ProfileStepTwo({ navigation, route }) {
             </View>
         </View>
       </View>
+
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Диагноз</Text>
+        </View>
+        <TouchableOpacity style={[styles.toggleBlock]} onPress={() => navigation.navigate('RegistrationDiagnosis')}>
+            <Text style={[styles.listText, {width: wp(77)}]}>Выбрать диагноз</Text>
+            <Image source={require('../../assets/images/chevronLight.png')}
+                      style={{width: wp(2.08), height: hp(1.71), alignSelf: 'flex-end',
+                      marginRight: wp(4.1), marginLeft: 'auto', marginTop: wp(3.2), marginBottom: 'auto'}} />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.block}>
         <View style={styles.labelBlock}>
           <Text style={styles.labelText}>Система питания</Text>

@@ -11,6 +11,9 @@ import AppearingDishDescriptionModal from '../modals/AppearingDishDescriptionMod
 import dishesList from '../../../data/dishesList';
 import { LinearGradient } from 'expo-linear-gradient';
 import { addToFavs } from '../../../functions_secure_store/Favourites';
+import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
+
+import { RefreshControl } from 'react-native';
 
 const { height } = Dimensions.get('screen');  
 
@@ -21,7 +24,10 @@ export default function RestaurantMenuScreen({navigation, route}) {
     const [currentSectionName, setCurrentSectionName] = useState(null);
     const [activeItem, setActiveItem] = useState({});
     const [visibility, setVisibility] = useState(false);
+    const { cart, setCart } = useShoppingCart();
     const currentRestaurantName = route.params.title;
+
+    const [test, setTest] = useState(3);
 
     const chooseMessage = (item, message) => {
         setActiveItem(item);
@@ -102,7 +108,47 @@ export default function RestaurantMenuScreen({navigation, route}) {
             tagExists = false;
         })
         return withoutProTags;        
-    }   
+    }
+
+    const isInCart = (activeItem) => {
+        const presentElement = cart.find(element => {
+            return (element.id == activeItem.id && element.mealId == route.params.mealId)
+        });
+        if (presentElement != null) {
+            return true;
+        }
+        return false;
+    }
+
+    const countAmountInCart = (activeItem) => {
+        const presentElement = cart.find(element => {
+            return (element.id == activeItem.id && element.mealId == route.params.mealId)
+        });
+        return presentElement.amount;
+    }
+  
+    const handleCartChoice = (activeItem, increase) => {
+        let amount = 0;
+        let tempCart = JSON.parse(JSON.stringify(cart));
+        for (let i = 0; i < tempCart.length; i++) {
+            if (tempCart[i].mealId == route.params.mealId && tempCart[i].id == activeItem.id) {
+                console.log('yes');
+                if (increase) {
+                    tempCart[i].amount = ++tempCart[i].amount;
+                } else {
+                    tempCart[i].amount = --tempCart[i].amount;
+                    if (tempCart[i].amount <= 0) {
+                        tempCart.splice(i, 1);
+        
+                    }
+                }
+            } else {
+                console.log('no');
+            }
+        }
+        setCart(tempCart);
+        return amount;
+    }
 
     useEffect(() => {
       setDishes(findDishesByRestaurant());
@@ -163,9 +209,25 @@ export default function RestaurantMenuScreen({navigation, route}) {
                 <View style={{marginHorizontal: wp(2.56)}}><Text style={styles.regularText}>{item.dishFats} Ж</Text></View>
                 <View><Text style={styles.regularText}>{item.dishCarbohydrates} У</Text></View>
             </View>
-            <TouchableOpacity onPress={() => chooseMessage(item, true)} style={styles.littleButton}>
+            
+            {!isInCart(item) &&
+            (<TouchableOpacity onPress={() => chooseMessage(item, true)} style={styles.littleButton}>
                 <Text style={styles.buttonText}>{item.dishPrice}р</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>)}
+            {isInCart(item) && 
+            (<View style={styles.amountBlock}>
+                <TouchableOpacity onPress={() => handleCartChoice(item, false)}
+                  style={styles.signButton}>
+                  <Image style={styles.sign} source={require('../../../assets/images/minusGreen.png')}/>
+                </TouchableOpacity>
+                {test && <Text style={styles.amountText}>{countAmountInCart(item)}</Text>}
+                <TouchableOpacity onPress={() => {handleCartChoice(item, true)}}
+                  style={styles.signButton}>
+                    <Image style={styles.sign} source={require('../../../assets/images/plusGreen.png')}/>
+                </TouchableOpacity>
+            </View>)}
+            
+            
         </TouchableOpacity>
     );
 
@@ -280,7 +342,6 @@ const styles = StyleSheet.create({
         lineHeight: hp(1.84),
         fontFamily: 'SF-Pro-Regular',
     },
-
     topMenu: {
         height: hp(8.06),
         width: wp(100),
@@ -344,5 +405,33 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignContent: 'center',
         alignSelf: 'center',
-    }
+    },
+    amountBlock: {
+        width: wp(40.51),
+        height: hp(3.8),
+        borderRadius: hp(2.61),
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignSelf: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    amountText: {
+        color: colors.black,
+        fontSize: RFValue(17, height),
+        lineHeight: hp(2.4),
+        fontFamily: 'SF-Pro-Regular',
+        marginHorizontal: wp(10),
+    },
+    sign: {
+        height: hp(2.5),
+        width: hp(2.6),
+        alignSelf: 'center',
+    },
+    signButton: {
+      width: wp(8),
+      height: hp(5),
+      justifyContent: 'center',
+    },
 })

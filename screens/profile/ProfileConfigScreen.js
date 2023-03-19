@@ -39,6 +39,7 @@ export default function ProfileConfigScreen() {
   const [aimFormatted, setAimFormatted] = useState('Поддержать форму');
   const [aimRhytm, setAimRhytm] = useState('regular');
   const [numberOfMeals, setNumberOfMeals] = useState(1);
+  const [diagnosis, setDiagnosis] = useState('Отсутствует');
 
   const [birthdayModalVisible, setBirthdayModalVisible] = useState(false);
   const [lifestyleModalVisible, setLifestyleModalVisible] = useState(false);
@@ -95,6 +96,22 @@ export default function ProfileConfigScreen() {
       default: am = 'Поддержать форму'; break;
     }
     return am;
+  }
+
+  const setAimRhytmAttention = (wl) => {
+    setAimRhytm(wl);
+    if (wl == 'active') {
+      Alert.alert(
+        'Предупреждение',
+        'Активное изменение веса может плохо сказаться на вашем физическим или психологическом состоянии, для безопасного использования данной настройки, мы рекомендуем заказать консультацию у нас.',
+        [
+          {
+            text: 'OK',
+            style: 'default',
+          },
+        ],
+      );
+    }
   }
 
   const createLifestyle = (lifestyleFormatted) => {
@@ -277,6 +294,10 @@ export default function ProfileConfigScreen() {
 
       setLifestyle(await SecureStore.getItemAsync('lifestyle'));
       setLifestyleFormatted(createLifestyleFormatted(await SecureStore.getItemAsync('lifestyle')));
+      let diagn = await SecureStore.getItemAsync('diagnosis');
+      if (diagn != null) {
+        setDiagnosis(diagn)
+      }
 
       setVeganism(await SecureStore.getItemAsync('veganism') == 1 ? true : false);
       setVegetarianism(await SecureStore.getItemAsync('vegetarianism') == 1 ? true : false);
@@ -428,7 +449,7 @@ export default function ProfileConfigScreen() {
         (<View style={styles.block}>
           <View style={{ alignItems: 'center' }}>
             <SwitchSelector style={{width: wp(91.8), marginLeft: 0, marginRight: 'auto'}}
-              initial={0} onPress={wl => setAimRhytm(wl) }
+              initial={0} onPress={wl => setAimRhytmAttention(wl) }
               textColor={colors.black} selectedColor={colors.white} buttonColor={colors.green}
               borderColor='rgba(118, 118, 128, 0)' backgroundColor='rgba(118, 118, 128, 0.12)'
               hasPadding borderRadius={hp(1.07)} borderWidth={hp(0.1)}
@@ -467,6 +488,19 @@ export default function ProfileConfigScreen() {
             </View>
         </View>
       </View>
+      
+      <View style={styles.block}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.labelText}>Диагноз</Text>
+        </View>
+        <TouchableOpacity style={[styles.toggleBlock]} onPress={() => navigation.navigate('Diagnosis')}>
+            {diagnosis != null && <Text style={[styles.listText, {width: wp(77)}]}>{diagnosis}</Text>}
+            <Image source={require('../../assets/images/chevronLight.png')}
+                      style={{width: wp(2.08), height: hp(1.71), alignSelf: 'flex-end',
+                      marginRight: wp(4.1), marginLeft: 'auto', marginTop: wp(3.2), marginBottom: 'auto'}} />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.block}>
         <View style={styles.labelBlock}>
           <Text style={styles.labelText}>Система питания</Text>

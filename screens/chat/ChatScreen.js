@@ -1,22 +1,26 @@
-import { Dimensions, View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
 import { useFonts } from 'expo-font';
-import { useState, useEffect } from 'react';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React from 'react';
 import { colors } from '../../styles/colors';
 import { globalStyles } from '../../styles/styles';
-import { useAuth } from '../../auth/AuthProvoder';
-import firebase from 'firebase/compat';
-import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
-import { FlatList } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { Linking } from 'react-native';
-import dishesIntroduction from '../../data/dishesIntroduction';
 
 const { height } = Dimensions.get('screen');
 
 export default function ChatScreen() {
+
+  const openWhatsApp = () => {
+    Linking.openURL('whatsapp://send?phone=+79169652789')
+        .catch((err) => console.log(err),
+            Alert.alert(
+                'Переход в WhatsApp не осуществлён',
+                'Проверьте, пожалуйста, установлен ли WhatsApp на вашем телефоне',
+                [{text: 'OK', style: 'default'}],
+              )
+        )
+  }
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -38,7 +42,7 @@ export default function ChatScreen() {
         - рекомендуем вам обратиться к квалифицированному психотерпевту 
         в области расстройств и нарушений пищевого поведения.</Text>
         <TouchableOpacity style={[globalStyles.mainButton, {marginBottom: hp(1.9), width: wp(83.6)}]}
-            onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
+            onPress={openWhatsApp}>
             <Text style={styles.buttonText}>Написать психотерапевту</Text>
         </TouchableOpacity>
       </View>
@@ -48,7 +52,7 @@ export default function ChatScreen() {
         назначение на сдачу анализов или учесть имеющиеся анализы и диагнозы в планировании вашего питания, 
         то рекомендуем вам обратиться к сертифицированному нутрициологу.</Text>
         <TouchableOpacity style={[globalStyles.mainButton, {marginBottom: hp(1.9), width: wp(83.6)}]}
-            onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
+            onPress={openWhatsApp}>
             <Text style={styles.buttonText}>Написать нутрициологу</Text>
         </TouchableOpacity>
       </View>

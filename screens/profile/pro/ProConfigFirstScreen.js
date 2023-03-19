@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useFonts } from 'expo-font';
@@ -12,6 +12,17 @@ const { height } = Dimensions.get('screen');
 export default function ProConfigFirstScreen() {
 
   const navigation = useNavigation();
+
+  const openWhatsApp = () => {
+    Linking.openURL('whatsapp://send?phone=+79169652789')
+        .catch((err) => console.log(err),
+            Alert.alert(
+                'Переход в WhatsApp не осуществлён',
+                'Проверьте, пожалуйста, установлен ли WhatsApp на вашем телефоне',
+                [{text: 'OK', style: 'default'}],
+              )
+        )
+  }
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../../assets/fonts/SFPro400.otf'),
@@ -51,7 +62,7 @@ export default function ProConfigFirstScreen() {
                 <Text style={styles.regularText}>Поможем настроить профиль идеально для вас</Text>
             </View>
             <TouchableOpacity style={styles.arrowBlock} 
-                onPress={() => Linking.openURL('whatsapp://send?phone=+79169652789')}>
+                onPress={openWhatsApp}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                     style={styles.arrowImage} />
             </TouchableOpacity>

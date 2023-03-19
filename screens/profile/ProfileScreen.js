@@ -124,10 +124,10 @@ export default function ProfileScreen() {
                 daysCounter++;
             }
         }
-        setElevenDaysAverageCalories(parseInt(elevenCal / daysCounter, 10));
-        setElevenDaysAverageProtein(parseInt(elevenProt / daysCounter, 10));
-        setElevenDaysAverageFats(parseInt(elevenFats / daysCounter, 10));
-        setElevenDaysAverageCarbohydrates(parseInt(elevenCarb / daysCounter, 10));
+        setElevenDaysAverageCalories(isNaN(parseInt(elevenCal / daysCounter, 10)) ? 0 : parseInt(elevenCal / daysCounter, 10));
+        setElevenDaysAverageProtein(isNaN(parseInt(elevenProt / daysCounter, 10)) ? 0 : parseInt(elevenProt / daysCounter, 10));
+        setElevenDaysAverageFats(isNaN(parseInt(elevenFats / daysCounter, 10)) ? 0 : parseInt(elevenFats / daysCounter, 10));
+        setElevenDaysAverageCarbohydrates(isNaN(parseInt(elevenCarb / daysCounter, 10)) ? 0 : parseInt(elevenCarb / daysCounter, 10));
         setElevenDaysStatisticsVisible(true);
     }
 

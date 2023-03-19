@@ -6,7 +6,6 @@ import { globalStyles } from '../../../styles/styles';
 import { colors } from '../../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 
@@ -184,7 +183,6 @@ export default function PasswordScreen({ route }) {
   }
 
   const saveWeekTags = async () => {
-    const startDate = FormattedDate(new Date());
     let date = new Date();        
     date.setDate(date.getDate() + 7);
     const endDate = FormattedDate(date);
@@ -229,47 +227,9 @@ export default function PasswordScreen({ route }) {
 
     await SecureStore.setItemAsync('weekTags', JSON.stringify(arrayOfTagsWithAmount));
     await SecureStore.setItemAsync('weekTagsEndDate', JSON.stringify(endDate));
-    console.log(await SecureStore.getItemAsync('weekTagsEndDate'))
-    
-    // filter by trueTags, but DO NOT SAVE THEM
-
-    // name: pork, amount: porkNumber
-    /*
-    если name в массиве с тегами или протегами есть, то убрать оттуда на данный момент
-    (сделать временно для функции массивы тегов и протегов без тега с названием name)
-    бегу по этому массиву и если копия массива тегов includes object.name, то из копии массива тегов убрать такое имя
-
-    а когда человек заказал еду проверяю этот массив, если там есть имя тега, то количество минус один
-    если стало 0, то удаляю
-
-    при входе смотрю на конечную дату и удаляю её
-    */
-
+    navigation.navigate('Profile');
   }
-  /*
-  
 
-
-    let arrayOfTagsOnly = [];
-    for (let i = 0; i < arrayOfTags.length; i++) {
-      if (arrayOfTags[i].amount > 0) {
-        arrayOfTagsOnly.push(arrayOfTags[i].name)
-      }
-    }
-    console.log('arrayOfTagsOnly', arrayOfTagsOnly);
-
-    const trueTags = ['pork', 'beef', 'vegetables', 'fruitsBerries'];
-    console.log('trueTags trueTagsCopy', trueTags);
-
-    for (let i = 0; i < trueTags.length; i++) {
-      if (arrayOfTagsOnly.includes(trueTags[i])) {
-        trueTags.splice(i, 1);
-      }
-    }
-
-    console.log('trueTagsCopy 2', trueTags);
-  */
- 
   useEffect(() => {
     const showKeyboard = Keyboard.addListener('keyboardDidShow', () => {
       setIsKeyboardShown(true);

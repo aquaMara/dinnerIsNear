@@ -15,6 +15,7 @@ import ProfileStepTwo from '../screens/registration/ProfileStepTwo';
 import TabNavigation from './TabNavigation';
 import CalorieCountScreen from '../screens/registration/CalorieCountScreen';
 import { MapScreen } from '../screens/main/MapScreen';
+import RegistrationDiagnosisScreen from '../screens/registration/RegistrationDiagnosisScreen';
 
 const { height } = Dimensions.get('screen');
 
@@ -67,6 +68,13 @@ export default function MainNavigation() {
         <Stack.Screen name="StepTwo" component={ProfileStepTwo}
             options={{ 
             title: 'Настройка профиля', 
+            headerStyle: { backgroundColor: '#fff' }, headerTintColor: '#000', headerTitleAlign: 'center',
+            headerTitleStyle: { fontSize: RFValue(17, height), lineHeight: hp(2.4), fontFamily: 'SF-Pro-Medium', },
+            headerBackTitle: 'Назад',
+        }} />
+        <Stack.Screen name="RegistrationDiagnosis" component={RegistrationDiagnosisScreen}
+            options={{ 
+            title: 'Выбор диагноза', 
             headerStyle: { backgroundColor: '#fff' }, headerTintColor: '#000', headerTitleAlign: 'center',
             headerTitleStyle: { fontSize: RFValue(17, height), lineHeight: hp(2.4), fontFamily: 'SF-Pro-Medium', },
             headerBackTitle: 'Назад',

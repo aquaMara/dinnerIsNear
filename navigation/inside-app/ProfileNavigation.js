@@ -17,6 +17,8 @@ import UndesirableProductsScreen from '../../screens/profile/pro/UndesirableProd
 import WeekTagsScreen from '../../screens/profile/pro/WeekTagsScreen';
 import ModesScreen from '../../screens/profile/pro/ModesScreen';
 import PasswordScreen from '../../screens/profile/pro/PasswordScreen';
+import SourcesScreen from '../../screens/profile/SourcesScreen';
+import DiagnosisScreen from '../../screens/profile/components/DiagnosisScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -41,6 +43,10 @@ export default function ProfileNavigation() {
         options={({ route }) => ({ title: route.params.title, headerShown: true, headerBackTitle: 'Назад'})} />
       <Stack.Screen name="ProfileConfig" component={ProfileConfigScreen}
         options={({ route }) => ({ title: 'Настройка профиля', headerShown: true, headerBackTitle: 'Назад'})} />
+        <Stack.Screen name="Diagnosis" component={DiagnosisScreen}
+        options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Выбор диагноза'}}/>
+      <Stack.Screen name="Sources" component={SourcesScreen}
+        options={({ route }) => ({ title: 'Источники', headerShown: true, headerBackTitle: 'Назад'})} />
       <Stack.Screen name="ProConfig" component={ProConfigFirstScreen}
         options={({ route }) => ({ title: 'Настройка PRO', headerShown: true,
                                   headerBackTitle: 'Назад', headerBackTitleStyle: {color: colors.black}}

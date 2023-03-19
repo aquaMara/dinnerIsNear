@@ -8,8 +8,6 @@ import { colors } from '../../styles/colors';
 import { globalStyles } from '../../styles/styles';
 import { useAuth } from '../../auth/AuthProvoder';
 import { countCalories } from '../../functions/CountCalories';
-import firebase from 'firebase/compat';
-import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
 import AddressBox from './components/AddressBox';
 import RecommendationNorm from './components/RecommendationNorm';
 import MealBlock from './components/MealBlock';
@@ -18,7 +16,11 @@ import { setStatusBarHidden } from 'expo-status-bar';
 import CaloriesForAMeal from './components/CaloriesForAMeal';
 import ROrderPart from './components/ROrderPart';
 import EatenPart from './components/EatenPart';
+import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FlatList } from 'react-native';
+import { ImageBackground } from 'react-native';
 
 const { height } = Dimensions.get('screen');
 
@@ -40,9 +42,12 @@ export default function RestaurantScreen() {
     const id = 'iLQD9PDWB1d6u5UI5vk6QNYvrwy';
     
     const [caloriesForEachMeal, setCaloriesForEachMeal] = useState(450);
-    const [meals, setMeals] = useState([{}]);
+    const [meals, setMeals] = useState([]);
     const [isMainBlockHidden, setIsMainBlockHidden] = useState(false);
     const [orderVisibility, setOrderVisibility] = useState(true);
+
+    const [isFoodEmpty, setIsFoodEmpty] = useState(true);
+    const [todayFood, setTodayFood] = useState([]);
 
     const { eatenMealsBlockMealsVisible, setEatenMealsBlockMealsVisible } = useState(true);
 
@@ -69,15 +74,26 @@ export default function RestaurantScreen() {
       setMeals(changedMeals);
     }
 
-    const changeEatenBlockVisibility = () => {
+    const changeEatenBlockVisibility = async (mealId) => {
+      //await SecureStore.setItemAsync('todayFood', JSON.stringify([]))
       setEatenBottomBlockVisibility(prevCheck => !prevCheck);
-    }
-
-    const getMealsForCertainMealFromCurrentUserMeals = (mId, meal) => {
-      var foodForCurrentMeal = currentUserMeals.filter(obj => {
-        return obj.mealId === mId
-      })
-      return foodForCurrentMeal;
+      
+      console.log('mealId', mealId)
+      let todayFoodData = await SecureStore.getItemAsync('todayFood');
+      let todayFood = JSON.parse(todayFoodData);
+      let todayMealFood = todayFood.filter(obj => {
+        return obj.mealId == mealId;
+      });
+      /*
+      
+      setTodayFood(todayMealFood);
+      console.log('todayMealFood', todayMealFood.length > 0, todayMealFood)
+      */
+      if (todayMealFood.length > 0) {
+        setIsFoodEmpty(false);
+      } else {
+        setIsFoodEmpty(true);
+      }
     }
 
     const [refreshing, setRefreshing] = React.useState(false);
@@ -90,7 +106,43 @@ export default function RestaurantScreen() {
       }, 2000);
     }
 
+    const RenderItem = ({ item }) => (
+      <TouchableOpacity style={styles.block}>    
+          <View style={styles.topBlock}>
+              <ImageBackground source={{uri: item.dishPath}} 
+                  style={styles.dishImage} imageStyle={{borderRadius: hp(2.37)}} resizeMode='cover' >
+                  <LinearGradient 
+                      colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.4)']}
+                      locations={[0.3677, 1]}
+                      style={styles.dishImage}></LinearGradient>
+              </ImageBackground>
+              
+              <View style={styles.middleBlock}>
+                  <View style={{width: wp(23.08), height: hp(5.92)}}>
+                      <Text style={styles.dishText} numberOfLines={2} ellipsizeMode='tail'>{item.dishName}</Text>
+                  </View>
+                  <View style={{width: wp(12)}}>
+                      <Text style={[styles.dishText, {textAlign: 'center'}]}>{item.dishCalories}</Text>
+                      <Text style={[styles.dishText, {textAlign: 'center'}]}>ккал</Text>
+                  </View>
+              </View>
+          </View>
+          <View style={styles.bottomBlock}>
+              <View><Text style={styles.regularText}>{item.dishProtein} Б</Text></View>
+              <View style={{marginHorizontal: wp(2.56)}}><Text style={styles.regularText}>{item.dishFats} Ж</Text></View>
+              <View><Text style={styles.regularText}>{item.dishCarbohydrates} У</Text></View>
+          </View>
+      </TouchableOpacity>
+  );
+
     useEffect(() => {
+      (async () => {
+      
+        let todayFoodData = await SecureStore.getItemAsync('todayFood');
+        setTodayFood(JSON.parse(todayFoodData));
+
+        
+      })();
       setMeals(countMeals(mealsCount, calories));
     }, []);
 
@@ -130,7 +182,7 @@ export default function RestaurantScreen() {
             </View>
           </TouchableOpacity>)}
           {meal.visible && (
-            <View style={[styles.appearedBlock, eatenBottomBlockVisibility && {height: hp(40.04)}]}>
+            <View style={[styles.appearedBlock]}>
               <View style={styles.mealLine}>
                 <Text style={styles.recommendationText}>{meal.name}</Text>
                 <TouchableOpacity onPress={() => changeBlockVisibility(meal.id)} style={styles.arrowButton}>
@@ -140,21 +192,24 @@ export default function RestaurantScreen() {
               </View>
               <CaloriesForAMeal mealId={meal.id} />
               <ROrderPart mealId={meal.id}/>
-              <View style={{alignItems: 'center'}}>
+              <View>
                 <View style={styles.introductionLine}>
                   <Text style={styles.recommendationText}>Вы съели:</Text>
-                  <TouchableOpacity onPress={changeEatenBlockVisibility} style={styles.arrowButton}>
+                  <TouchableOpacity onPress={() => changeEatenBlockVisibility(meal.id)} style={styles.arrowButton}>
                     {!eatenBottomBlockVisibility && <Image source={require('../../assets/images/leftChevron.png')}
                       style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />}
                     {eatenBottomBlockVisibility && <Image source={require('../../assets/images/chevronUp.png')}
                       style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />}
                   </TouchableOpacity>
-                </View>
-                
+                </View>                
                 {
                   eatenBottomBlockVisibility && (
+                    <View>
+                    {isFoodEmpty && (
                     <View style={styles.eatenBlock}>
                       <Text style={[styles.greyText, {width: wp(65.9), textAlign: 'center'}]}>Вы ещё ничего не заказали или не добавили, поэтому тут пусто</Text>
+                    </View>
+                    )}
                     </View>
                 )}
                 
@@ -235,8 +290,8 @@ const styles = StyleSheet.create({
     appearedBlock: {
       // width: wp(91.8),
       width: wp(100),
-      //minHeight: hp(31.04),
-      height: hp(50),
+      minHeight: hp(31.04),
+      maxHeight: hp(56.84),
       marginTop: hp(2.37),
       alignItems: 'center',
     },
@@ -253,7 +308,9 @@ const styles = StyleSheet.create({
       height: hp(2.37),
       marginTop: hp(2.67),
       display: 'flex',
-      flexDirection: 'row', 
+      flexDirection: 'row',
+      marginLeft: wp(4.1),
+      marginBottom: hp(1.84)
   },
   recommendationText: {
       color: colors.black,
@@ -273,7 +330,7 @@ const styles = StyleSheet.create({
   eatenBlock: {
     width: wp(100),
     height: hp(3.8),
-    marginTop: hp(1.84),
+    //marginTop: hp(1.84),
     marginBottom: hp(1.78),
     marginHorizontal: 0,
     alignItems: 'center',
@@ -303,7 +360,58 @@ const styles = StyleSheet.create({
     shadowOffset: {width: wp(0), height: hp(0.12)},
     shadowRadius: hp(2.13),
     shadowOpacity: 1,
-  }
+  },
+
+  block: {
+    backgroundColor: colors.white,
+    height: hp(25.12),
+    width: wp(43.59),
+    borderRadius: hp(2.37),
+    marginBottom: hp(2.13),
+    shadowOffset: {width: wp(0), height: hp(0.12)},
+    shadowColor: colors.black,
+    shadowRadius: wp(2.05),
+    shadowOpacity: 0.15,
+    marginLeft: wp(4.1),
+  },
+  topBlock: {
+    height: hp(20.14),
+    width: wp(43.59),
+  },
+  dishImage: {
+    width: wp(43.59),
+    height: hp(20.14),
+    borderRadius: hp(2.37),
+  },
+  middleBlock: {
+    width: wp(37.44),
+    height: hp(5.30),
+    alignSelf: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: -hp(6.45),
+  },
+  bottomBlock: {
+    width: wp(43.59),
+    height: hp(2.1),
+    marginTop: hp(1.18),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  dishText: {
+    color: colors.white,
+    fontSize: RFValue(17, height),
+    lineHeight: hp(2.4),
+    fontFamily: 'SF-Pro-Medium'
+  },
+  regularText: {
+    color: colors.black,
+    fontSize: RFValue(13, height),
+    lineHeight: hp(1.84),
+    fontFamily: 'SF-Pro-Regular',
+  },
       
   })
 

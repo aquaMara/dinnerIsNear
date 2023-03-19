@@ -66,7 +66,7 @@ export default function ProfileStepOne({ navigation, route }) {
 
   const toNextStep = async () => {
     let isContinue = false;
-    if (nameData.trim() === '' && weight.trim() === '' && height.trim() === '') {
+    if (nameData.trim() == '' || weight.trim() == '' || height.trim() == '') {
       Alert.alert(
         'Незаполненные поля ввода',
         'Проверьте, пожалуйста, заполнили ли вы имя и фамилию, рост, вес',

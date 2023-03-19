@@ -70,8 +70,8 @@ export default function FirstMapScreen() {
 			{markers.map((marker, id) => (
 			<Marker key={id} pinColor={colors.white}
 				coordinate={{ latitude: marker.latitude, longitude: marker.longitude}}
-				title={marker.name} description={marker.description}
-        image={require('../../assets/images/whitePin.png')}>
+				title={marker.name} description={marker.description}>
+				<Image source={require('../../assets/images/whitePin.png')} style={styles.greenPin} />
 				<Callout style={[styles.restrauntSquare]}>
 					<Image source={{uri: marker.path}} style={styles.restrauntPicture} />
 						<View style={styles.restrauntTextBlock}>
@@ -83,7 +83,7 @@ export default function FirstMapScreen() {
       {currentLatitude > 0 && 
       <Marker pinColor={colors.green} style={styles.greenPin}
         coordinate={{ latitude: currentLatitude, longitude: currentLongitude}} >
-        <Image source={require('../../assets/images/greenPin.png')} style={styles.greenPin} />
+        <Image source={require('../../assets/images/greenPin2.png')} style={styles.greenPin} />
       </Marker>
       }
 		</MapView>
@@ -92,7 +92,7 @@ export default function FirstMapScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  	container: {
 		backgroundColor: colors.white,
 		alignItems: "center",
 		height: hp(100),
@@ -106,17 +106,17 @@ const styles = StyleSheet.create({
 		zIndex: 1,
 		position: "absolute",
 		marginTop: hp(8.1),
-    width: wp(91.8),
-    height: hp(3.63),
+		width: wp(91.8),
+		height: hp(3.63),
 	},
-  searchContainer: {
-    width: wp(91.8),
+  	searchContainer: {
+    	width: wp(91.8),
 		height: hp(4.73),
-  },
+  	},
 	searchInput: {
 		borderRadius: hp(20.37),
 		width: wp(91.8),
-    height: hp(4.73),
+    	height: hp(4.73),
 	},
 	searchImage: {
 		width: wp(4.62),
@@ -159,10 +159,14 @@ const styles = StyleSheet.create({
 	},
 	greenPin: {
 		width: wp(14.62),
+		width: wp(10.96),
 		height: hp(6.75),
+		height: hp(6.19)
 	},
 	whitePin: {
 		width: wp(8.92),
+		width: wp(6.92),
 		height: hp(6.03),
+		height: hp(4.03)
 	},
 })

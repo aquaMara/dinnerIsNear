@@ -17,15 +17,15 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.31</string>
+	<string>2.32</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Program requires GPS to show a user their location to improve user experience while searching for the closest restaurant, it doesn't store any location data</string>
+	<string>Our app needs access to a user's location to show it on a map, so users see the closest restaurant to their current location, in such way it improves user experience. Location is not saved and it is not tracked when a user changes the screen or quits our app.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Program requires GPS to show a user their location to improve user experience while searching for the closest restaurant, it doesn't store any location data</string>
+	<string>Our app needs access to a user's location to show it on a map, so users see the closest restaurant to their current location, in such way it improves user experience. Location is not saved and it is not tracked when a user changes the screen or quits our app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Program requires GPS to show a user their location to improve user experience while searching for the closest restaurant, it doesn't store any location data</string>
+	<string>Our app needs access to a user's location to show it on a map, so users see the closest restaurant to their current location, in such way it improves user experience. Location is not saved and it is not tracked when a user changes the screen or quits our app.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

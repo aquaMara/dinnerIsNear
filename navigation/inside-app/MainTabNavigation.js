@@ -13,6 +13,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { colors } from '../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import SwitchSelector from "react-native-switch-selector";
+import { Switch } from 'react-native';
 import FavouritesScreen from '../../screens/main/FavouritesScreen';
 
 import RestaurantScreen from '../../screens/main/RestaurantScreen';
@@ -85,25 +86,24 @@ export default function MainTabNavigation() {
   }
 
   return (
-    <Stack.Navigator initialRouteName='Restaurant'>
+    <Stack.Navigator initialRouteName='Recommendation'>
       <Stack.Screen name="Recommendation" component={RecommendationScreen} options={{ 
         headerTitleStyle: {hidden: true, fontSize: 0},
         headerBackTitle: 'Назад', headerShown: true,
         headerLeft: () => 
         (<View style={styles.addressInsideBox}>
           <SwitchSelector
-            style={{height: hp(3.67), width: wp(15.08), padding: 0}}
-            imageStyle={{height: hp(3.2), width: wp(6.92)}}
-            onPress={() => navigation.navigate('Restaurant')}
+            style={{height: hp(2.67), width: wp(15.08), padding: 0}}
+            onPress={() => {navigation.navigate('Restaurant');setScreenNumber(0)}}
             initial={1}
-                selectedColor={colors.green}
+                selectedColor={colors.white}
                 textColor={colors.green}
                 buttonColor={colors.white}
                 borderColor={colors.green}
                 backgroundColor={colors.green}
                 options={[
-                    { value: false, imageIcon: require('../../assets/images/restaurant.png'), activeColor: 'white' }, //images.feminino = require('./path_to/assets/img/feminino.png')
-                    { value: true, imageIcon: require('../../assets/images/map.png'), activeColor: 'white' } //images.masculino = require('./path_to/assets/img/masculino.png')
+                    { value: 0, activeColor: 'white' }, //images.feminino = require('./path_to/assets/img/feminino.png')
+                    { value: 1, activeColor: 'white' } //images.masculino = require('./path_to/assets/img/masculino.png')
                 ]} />
             <View style={styles.writtenAddress}>
                 <View style={{height: hp(4.27), display: 'flex', flexDirection: 'column'}}>
@@ -131,6 +131,22 @@ export default function MainTabNavigation() {
       <Stack.Screen name="Restaurant" component={RestaurantScreen} options={{
         headerBackTitle: 'Назад', headerShown: true,
         headerTitle: 'В ресторане',
+        headerLeft: () => 
+        (<View style={styles.addressInsideBox}>
+          <SwitchSelector
+            style={{width: wp(15.08)}}
+            onPress={() => {navigation.navigate('Recommendation'); setScreenNumber(1)}}
+            initial={0}
+                selectedColor={colors.green}
+                textColor={colors.green}
+                buttonColor={colors.white}
+                borderColor={colors.green}
+                backgroundColor={colors.grey3}
+                options={[
+                    { value: 0, activeColor: 'white' }, //images.feminino = require('./path_to/assets/img/feminino.png')
+                    { value: 1, activeColor: 'white' } //images.masculino = require('./path_to/assets/img/masculino.png')
+                ]} />
+        </View>),
         headerRight: () => 
         ( <View style={styles.buttonsBox}>
             <TouchableOpacity onPress={() => navigation.navigate('Favs')}  style={{marginRight: wp(2)}}>

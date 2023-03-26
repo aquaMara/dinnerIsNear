@@ -11,16 +11,17 @@ import { globalStyles } from '../../styles/styles';
 import * as SecureStore from 'expo-secure-store';
 import { countCaloriesInCart, countProteinInCart } from '../../functions_secure_store/Cart';
 import { countFatsInCart, countCarbohydratesInCart } from '../../functions_secure_store/Cart';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 const { height } = Dimensions.get('screen');
 
 export default function ShoppingCartScreen() {
 
-    const [meals, setMeals] = useState();
-    let calorieIntake = 1700;
+    const { setCaloriesCount, setProteinCount, setFatsCount, setCarbohydratesCount, calories } = useAuth();
     const { cart, setCart } = useShoppingCart();
+    const [meals, setMeals] = useState();
     const { currentUserMeals, setCurrentUserMeals} = useAuth();
-    const { setCaloriesCount, setProteinCount, setFatsCount, setCarbohydratesCount } = useAuth();
+    const [warningVisibility, setWarningVisibility] = useState(false);
 
     const changeBlockVisibility = (givenId) => {
         const changedMeals = meals.map(meal => {
@@ -66,6 +67,7 @@ export default function ShoppingCartScreen() {
             }
         })
         setCart(cart2);
+        checkCart(cart2);
     }
 
     const increaseDishAmount = (mealId, dishId) => {
@@ -78,6 +80,7 @@ export default function ShoppingCartScreen() {
             }
         })
         setCart(cart2);
+        checkCart(cart2);
     }
 
     const addToEaten = async (mealId) => {
@@ -179,8 +182,25 @@ export default function ShoppingCartScreen() {
         setCart(cart2);
     }
 
+    const checkCart = (cart) => {
+        console.log(cart)
+        if (cart != null) {
+            let caloriesInCart = 0;
+            for (let i = 0; i < cart.length; i++) {
+                caloriesInCart += (cart[i].dishCalories * cart[i].amount);
+            }
+            if (caloriesInCart > calories) {
+                setWarningVisibility(true);
+            } else {
+                setWarningVisibility(false);
+            }
+        }
+    }
+
     useEffect(() => {
-        setMeals(countMeals(6, calorieIntake));
+        checkCart(cart);
+        console.log(cart)
+        setMeals(countMeals(6, calories));
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -195,6 +215,23 @@ export default function ShoppingCartScreen() {
     
   return (
     <ScrollView style={{backgroundColor: colors.white, flex: 1}}>
+    {warningVisibility && (
+            <GestureRecognizer onSwipeLeft={() => setWarningVisibility(false)}>
+                <View style={{width: wp(91.8), height: hp(13.63), alignSelf: 'center',
+                    borderRadius: wp(5.13), borderColor: colors.red, borderWidth: wp(1.03),
+                    alignItems: 'center', marginTop: hp(1.78)}}>
+                    <View style={{width: wp(83.59), height: hp(9.83)}}>
+                        <Text style={{fontSize: RFValue(17, height), fontFamily: 'SF-Pro-Medium',
+                            color: colors.black, lineHeight: hp(2.4), textAlign: 'left', marginTop: hp(1.7)}}>
+                            Вы привысили норму</Text>
+                        <Text style={{fontSize: RFValue(15, height), fontFamily: 'SF-Pro-Regular',
+                            color: colors.black, lineHeight: hp(2.12), textAlign: 'justify', marginTop: hp(0.7)}}>
+                            Мы рекомендуем вам убрать несколько пунктов из корзины или заменить их на другие,
+                            чтобы не превышать рекомендуемую вам норму.</Text>
+                    </View>
+                </View>
+            </GestureRecognizer>
+    )}
     { meals.length > 0 && meals.map((meal) =>(
     <View key={meal.id} style={!meal.visible && styles.mealInvisible} >
         <View style={styles.topLine}>

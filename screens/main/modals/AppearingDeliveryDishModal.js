@@ -7,8 +7,6 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { globalStyles } from "../../../styles/styles";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import { useDeliveryCart } from '../../../auth/DeliveryCartProvider';
-
-
 const { height } = Dimensions.get('screen');
 
 export default function AppearingDeliveryDishModal({activeItem, mealId, chooseMessage, visibility}) {
@@ -19,14 +17,28 @@ export default function AppearingDeliveryDishModal({activeItem, mealId, chooseMe
   const handleCartChoice = () => {
     setModalVisibleIntro(!modalVisibleIntro);
     chooseMessage(activeItem, false);
-
-    const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
-        dishPath, dishPrice, description, weight} = activeItem;
-    
-    const cartItem = {mealId, id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
-        dishPath, dishPrice, description, weight, amount: 1}
-    
-    setDcart(cart => [...dcart, cartItem]);
+    let tempCart = JSON.parse(JSON.stringify(dcart));
+    let exists = false;
+    for (let i = 0; i < tempCart.length; i++) {
+        if (tempCart[i].mealId == mealId && tempCart[i].id == activeItem.id) {
+            console.log('yes');
+            tempCart[i].amount = ++tempCart[i].amount;
+            exists = true;
+        } else {
+            console.log('no');
+        }
+    }
+    if (exists) {
+        setDcart(tempCart);
+    } else {
+        const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+            dishPath, dishPrice, description, weight} = activeItem;
+        
+        const cartItem = {mealId, id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+            dishPath, dishPrice, description, weight, amount: 1}
+        
+        setDcart(cart => [...dcart, cartItem]);
+    }
   }
 
   useEffect(() => {

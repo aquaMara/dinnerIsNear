@@ -26,8 +26,8 @@ export default function CaloriesForAMeal({ mealId }) {
     const today = FormatDate(new Date())
     const data = await SecureStore.getItemAsync(today);
     const eatenToday = JSON.parse(data);
-    console.log('eatenToday', eatenToday)
-    console.log('mealId', mealId)
+    //console.log('eatenToday', eatenToday)
+    //console.log('mealId', mealId)
     if (eatenToday) {
       countNutrition(eatenToday, mealId);
     }

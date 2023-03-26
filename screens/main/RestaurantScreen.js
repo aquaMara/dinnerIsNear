@@ -30,10 +30,9 @@ import MealEatenDishes from './components/MealEatenDishes';
 
 export default function RestaurantScreen() {
 
-    const {mealsCount, setMealsCount} = useAuth();
-    const { calories, setCalories } = useAuth();
+    const {mealsCount, setMealsCount, calories, setCalories} = useAuth();
     const [meals, setMeals] = useState([]);
-    
+    const [refreshing, setRefreshing] = React.useState(false);
     const [isFoodEmpty, setIsFoodEmpty] = useState(true);
     const [todayFood, setTodayFood] = useState([]);
 
@@ -41,14 +40,24 @@ export default function RestaurantScreen() {
 
     const [eatenBottomBlockVisibility, setEatenBottomBlockVisibility] = useState(false);
 
-    const addMeal = () => {
+    const FormattedDate = () => {
+      const dateToday = new Date();
+      var mm = dateToday.getMonth() + 1;
+      return dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate();
+    }
+
+    const addMeal = async () => {
+      const today = FormattedDate();
       if (mealsCount < 6) {
         setMealsCount(prev => mealsCount + 1);
-        setMeals( prev => countMeals(mealsCount + 1, calories) );
+        setMeals( prev => countMeals(mealsCount + 1, calories));
+        let name = today + 'mealsCount';
+        await SecureStore.setItemAsync(name, (mealsCount + 1).toString());
       }
     }
 
     const changeBlockVisibility = (givenId) => {
+      setEatenBottomBlockVisibility(false);
       const changedMeals = meals.map(meal => {
         if (meal.id === givenId) {
           return {
@@ -56,35 +65,46 @@ export default function RestaurantScreen() {
             visible: !meal.visible, 
           }
         } else {
-          return meal;
+          //return meal;
+          return {
+            ...meal,
+            visible: false, 
+          }
         }
       })
       setMeals(changedMeals);
     }
 
     const changeEatenBlockVisibility = async (mealId) => {
-      //await SecureStore.setItemAsync('todayFood', JSON.stringify([]))
-      setEatenBottomBlockVisibility(prevCheck => !prevCheck);
-      
-      console.log('mealId', mealId)
       let todayFoodData = await SecureStore.getItemAsync('todayFood');
       let todayFood = JSON.parse(todayFoodData);
-      let todayMealFood = todayFood.filter(obj => {
-        return obj.mealId == mealId;
-      });
-      /*
-      
-      setTodayFood(todayMealFood);
-      console.log('todayMealFood', todayMealFood.length > 0, todayMealFood)
-      */
-      if (todayMealFood.length > 0) {
-        setIsFoodEmpty(false);
-      } else {
-        setIsFoodEmpty(true);
-      }
-    }
 
-    const [refreshing, setRefreshing] = React.useState(false);
+      if (todayFood != null) {
+
+        if (todayFood.length > 0) {
+          let todayMealFood = todayFood.filter(obj => {
+            return obj.mealId == mealId;
+          });
+
+          var newArray = [];
+          var lookupObject  = {};
+          for(var i in todayMealFood) {
+              lookupObject[todayMealFood[i]['id']] = todayMealFood[i];
+          }
+          for(i in lookupObject) {
+              newArray.push(lookupObject[i]);
+          }
+
+          if (todayMealFood.length > 0) {
+            setTodayFood(newArray);
+            setIsFoodEmpty(false);
+          } else {
+            setIsFoodEmpty(true);
+          }
+        }
+      }
+      setEatenBottomBlockVisibility(prevCheck => !prevCheck);
+    }
 
     const onRefresh = () => {
       setRefreshing(true);
@@ -195,6 +215,26 @@ export default function RestaurantScreen() {
                       <Text style={[styles.greyText, {width: wp(65.9), textAlign: 'center'}]}>Вы ещё ничего не заказали или не добавили, поэтому тут пусто</Text>
                     </View>
                     )}
+                    {!isFoodEmpty && ( todayFood.length > 0 && todayFood.map((tfd) =>(
+                    <View key={tfd.id}>
+                    <View style={styles.mealBlock2} key={tfd.id} >
+                      <View>
+                          <Image source={{uri: tfd.dishPath}}
+                              style={styles.image}/>
+                      </View>
+                      <View style={styles.dishBlock}>
+                          <View><Text style={styles.dishTitle} numberOfLines={1} ellipsizeMode='tail'>{tfd.dishName}</Text></View>
+                          <View style={{display: 'flex', flexDirection: 'row', marginBottom: 0, marginTop: 'auto'}}>
+                              <View style={{width: wp(14), marginRight: wp(2.31)}}><Text style={[styles.dishInfo]}>К{tfd.dishCalories}</Text></View>
+                              <View style={{width: wp(13), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Б{tfd.dishProtein}</Text></View>
+                              <View style={{width: wp(13), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Ж{tfd.dishFats}</Text></View>
+                              <View style={{width: wp(13)}}><Text style={styles.dishInfo}>У{tfd.dishCarbohydrates}</Text></View>
+                          </View>
+                      </View>
+                    </View>
+                    </View>
+                    ))
+                    )}
                     </View>
                 )}
                 
@@ -276,9 +316,10 @@ const styles = StyleSheet.create({
       // width: wp(91.8),
       width: wp(100),
       minHeight: hp(31.04),
-      maxHeight: hp(56.84),
+      //maxHeight: hp(56.84),
       marginTop: hp(2.37),
       alignItems: 'center',
+      flex: 1
     },
     mealLine: {
       width: wp(91.8),
@@ -296,107 +337,140 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       marginLeft: wp(4.1),
       marginBottom: hp(1.84)
-  },
-  recommendationText: {
-      color: colors.black,
+    },
+    recommendationText: {
+        color: colors.black,
+        fontSize: RFValue(17, height),
+        lineHeight: hp(2.4),
+        fontFamily: 'SF-Pro-Bold',
+        alignSelf: 'center',
+    },
+    arrowButton: {
+      marginRight: 0,
+      marginLeft: 'auto',
+      alignSelf: 'center',
+      justifyContent: 'center',
+      height: hp(2.98),
+      width: wp(7),
+    },
+    eatenBlock: {
+      width: wp(100),
+      height: hp(3.8),
+      //marginTop: hp(1.84),
+      marginBottom: hp(1.78),
+      marginHorizontal: 0,
+      alignItems: 'center',
+    },
+    alreadyEatenBlock: {
+      width: wp(100),
+      height: hp(6.8),
+      //minHeight: hp(7.12),
+      //height: hp(30),
+      marginTop: hp(1.84),
+      marginBottom: hp(1.78),
+      marginHorizontal: 0,
+      alignItems: 'center',
+    },
+    buttonText: {
+      color: '#8A8A8E',
       fontSize: RFValue(17, height),
       lineHeight: hp(2.4),
       fontFamily: 'SF-Pro-Bold',
-      alignSelf: 'center',
-  },
-  arrowButton: {
-    marginRight: 0,
-    marginLeft: 'auto',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    height: hp(2.98),
-    width: wp(7),
-  },
-  eatenBlock: {
-    width: wp(100),
-    height: hp(3.8),
-    //marginTop: hp(1.84),
-    marginBottom: hp(1.78),
-    marginHorizontal: 0,
-    alignItems: 'center',
-  },
-  alreadyEatenBlock: {
-    width: wp(100),
-    height: hp(6.8),
-    //minHeight: hp(7.12),
-    //height: hp(30),
-    marginTop: hp(1.84),
-    marginBottom: hp(1.78),
-    marginHorizontal: 0,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#8A8A8E',
-    fontSize: RFValue(17, height),
-    lineHeight: hp(2.4),
-    fontFamily: 'SF-Pro-Bold',
+      },
+      
+    whiteButton: {
+      backgroundColor: colors.white,
+      marginTop: hp(3.56),
+      marginBottom: hp(1.54),
+      shadowColor: 'rgba(0, 0, 0, 0.18)',
+      shadowOffset: {width: wp(0), height: hp(0.12)},
+      shadowRadius: hp(2.13),
+      shadowOpacity: 1,
     },
-    
-  whiteButton: {
-    backgroundColor: colors.white,
-    marginTop: hp(3.56),
-    marginBottom: hp(1.54),
-    shadowColor: 'rgba(0, 0, 0, 0.18)',
-    shadowOffset: {width: wp(0), height: hp(0.12)},
-    shadowRadius: hp(2.13),
-    shadowOpacity: 1,
-  },
 
-  block: {
-    backgroundColor: colors.white,
-    height: hp(25.12),
-    width: wp(43.59),
-    borderRadius: hp(2.37),
-    marginBottom: hp(2.13),
-    shadowOffset: {width: wp(0), height: hp(0.12)},
-    shadowColor: colors.black,
-    shadowRadius: wp(2.05),
-    shadowOpacity: 0.15,
-    marginLeft: wp(4.1),
-  },
-  topBlock: {
-    height: hp(20.14),
-    width: wp(43.59),
-  },
-  dishImage: {
-    width: wp(43.59),
-    height: hp(20.14),
-    borderRadius: hp(2.37),
-  },
-  middleBlock: {
-    width: wp(37.44),
-    height: hp(5.30),
-    alignSelf: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: -hp(6.45),
-  },
-  bottomBlock: {
-    width: wp(43.59),
-    height: hp(2.1),
-    marginTop: hp(1.18),
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  dishText: {
-    color: colors.white,
-    fontSize: RFValue(17, height),
-    lineHeight: hp(2.4),
-    fontFamily: 'SF-Pro-Medium'
-  },
-  regularText: {
-    color: colors.black,
-    fontSize: RFValue(13, height),
-    lineHeight: hp(1.84),
-    fontFamily: 'SF-Pro-Regular',
-  },
+    block: {
+      backgroundColor: colors.white,
+      height: hp(25.12),
+      width: wp(43.59),
+      borderRadius: hp(2.37),
+      marginBottom: hp(2.13),
+      shadowOffset: {width: wp(0), height: hp(0.12)},
+      shadowColor: colors.black,
+      shadowRadius: wp(2.05),
+      shadowOpacity: 0.15,
+      marginLeft: wp(4.1),
+    },
+    topBlock: {
+      height: hp(20.14),
+      width: wp(43.59),
+    },
+    dishImage: {
+      width: wp(43.59),
+      height: hp(20.14),
+      borderRadius: hp(2.37),
+    },
+    middleBlock: {
+      width: wp(37.44),
+      height: hp(5.30),
+      alignSelf: 'center',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: -hp(6.45),
+    },
+    bottomBlock: {
+      width: wp(43.59),
+      height: hp(2.1),
+      marginTop: hp(1.18),
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+    dishText: {
+      color: colors.white,
+      fontSize: RFValue(17, height),
+      lineHeight: hp(2.4),
+      fontFamily: 'SF-Pro-Medium'
+    },
+    regularText: {
+      color: colors.black,
+      fontSize: RFValue(13, height),
+      lineHeight: hp(1.84),
+      fontFamily: 'SF-Pro-Regular',
+    },
+
+    mealBlock2: {        // no height !!!
+      width: wp(91.8),
+      height: hp(5.92),
+      marginTop: hp(2.49),
+      alignSelf: 'center',
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    image: {
+      width: wp(12.82),
+      height: hp(5.92),
+      borderRadius: wp(3.33),
+      aspectRatio: 1
+    },
+    dishBlock: {
+      width: wp(56.4),
+      marginLeft: wp(2.31),
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    dishTitle: {
+      fontSize: RFValue(17, height),
+      fontFamily: 'SF-Pro-Medium',
+      lineHeight: hp(2.4),
+    },
+    dishInfo: {
+      color: colors.black,
+      opacity: 0.2,
+      fontSize: RFValue(15, height),
+      fontFamily: 'SF-Pro-Regular',
+      lineHeight: hp(2.12),
+    },
       
   })
 

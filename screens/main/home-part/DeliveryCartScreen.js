@@ -11,15 +11,17 @@ import { globalStyles } from '../../../styles/styles';
 import * as SecureStore from 'expo-secure-store';
 import { countCaloriesInCart, countProteinInCart } from '../../../functions_secure_store/Cart';
 import { countFatsInCart, countCarbohydratesInCart } from '../../../functions_secure_store/Cart';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 const { height } = Dimensions.get('screen');
 
 export default function DeliveryCartScreen() {
 
   const { calories, setCalories } = useAuth();
+  const { setCaloriesCount, setProteinCount, setFatsCount, setCarbohydratesCount } = useAuth();
   const { dcart, setDcart } = useDeliveryCart();
   const [meals, setMeals] = useState();
-  const { setCaloriesCount, setProteinCount, setFatsCount, setCarbohydratesCount } = useAuth();
+  const [warningVisibility, setWarningVisibility] = useState(false);
 
   const changeBlockVisibility = (givenId) => {
     const changedMeals = meals.map(meal => {
@@ -65,6 +67,7 @@ const decreseDishAmount = (mealId, dishId) => {
         }
     })
     setDcart(cart2);
+    checkCart(cart2);
 }
 
 const increaseDishAmount = (mealId, dishId) => {
@@ -77,6 +80,7 @@ const increaseDishAmount = (mealId, dishId) => {
         }
     })
     setDcart(cart2);
+    checkCart(cart2);
 }
 
 const addToEaten = async (mealId) => {
@@ -133,52 +137,68 @@ const saveTodayFood = async (foodForCurrentMeal) => {
 
     await SecureStore.setItemAsync('weekTags', JSON.stringify(weekTags));
 
-    const today = FormattedDate();
-    let exists = await SecureStore.getItemAsync('todayFood');
-    let todayFood = [];
-    if (exists) {
-        todayFood = JSON.parse(exists)
-        // delete outdated food
-        todayFood = todayFood.filter(obj => {
-            if (obj.date == today) {
-                return obj;
-            }
+        const today = FormattedDate();
+        let exists = await SecureStore.getItemAsync('todayFood');
+        let todayFood = [];
+        if (exists) {
+            todayFood = JSON.parse(exists)
+            // delete outdated food
+            todayFood = todayFood.filter(obj => {
+                if (obj.date == today) {
+                    return obj;
+                }
+            })
+        }
+        for (let i = 0; i < foodForCurrentMeal.length; i++) {
+            todayFood.push(foodForCurrentMeal[i]);
+        }
+        const data = JSON.stringify(todayFood);
+        await SecureStore.setItemAsync('todayFood', data);
+    }
+
+    const saveNutrition = async (mealId, date, totalCalories, totalProtein, totalFats, totalCarbohydrates) => {
+        //await SecureStore.deleteItemAsync(date);
+        let exists = await SecureStore.getItemAsync(date);
+        const newObject = {mealId, date, totalCalories, totalProtein, totalFats, totalCarbohydrates};
+        let eatenMeals = [];
+        if (exists) {
+            eatenMeals = JSON.parse(exists)
+        }
+        eatenMeals.push(newObject);
+        const data = JSON.stringify(eatenMeals);
+        await SecureStore.setItemAsync(date, data);
+    }
+
+    const FormattedDate = () => {
+        const dateToday = new Date();
+        var mm = dateToday.getMonth() + 1;
+        return dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate();
+    }
+
+    const deleteEatenFromCart = (mealId) => {
+        var cart2 = dcart.filter(obj => {
+            return obj.mealId != mealId
         })
+        setDcart(cart2);
     }
-    for (let i = 0; i < foodForCurrentMeal.length; i++) {
-        todayFood.push(foodForCurrentMeal[i]);
+
+    const checkCart = (dcart) => {
+        if (dcart != null) {
+            let caloriesInCart = 0;
+            for (let i = 0; i < dcart.length; i++) {
+                caloriesInCart += (dcart[i].dishCalories * dcart[i].amount);
+            }
+            if (caloriesInCart > calories) {
+                setWarningVisibility(true);
+            } else {
+                setWarningVisibility(false);
+            }
+        }
     }
-    const data = JSON.stringify(todayFood);
-    await SecureStore.setItemAsync('todayFood', data);
-}
 
-const saveNutrition = async (mealId, date, totalCalories, totalProtein, totalFats, totalCarbohydrates) => {
-    //await SecureStore.deleteItemAsync(date);
-    let exists = await SecureStore.getItemAsync(date);
-    const newObject = {mealId, date, totalCalories, totalProtein, totalFats, totalCarbohydrates};
-    let eatenMeals = [];
-    if (exists) {
-        eatenMeals = JSON.parse(exists)
-    }
-    eatenMeals.push(newObject);
-    const data = JSON.stringify(eatenMeals);
-    await SecureStore.setItemAsync(date, data);
-}
-
-const FormattedDate = () => {
-    const dateToday = new Date();
-    var mm = dateToday.getMonth() + 1;
-    return dateToday.getFullYear() + '-' + mm + '-' + dateToday.getDate();
-}
-
-const deleteEatenFromCart = (mealId) => {
-    var cart2 = dcart.filter(obj => {
-        return obj.mealId != mealId
-    })
-    setDcart(cart2);
-}
 
   useEffect(() => {
+    checkCart(dcart);
     setMeals(countMeals(6, calories));
   }, []); 
   
@@ -194,6 +214,23 @@ const deleteEatenFromCart = (mealId) => {
 
   return (
     <ScrollView style={{backgroundColor: colors.white, flex: 1}}>
+    {warningVisibility && (
+            <GestureRecognizer onSwipeLeft={() => setWarningVisibility(false)}>
+                <View style={{width: wp(91.8), height: hp(13.63), alignSelf: 'center',
+                    borderRadius: wp(5.13), borderColor: colors.red, borderWidth: wp(1.03),
+                    alignItems: 'center', marginTop: hp(1.78)}}>
+                    <View style={{width: wp(83.59), height: hp(9.83)}}>
+                        <Text style={{fontSize: RFValue(17, height), fontFamily: 'SF-Pro-Medium',
+                            color: colors.black, lineHeight: hp(2.4), textAlign: 'left', marginTop: hp(1.7)}}>
+                            Вы привысили норму</Text>
+                        <Text style={{fontSize: RFValue(15, height), fontFamily: 'SF-Pro-Regular',
+                            color: colors.black, lineHeight: hp(2.12), textAlign: 'justify', marginTop: hp(0.7)}}>
+                            Мы рекомендуем вам убрать несколько пунктов из корзины или заменить их на другие,
+                            чтобы не превышать рекомендуемую вам норму.</Text>
+                    </View>
+                </View>
+            </GestureRecognizer>
+    )}
     { meals.length > 0 && meals.map((meal) =>(
     <View key={meal.id} style={!meal.visible && styles.mealInvisible} >
         <View style={styles.topLine}>

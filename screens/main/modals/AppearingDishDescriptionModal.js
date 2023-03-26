@@ -18,14 +18,28 @@ export default function AppearingDishDescriptionModal({activeItem, mealId, choos
   const handleCartChoice = () => {
     setModalVisibleIntro(!modalVisibleIntro);
     chooseMessage(activeItem, false);
-
-    const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
-        dishPath, dishPrice, description, weight} = activeItem;
-    
-    const cartItem = {mealId, id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
-        dishPath, dishPrice, description, weight, amount: 1}
-    
-    setCart(cart => [...cart, cartItem]);
+    let tempCart = JSON.parse(JSON.stringify(cart));
+    let exists = false;
+    for (let i = 0; i < tempCart.length; i++) {
+        if (tempCart[i].mealId == mealId && tempCart[i].id == activeItem.id) {
+            console.log('yes');
+            tempCart[i].amount = ++tempCart[i].amount;
+            exists = true;
+        } else {
+            console.log('no');
+        }
+    }
+    if (exists) {
+        setCart(tempCart);
+    } else {
+        const {id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+            dishPath, dishPrice, description, weight} = activeItem;
+        
+        const cartItem = {mealId, id, dishName, restaurantName, section, tags, dishCalories, dishProtein, dishFats, dishCarbohydrates,
+            dishPath, dishPrice, description, weight, amount: 1}
+        
+        setCart(cart => [...cart, cartItem]);
+    }
   }
 
   useEffect(() => {

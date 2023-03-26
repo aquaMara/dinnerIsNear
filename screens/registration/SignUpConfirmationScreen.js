@@ -104,7 +104,16 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
     
     setProtein(dayProtein);
     setFats(dayFats);
-    setMealsCount(mealAmount)
+
+    const today = FormattedDate();
+    console.log(today)
+    let nameKey = today + 'mealsCount';
+    let mealAmount2 = parseInt(await SecureStore.getItemAsync(nameKey));
+    if (!isNaN(mealAmount2) && mealAmount2 != null) {
+      setMealsCount(mealAmount2);
+    } else {
+      setMealsCount(mealAmount);
+    }
     setName(name);
   }
 

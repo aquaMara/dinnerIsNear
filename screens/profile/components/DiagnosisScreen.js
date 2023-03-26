@@ -1,19 +1,27 @@
-import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TextInput, Modal, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TextInput, Modal, TouchableOpacity, Alert, KeyboardAvoidingView, SafeAreaView } from 'react-native';
 import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
+import { Keyboard } from 'react-native';
 import { useState } from 'react';
 import { useFonts } from 'expo-font';
-import { globalStyles } from '../../../styles/styles';
 import { colors } from '../../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-import { useNavigation } from '@react-navigation/native';
+
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 import * as SecureStore from 'expo-secure-store';
 
 const { height } = Dimensions.get('screen');
 
 export default function DiagnosisScreen() {
+
+  const [warningVisibility, setWarningVisibility] = useState(false);
+  const [inputVisibility, setInputVisible] = useState(false);
+  const [anotherDiagnosis, setAnotherDiagnosis] = useState('');
+  const [marginVisibility, setMarginVisibility] = useState(false);
 
   const [noDiagnosis, setNoDiagnosis] = useState(true);
   const [akne, setAkne] = useState(false);
@@ -45,96 +53,172 @@ export default function DiagnosisScreen() {
       await SecureStore.setItemAsync('noDiagnosis', val == true ? '1' : '0' );
   }
   const setAkneSecureStore = async (val) => {
+      if (val) {
+        setWarningVisibility(true)
+      }
       setAkne(val);
       await SecureStore.setItemAsync('akne', val == true ? '1' : '0');
   }
   const setAnemiaSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setAnemia(val);
       await SecureStore.setItemAsync('anemia', val == true ? '1' : '0' );
   }
   const setGastritSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setGastrit(val);
       await SecureStore.setItemAsync('gastrit', val == true ? '1' : '0' );
   }
   const setDefitsytVitaminovSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setDefitsytVitaminov(val);
       await SecureStore.setItemAsync('defitsytVitaminov', val == true ? '1' : '0' );
   }
   const setDivertikulezSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setDivertikulez(val);
       await SecureStore.setItemAsync('divertikulez', val == true ? '1' : '0' );
   }
   const setZagibPuzyrjaSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setZagibPuzyrja(val);
       await SecureStore.setItemAsync('zagibPuzyrja', val == true ? '1' : '0' );
   }
   const setInsulinorezistentnostSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setInsulinorezistentnost(val);
       await SecureStore.setItemAsync('insulinorezistentnost', val == true ? '1' : '0' );
   }
   const setMetabolicheskijSindromSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setMetabolicheskijSindrom(val);
       await SecureStore.setItemAsync('metabolicheskijSindrom', val == true ? '1' : '0' );
   }
   const setNoJelchnyjPuzyrSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setNoJelchnyjPuzyr(val);
       await SecureStore.setItemAsync('noJelchnyjPuzyr', val == true ? '1' : '0' );
   }
   const setNoChitovidnajaJelezaSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setNoChitovidnajaJeleza(val);
       await SecureStore.setItemAsync('noChitovidnajaJeleza', val == true ? '1' : '0' );
   }
   const setPankreatitSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setPankreatit(val);
       await SecureStore.setItemAsync('pankreatit', val == true ? '1' : '0' );
   }
   const setPankreaticheskijDiabetSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setPankreaticheskijDiabet(val);
       await SecureStore.setItemAsync('pankreaticheskijDiabet', val == true ? '1' : '0' );
   }
   const setPovyshennajaKislotnostSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setPovyshennajaKislotnost(val);
       await SecureStore.setItemAsync('povyshennajaKislotnost', val == true ? '1' : '0' );
   }
   const setPonizhennajaKislotnostSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setPonizhennajaKislotnost(val);
       await SecureStore.setItemAsync('ponizhennajaKislotnost', val == true ? '1' : '0' );
   }
   const setProblemySKlapanamiSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setProblemySKlapanami(val);
       await SecureStore.setItemAsync('problemySKlapanami', val == true ? '1' : '0' );
   }
   const setSaharnyiDiabetOneSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setSaharnyiDiabetOne(val);
       await SecureStore.setItemAsync('saharnyiDiabetOne', val == true ? '1' : '0' );
   }
   const setSaharnyiDiabetTwoSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setSaharnyiDiabetTwo(val);
       await SecureStore.setItemAsync('saharnyiDiabetTwo', val == true ? '1' : '0' );
   }
   const setSindromVolframaSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setSindromVolframa(val);
       await SecureStore.setItemAsync('sindromVolframa', val == true ? '1' : '0' );
   }
   const setSrkSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setSrk(val);
       await SecureStore.setItemAsync('srk', val == true ? '1' : '0' );
   }
   const setHelicobacterSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setHelicobacter(val);
       await SecureStore.setItemAsync('helicobacter', val == true ? '1' : '0' );
   }
   const setHoletsestitSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setHoletsestit(val);
       await SecureStore.setItemAsync('holetsestit', val == true ? '1' : '0' );
   }
   const setJazvaSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setJazva(val);
       await SecureStore.setItemAsync('jazva', val == true ? '1' : '0' );
   }
   const setAnotherSecureStore = async (val) => {
+    if (val) {
+        setWarningVisibility(true)
+      }
       setAnother(val);
       await SecureStore.setItemAsync('another', val == true ? '1' : '0' );
+  }
+
+  const setAnotherDiagnosisSecureStore = async () => {
+    if (anotherDiagnosis.trim() != '') {
+        setWarningVisibility(true);
+        await SecureStore.setItemAsync('anotherDiagnosis', JSON.stringify(anotherDiagnosis.trim()));
+    }
   }
 
   useEffect(() => {
@@ -182,7 +266,21 @@ export default function DiagnosisScreen() {
   }
 
   return (
-      <ScrollView style={{backgroundColor: colors.white}}>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{flex: 1}}>
+    <ScrollView style={{backgroundColor: colors.white}}>
+        {warningVisibility && (
+            <GestureRecognizer onSwipeLeft={() => setWarningVisibility(false)}>
+                <View style={{width: wp(91.8), height: hp(8.63), alignSelf: 'center',
+                    borderRadius: wp(5.13), borderColor: colors.red, borderWidth: wp(1.03),
+                    alignItems: 'center', justifyContent: 'center', marginTop: hp(1.78)}}>
+                    <View style={{width: wp(83.59), height: hp(4.83)}}>
+                        <Text style={{fontSize: RFValue(15, height), fontFamily: 'SF-Pro-Regular',
+                            color: colors.black, lineHeight: hp(2.12), textAlign: 'justify'}}>
+                            Выбор диагноза доступен только после консультации с нутрициологом</Text>
+                    </View>
+                </View>
+            </GestureRecognizer>
+        )}
       <TouchableOpacity style={styles.toggleBlock} onPress={() => setNoDiagnosisSecureStore(!noDiagnosis)}>
             <Text style={[styles.listText]}>Отстутствует</Text>
             {noDiagnosis && <Image style={styles.diagnosisPicture} source={require('../../../assets/images/diagnosisPicture.png')}/>}
@@ -275,11 +373,24 @@ export default function DiagnosisScreen() {
             <Text style={[styles.listText]}>Язва желудка</Text>
             {jazva && <Image style={styles.diagnosisPicture} source={require('../../../assets/images/diagnosisPicture.png')}/>}
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.toggleBlock, {marginBottom: wp(10)}]} onPress={() => setAnotherSecureStore(!another)}>
+      <TouchableOpacity style={[styles.toggleBlock]} onPress={() => {setInputVisible(prev => !prev); setWarningVisibility(true)}}>
             <Text style={[styles.listText]}>Другое</Text>
-            {another && <Image style={styles.diagnosisPicture} source={require('../../../assets/images/diagnosisPicture.png')}/>}
       </TouchableOpacity>
+      {inputVisibility && (
+        <View style={[styles.toggleBlock, marginVisibility && {marginBottom: wp(26)}]}>
+            <TextInput value={anotherDiagnosis} style={[styles.listText, {height: hp(4.98), width: wp(85.13)}]}
+                placeholder='Введите свой диагноз' placeholderTextColor={colors.grey2}
+                onFocus={() => setMarginVisibility(true)}
+                onChangeText={(s) => setAnotherDiagnosis(s)}
+                onEndEditing={() => {setAnotherDiagnosisSecureStore(); setMarginVisibility(false)}}/>
+            <TouchableOpacity onPress={() => setAnotherDiagnosisSecureStore()}
+                style={{height: hp(4.98), width: wp(8), justifyContent: 'center', alignItems: 'center'}}>
+                <Image style={styles.diagnosisButtonPicture} source={require('../../../assets/images/diagnosisPicture.png')}/>
+            </TouchableOpacity>
+        </View>
+      )}
     </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -306,6 +417,11 @@ const styles = StyleSheet.create({
     width: wp(4.62),
     height: hp(2.13),
     aspectRatio: 1,
-    marginLeft: wp(2.05)
-  }
+    marginLeft: wp(2.05),
+  },
+  diagnosisButtonPicture: {
+    width: wp(4.62),
+    height: hp(2.6),
+    aspectRatio: 1,
+  },
 })

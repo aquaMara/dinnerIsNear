@@ -241,12 +241,12 @@ export default function ShoppingCartScreen() {
                     style={styles.image}/>
             </View>
             <View style={styles.dishBlock}>
-                <View><Text style={styles.dishTitle}>{dish.dishName}</Text></View>
+                <View><Text style={styles.dishTitle} numberOfLines={1} ellipsizeMode='tail'>{dish.dishName}</Text></View>
                 <View style={{display: 'flex', flexDirection: 'row', marginBottom: 0, marginTop: 'auto'}}>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={[styles.dishInfo]}>К{dish.dishCalories}</Text></View>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Б{dish.dishProtein}</Text></View>
-                    <View style={{width: wp(9.2), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Ж{dish.dishFats}</Text></View>
-                    <View style={{width: wp(9.2)}}><Text style={styles.dishInfo}>У{dish.dishCarbohydrates}</Text></View>
+                    <View style={{width: wp(14), marginRight: wp(2.31)}}><Text style={[styles.dishInfo]}>К{dish.dishCalories}</Text></View>
+                    <View style={{width: wp(13), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Б{dish.dishProtein}</Text></View>
+                    <View style={{width: wp(13), marginRight: wp(2.31)}}><Text style={styles.dishInfo}>Ж{dish.dishFats}</Text></View>
+                    <View style={{width: wp(13)}}><Text style={styles.dishInfo}>У{dish.dishCarbohydrates}</Text></View>
                 </View>
             </View>
             <View style={{display: 'flex', flexDirection: 'row', marginRight: 0, marginLeft: 'auto'}}>
@@ -306,11 +306,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'row',
-    },
-    titleText: {
-        fontSize: RFValue(17, height),
-        fontFamily: 'SF-Pro-Bold',
-        lineHeight: hp(2.4),
     },
     arrowButton: {
         marginRight: 0,
@@ -389,10 +384,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     middleBlock: {
-        width: wp(13.5),
+        width: wp(15.5),
     },
     middleBlockCalories: {
-        width: wp(22),
+        width: wp(24),
         marginLeft: 'auto',
         marginRight: 0,
     },
@@ -405,6 +400,7 @@ const styles = StyleSheet.create({
         fontSize: RFValue(17, height),
         fontFamily: 'SF-Pro-Bold',
         lineHeight: hp(2.4),
+        textAlign: 'right',
     },
 
 })

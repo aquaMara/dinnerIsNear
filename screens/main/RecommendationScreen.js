@@ -7,45 +7,30 @@ import React from 'react';
 import { colors } from '../../styles/colors';
 import { globalStyles } from '../../styles/styles';
 import { useAuth } from '../../auth/AuthProvoder';
-import { countCalories } from '../../functions/CountCalories';
-import firebase from 'firebase/compat';
-import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
-import AddressBox from './components/AddressBox';
+import { RefreshControl } from 'react-native';
 import RecommendationNorm from './components/RecommendationNorm';
 import MealBlock from './components/MealBlock';
 import { countMeals } from '../../functions/CountMeals';
-import { setStatusBarHidden } from 'expo-status-bar';
 import CaloriesForAMeal from './components/CaloriesForAMeal';
 import OrderPart from './components/OrderPart';
-import EatenPart from './components/EatenPart';
 import { useNavigation } from '@react-navigation/native';
 
 const { height } = Dimensions.get('screen');
-  // {navigation, route}
+
 export default function RecommendationScreen() {
 
-    //const { currentUserData, setCurrentUserData } = useAuth();
-    // setCurrentUserData('Alyssa')
     const navigation = useNavigation();
-
-    const { currentUser, currentUserData } = useAuth();
-    //const id = currentUser.uid;
-    const id = '56heP7RFY7ZLGTwepBzjBTsdiA63';
-    
-    const [caloriesForEachMeal, setCaloriesForEachMeal] = useState(450);
-    const [calorieIntake, setCalorieIntake] = useState(1700);
-    const [numberOfMeals, setNumberOfMeals] = useState(4);
+    const {mealsCount, setMealsCount} = useAuth();
+    const { calories, setCalories } = useAuth();
     const [meals, setMeals] = useState([{}]);
-    const [isMainBlockHidden, setIsMainBlockHidden] = useState(true);
-    const [orderVisibility, setOrderVisibility] = useState(true);
 
     const [eatenBottomBlockVisibility, setEatenBottomBlockVisibility] = useState(false);
 
     const addMeal = () => {
-      if (numberOfMeals <= 6) {
-        setNumberOfMeals(prev => ++prev);
-        setMeals(countMeals(numberOfMeals, calorieIntake));
-      }      
+      if (mealsCount < 6) {
+        setMealsCount(prev => mealsCount + 1);
+        setMeals( prev => countMeals(mealsCount + 1, calories) );
+      }
     }
     
     const changeBlockVisibility = (givenId) => {
@@ -66,8 +51,18 @@ export default function RecommendationScreen() {
       setEatenBottomBlockVisibility(prevCheck => !prevCheck);
     }
 
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = () => {
+      setRefreshing(true);
+      setMeals(countMeals(mealsCount, calories));
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }
+
     useEffect(() => {
-      setMeals(countMeals(numberOfMeals, calorieIntake));
+      setMeals(countMeals(mealsCount, calories));
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -82,12 +77,15 @@ export default function RecommendationScreen() {
 
   return (
     
-      <ScrollView style={{backgroundColor: colors.white}}>
+      <ScrollView style={{backgroundColor: colors.white}} 
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
         <RecommendationNorm />
         {
           meals.length > 0 && meals.map((meal) =>
           <View key={meal.id}>
-          {meal.visible && (
+          {!meal.visible && (
           <View style={[styles.mealBlock]}>
             <View style={styles.topLine}>
               <Text style={styles.recommendationText}>{meal.name}</Text>
@@ -101,7 +99,7 @@ export default function RecommendationScreen() {
               <Text style={[styles.greyText, {marginRight: 0, marginLeft: 'auto'}]}>~{meal.calories}ккал</Text>
             </View>
           </View>)}
-          {!meal.visible && (
+          {meal.visible && (
             <View style={[styles.appearedBlock, eatenBottomBlockVisibility && {height: hp(49.04)}]}>
               <View style={styles.mealLine}>
                 <Text style={styles.recommendationText}>{meal.name}</Text>
@@ -110,8 +108,8 @@ export default function RecommendationScreen() {
                       style={{width: wp(5.13), height: hp(1.38), alignSelf: 'flex-end'}} />
                 </TouchableOpacity>
               </View>
-              <CaloriesForAMeal />
-              <OrderPart name={meal.name} navigation={navigation}/>
+              <CaloriesForAMeal mealId={meal.id} />
+              <OrderPart meal={meal} navigation={navigation}/>
               <View style={{alignItems: 'center'}}>
                 <View style={styles.introductionLine}>
                   <Text style={styles.recommendationText}>Вы съели:</Text>

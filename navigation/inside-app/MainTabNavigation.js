@@ -21,6 +21,8 @@ import Restaurants from '../../screens/main/restaurant-part/Restaurants';
 import RestaurantMenuScreen from '../../screens/main/restaurant-part/RestaurantMenuScreen';
 
 import firebase from 'firebase/compat';
+import RecommendationMenuScreen from '../../screens/main/home-part/RecommendationMenuScreen';
+import DeliveryCartScreen from '../../screens/main/home-part/DeliveryCartScreen';
 
 const { height } = Dimensions.get('screen');
 
@@ -30,50 +32,6 @@ export default function MainTabNavigation() {
 
   const navigation = useNavigation();
   const [address, setAddress] = useState('проспект Толстова, 237');
-  const [isHomeScreen, setIsHomeScreen] = useState(true);
-  const [screenNumber, setScreenNumber] = useState(1);
-  const [favs0, setFavs0] = useState({});
-
-  const getFavsFromFirebase = async () => {
-    const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
-    const tableName = 'favs0';
-    await firebase.firestore().collection(tableName).doc(userId)
-      .get().then((snapshot) => {
-        if (snapshot.exists) {
-          const array = Object.values(snapshot.data());
-          console.log('array', array)
-          var newData = {};
-          array.map((item, id)=> { 
-            newData[item.id] = item;
-          });
-          console.log('newData', newData)
-          return {'newData': 'j'};
-        }
-    });
-    return 'getFavsFromFirebasex';
-  }
-
-  const setScreen = (val) => {
-    setIsHomeScreen(val)
-    val ? navigation.navigate('Recommendation') : navigation.navigate('Restaurant')
-  }
-
-  useEffect(() => {
-    const userId = "8D5itKpIaMZubdZLPsyP0XCDY6i1";
-    const tableName = 'favs0';
-  
-    firebase.firestore().collection('tags0')
-        .doc(userId).get()
-        .then((snapshot) => {
-          if (snapshot) {
-              setFavs0(snapshot.data());
-              return snapshot.data();
-              //setTags(prev => ([...prev, ...snapshot.data()]));
-          }
-          
-      }).catch((err) => {console.log('FAVS0 ERR', err)})
-      
-    }, [])
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -92,19 +50,10 @@ export default function MainTabNavigation() {
         headerBackTitle: 'Назад', headerShown: true,
         headerLeft: () => 
         (<View style={styles.addressInsideBox}>
-          <SwitchSelector
-            style={{height: hp(2.67), width: wp(15.08), padding: 0}}
-            onPress={() => {navigation.navigate('Restaurant');setScreenNumber(0)}}
-            initial={1}
-                selectedColor={colors.white}
-                textColor={colors.green}
-                buttonColor={colors.white}
-                borderColor={colors.green}
-                backgroundColor={colors.green}
-                options={[
-                    { value: 0, activeColor: 'white' }, //images.feminino = require('./path_to/assets/img/feminino.png')
-                    { value: 1, activeColor: 'white' } //images.masculino = require('./path_to/assets/img/masculino.png')
-                ]} />
+          <Switch value={true} onValueChange={() => navigation.navigate('Restaurant')}
+            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+            thumbColor={colors.white} />
             <View style={styles.writtenAddress}>
                 <View style={{height: hp(4.27), display: 'flex', flexDirection: 'column'}}>
                 <View style={{display: 'flex', flexDirection: 'row',}} >
@@ -122,7 +71,7 @@ export default function MainTabNavigation() {
               <Image source={require('../../assets/images/favourites.png')}
                 style={styles.favsImage}/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={{}}>
+            <TouchableOpacity onPress={() => navigation.navigate('DeliveryCart')} style={{}}>
               <Image source={require('../../assets/images/shop.png')}
                 style={styles.shopImage} />
             </TouchableOpacity>
@@ -133,19 +82,10 @@ export default function MainTabNavigation() {
         headerTitle: 'В ресторане',
         headerLeft: () => 
         (<View style={styles.addressInsideBox}>
-          <SwitchSelector
-            style={{width: wp(15.08)}}
-            onPress={() => {navigation.navigate('Recommendation'); setScreenNumber(1)}}
-            initial={0}
-                selectedColor={colors.green}
-                textColor={colors.green}
-                buttonColor={colors.white}
-                borderColor={colors.green}
-                backgroundColor={colors.grey3}
-                options={[
-                    { value: 0, activeColor: 'white' }, //images.feminino = require('./path_to/assets/img/feminino.png')
-                    { value: 1, activeColor: 'white' } //images.masculino = require('./path_to/assets/img/masculino.png')
-                ]} />
+          <Switch value={false} onValueChange={() => navigation.navigate('Recommendation')}
+            trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
+            style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
+            thumbColor={colors.white} />
         </View>),
         headerRight: () => 
         ( <View style={styles.buttonsBox}>
@@ -173,7 +113,20 @@ export default function MainTabNavigation() {
             </TouchableOpacity>
           </View> ) })} />
       <Stack.Screen name="Cart" component={ShoppingCartScreen} options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Корзина' }} />
+      <Stack.Screen name="DeliveryCart" component={DeliveryCartScreen} options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Корзина' }} />
       <Stack.Screen name="Favs" component={FavouritesScreen} options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Избранное' }} />
+      <Stack.Screen name="RecommendationMenu" component={RecommendationMenuScreen} options={({ route }) => ({ title: route.params.title, headerBackTitle: 'Назад', headerShown: true, 
+        headerRight: () => 
+        ( <View style={styles.buttonsBox}>
+            <TouchableOpacity onPress={() => navigation.navigate('Favs')} style={{marginRight: wp(2)}}>
+              <Image source={require('../../assets/images/favourites.png')}
+                style={styles.favsImage}/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('DeliveryCart')} >
+              <Image source={require('../../assets/images/shop.png')}
+                style={styles.shopImage} />
+            </TouchableOpacity>
+          </View> ) })} />
       <Stack.Screen name="Restaurants" component={Restaurants} options={{ headerShown: true, headerBackTitle: 'Назад', headerTitle: 'Заведения' }} />
       <Stack.Screen name="RestaurantMenu" component={RestaurantMenuScreen} options={({ route }) => ({ title: "Меню: " + route.params.title, headerBackTitle: 'Назад', headerShown: true, 
         headerRight: () => 

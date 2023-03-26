@@ -39,49 +39,46 @@ export default function MiddleLineBlock() {
         <View style={styles.middleLineBlock}>
             <Text style={styles.regularText}>Дополнительно</Text>
         </View>
-        <View style={[styles.block, styles.veryTopBlockHeight]}>
+        <TouchableOpacity style={[styles.block, styles.veryTopBlockHeight]} onPress={() => navigation.navigate('Modes')}>
             <View style={styles.textBlock}>
                 <Text style={styles.titleText}>Режимы и особенности</Text>
             </View>
-            <TouchableOpacity style={styles.arrowBlock} 
-                onPress={() => navigation.navigate('Modes')}>
+            <View style={styles.arrowBlock}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                     style={styles.arrowImage} />
-            </TouchableOpacity>
-        </View>
-        <View style={[styles.block, styles.topBlockHeight]}>
+            </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.block, styles.topBlockHeight]} onPress={() => navigation.navigate("Articles")}>
             <View style={[styles.textBlocks, styles.topTextBlockHeight]}>
                 <Text style={styles.titleText}>Полезные статьи</Text>
                 <Text style={styles.regularText}>Узнай подробнее о нутриентах</Text>
             </View>
-            <TouchableOpacity style={styles.arrowBlock} onPress={() => navigation.navigate("Articles")}>
+            <View style={styles.arrowBlock}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                     style={styles.arrowImage} />
-            </TouchableOpacity>
-        </View>
-        <View style={[styles.block, styles.veryTopBlockHeight]}>
+            </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.block, styles.veryTopBlockHeight]} onPress={() => navigation.navigate('Sources')}>
             <View style={styles.textBlock}>
                 <Text style={styles.titleText}>Источники</Text>
             </View>
-            <TouchableOpacity style={styles.arrowBlock} 
-                onPress={() => navigation.navigate('Sources')}>
+            <View style={styles.arrowBlock}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                     style={styles.arrowImage} />
-            </TouchableOpacity>
-        </View>
-        <View style={[styles.block, styles.bottomBlock]}>
+            </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.block, styles.bottomBlock]} onPress={openWhatsApp}>
             <View style={[styles.textBlocks, styles.bottomTextBlockHeight]}>
                 <Text style={styles.titleText}>Консультация с нутрициологом</Text>
                 <Text style={styles.regularText} numberOfLines={2} ellipsizeMode='tail'>
                     Хочешь добиться лучшего результата 
                     или улучшить своё самочувствие? Запишись на консультацию</Text>
             </View>
-            <TouchableOpacity style={styles.arrowBlock}
-                onPress={openWhatsApp}>
+            <View style={styles.arrowBlock}>
             <Image source={require('../../../assets/images/chevronLeft.png')}
                 style={styles.arrowImage} />
-            </TouchableOpacity>
-        </View>
+            </View>
+        </TouchableOpacity>
     </View>
   )
 }

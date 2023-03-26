@@ -47,8 +47,21 @@ export default function Restaurants({route}) {
     return weekTags;
   }
 
+  const searchForRestraunt = () => {
+    console.log(search, 'search', search.trim());
+    if (search.trim().length > 0) {
+      let searchedRestaurants = restsIntroduction.filter(obj => {
+        return obj.name.toLowerCase().includes(search.trim().toLowerCase());
+      })
+      setRestaurants(searchedRestaurants);
+    } else {
+      setRestaurants(restsIntroduction);
+    }
+  }
+
   const renderRestaurant = ({item}) => (
-    <TouchableOpacity style={styles.restaurantBlock} onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
+    <TouchableOpacity style={styles.restaurantBlock}
+      onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
       <View style={styles.topBlock}>
         <ImageBackground source={{uri: item.image}} style={styles.restaurantImage} imageStyle={{borderRadius: hp(2.37)}} >
           <LinearGradient 
@@ -88,8 +101,9 @@ export default function Restaurants({route}) {
         <View style={styles.searchBarBox}>
           <TextInput value={search} style={styles.searchInput}
             placeholder='Поиск' placeholderTextColor={colors.grey2}
-            onChangeText={(s) => setSearch(s)} />
-          <TouchableOpacity style={styles.searchButton}>
+            onChangeText={(s) => setSearch(s)}
+            onEndEditing={() => searchForRestraunt()} />
+          <TouchableOpacity style={styles.searchButton} onPress={() => searchForRestraunt()}>
             <Image source={require('../../../assets/images/search.png')} style={styles.searchImage} />
           </TouchableOpacity>
         </View>

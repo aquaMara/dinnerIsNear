@@ -1,19 +1,14 @@
 import { Dimensions, View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, SafeAreaView, Alert, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react';
 import data from '../chat/data';
-import dishesIntroduction from '../../data/dishesIntroduction';
+import dishesList from '../../data/dishesIntroduction';
 import dishesSections from '../../data/dishesSections';
 import { useFonts } from 'expo-font';
-import { Linking } from 'react-native';
-import { firebaseConfig } from '../../firebase-config';
-import firebase from "firebase/compat";
-import { globalStyles } from '../../styles/styles';
 import { colors } from '../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { collection, getDoc, getFirestore, getDocs, collectionGroup, query, where, doc, documentId } from "@firebase/firestore";
 import { FlatList } from 'react-native';
-import TopView from './components/TopView';
 //import AppearingDishDescription from './components/AppearingDishDescription';
 import AppearingDishDescriptionModal from './modals/AppearingDishDescriptionModal';
 
@@ -77,7 +72,7 @@ export default function MenuScreen({ navigation, route }) {
     );
 
     useEffect(() => {
-        setDishes(data);
+        setDishes(dishesList);
         setDishesIntro(dishesSections);
         setCurrentSectionId(route.params.sectionId)
     }, [])

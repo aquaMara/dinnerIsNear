@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 
 export default function TabNavigation() {
   return (
-    <Tab.Navigator initialRouteName='ProfileTab' 
+    <Tab.Navigator initialRouteName='MainTab' 
       screenOptions={{
       tabBarActiveTintColor: colors.black,
       tabBarInactiveTintColor: colors.grey,

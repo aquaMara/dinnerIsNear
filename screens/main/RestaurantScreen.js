@@ -30,22 +30,10 @@ import MealEatenDishes from './components/MealEatenDishes';
 
 export default function RestaurantScreen() {
 
-    const navigation = useNavigation();
-
-    const { currentUser, currentUserData } = useAuth();
     const {mealsCount, setMealsCount} = useAuth();
     const { calories, setCalories } = useAuth();
-    const { currentUserMeals } = useAuth();
-    const { caloriesCount } = useAuth();
-    //const id = currentUser.uid;
-    //console.log(currentUser.uid)
-    const id = 'iLQD9PDWB1d6u5UI5vk6QNYvrwy';
-    
-    const [caloriesForEachMeal, setCaloriesForEachMeal] = useState(450);
     const [meals, setMeals] = useState([]);
-    const [isMainBlockHidden, setIsMainBlockHidden] = useState(false);
-    const [orderVisibility, setOrderVisibility] = useState(true);
-
+    
     const [isFoodEmpty, setIsFoodEmpty] = useState(true);
     const [todayFood, setTodayFood] = useState([]);
 
@@ -137,11 +125,8 @@ export default function RestaurantScreen() {
 
     useEffect(() => {
       (async () => {
-      
         let todayFoodData = await SecureStore.getItemAsync('todayFood');
         setTodayFood(JSON.parse(todayFoodData));
-
-        
       })();
       setMeals(countMeals(mealsCount, calories));
     }, []);

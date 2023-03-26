@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, TextInput, Dimensions, Image, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, Image, ImageBackground } from 'react-native';
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { useFonts } from 'expo-font';
@@ -7,27 +7,27 @@ import { colors } from '../../../styles/colors';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import dishesSections from '../../../data/dishesSections';
-import AppearingDishDescriptionModal from '../modals/AppearingDishDescriptionModal';
+//import AppearingDishDescriptionModal from '../modals/AppearingDishDescriptionModal';
+import AppearingDeliveryDishModal from '../modals/AppearingDeliveryDishModal';
 import dishesList from '../../../data/dishesList';
 import { LinearGradient } from 'expo-linear-gradient';
 import { addToFavs } from '../../../functions_secure_store/Favourites';
-import { useShoppingCart } from '../../../auth/ShoppingCartProvider';
 
 import { RefreshControl } from 'react-native';
+import { useDeliveryCart } from '../../../auth/DeliveryCartProvider';
 
-const { height } = Dimensions.get('screen');  
+const { height } = Dimensions.get('screen');
 
-export default function RestaurantMenuScreen({navigation, route}) {
-
-    const [dishes, setDishes] = useState([{}]);
-    const [dishesIntro, setDishesIntro] = useState([]);
-    const [currentSectionName, setCurrentSectionName] = useState(null);
-    const [activeItem, setActiveItem] = useState({});
-    const [visibility, setVisibility] = useState(false);
-    const { cart, setCart } = useShoppingCart();
-    const [search, setSearch] = useState('');
-    const [searchIconVisibility, setSearchIconVisibility] = useState(true);
-    const currentRestaurantName = route.params.title;
+export default function RecommendationMenuScreen({navigation, route}) {
+  
+  const [dishes, setDishes] = useState([{}]);
+  const [dishesIntro, setDishesIntro] = useState([]);
+  const [currentSectionName, setCurrentSectionName] = useState(null);
+  const [activeItem, setActiveItem] = useState({});
+  const [visibility, setVisibility] = useState(false);
+  const { dcart, setDcart } = useDeliveryCart();
+  const [search, setSearch] = useState('');
+  const [searchIconVisibility, setSearchIconVisibility] = useState(true);
 
     const [test, setTest] = useState(3);
 
@@ -36,31 +36,29 @@ export default function RestaurantMenuScreen({navigation, route}) {
         setVisibility(message);
     };
 
-    const handleSectionChoice = (name) => {
-        if (name === 'Все') {
-            setDishes(findDishesByRestaurant())
+    const handleSectionChoice = (sectionName) => {
+      console.log('sectionName', sectionName)
+        if (sectionName === 'Все') {
+            setDishes(findDishesAll(dishesList));
             setCurrentSectionName('Все')
         } else {
-            setDishes(findDishesByRestaurantAndBySectionName(name));
-            setCurrentSectionName(name);
-        }     
+            setDishes(findDishesBySectionName(sectionName));
+            setCurrentSectionName(sectionName);
+        }
     }
 
-    const findDishesByRestaurantAndBySectionName = (name) => {
-        let result = dishesList.filter(obj => {
-            return obj.section === name && obj.restaurantName === currentRestaurantName;
-        })
-        let withoutTags = removeProhibitedTags(result);
-        return withoutTags;
+    const findDishesAll = (dishesList) => {
+      let withoutTags = removeProhibitedTags(dishesList);
+      return withoutTags;
     }
 
-    const findDishesByRestaurant = () => {
-        var result = dishesList.filter(obj => {
-            return obj.restaurantName === currentRestaurantName;
-        })
-        let withoutTags = removeProhibitedTags(result);
-        return withoutTags;
-    } 
+    const findDishesBySectionName = (sectionName) => {
+      let result = dishesList.filter(obj => {
+        return obj.section == sectionName;
+      })
+      let withoutTags = removeProhibitedTags(result);
+      return withoutTags;
+    }
 
     const removeProhibitedTags = (result) => {
         let trueTags = route.params.trueTags;
@@ -85,7 +83,6 @@ export default function RestaurantMenuScreen({navigation, route}) {
                 trueProTags.splice(i, 1);
             }
         }
-
         let withoutTags = result.filter(obj => {
             for (let i = 0; i < trueTags.length; i++) {
                 if (obj.tags.indexOf(trueTags[i]) > -1) {
@@ -113,7 +110,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
     }
 
     const isInCart = (activeItem) => {
-        const presentElement = cart.find(element => {
+        const presentElement = dcart.find(element => {
             return (element.id == activeItem.id && element.mealId == route.params.mealId)
         });
         if (presentElement != null) {
@@ -123,7 +120,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
     }
 
     const countAmountInCart = (activeItem) => {
-        const presentElement = cart.find(element => {
+        const presentElement = dcart.find(element => {
             return (element.id == activeItem.id && element.mealId == route.params.mealId)
         });
         return presentElement.amount;
@@ -131,10 +128,9 @@ export default function RestaurantMenuScreen({navigation, route}) {
   
     const handleCartChoice = (activeItem, increase) => {
         let amount = 0;
-        let tempCart = JSON.parse(JSON.stringify(cart));
+        let tempCart = JSON.parse(JSON.stringify(dcart));
         for (let i = 0; i < tempCart.length; i++) {
             if (tempCart[i].mealId == route.params.mealId && tempCart[i].id == activeItem.id) {
-                console.log('yes');
                 if (increase) {
                     tempCart[i].amount = ++tempCart[i].amount;
                 } else {
@@ -148,38 +144,46 @@ export default function RestaurantMenuScreen({navigation, route}) {
                 console.log('no');
             }
         }
-        setCart(tempCart);
+        setDcart(tempCart);
         return amount;
     }
 
-    const searchForDishesByNameSectionRestaurant = () => {
-        console.log(currentSectionName, search, route.params.title);
+    const searchForDishesByNameSection = () => {
+        console.log(currentSectionName, search);
         let searchedDishes = [];
 
         if (search.trim().length > 0) {
             if (currentSectionName == 'Все') {
                 searchedDishes = dishesList.filter(obj => {
-                    return obj.dishName.toLowerCase().includes(search.trim().toLowerCase())
-                        && obj.restaurantName == route.params.title;
+                    return obj.dishName.toLowerCase().includes(search.trim().toLowerCase());
                 })
             } else {
                 searchedDishes = dishesList.filter(obj => {
-                    return obj.dishName.toLowerCase().includes(search.trim().toLowerCase())
-                        && obj.restaurantName == route.params.title
-                        && obj.section == currentSectionName;
+                    return obj.dishName.toLowerCase().includes(search.trim().toLowerCase()) && obj.section == currentSectionName;
                 })
             }
+            // setDishes(searchedDishes);
             setDishes(removeProhibitedTags(searchedDishes));
         } else {
+            /*
+            if (currentSectionName == 'Все') {
+                setDishes(dishesList);
+            } else {
+                let searchedDishes2 = dishesList.filter(obj => {
+                    return obj.section == currentSectionName;
+                })
+                setDishes(searchedDishes2);
+            }
+            */
            handleSectionChoice(currentSectionName);            
         }
 
     }
 
     useEffect(() => {
-      setDishes(findDishesByRestaurant());
+      handleSectionChoice(route.params.section)
       setDishesIntro(dishesSections);
-      setCurrentSectionName('Все');
+      setCurrentSectionName(route.params.section);
     }, []);
 
     const [fontsLoaded] = useFonts({
@@ -246,7 +250,7 @@ export default function RestaurantMenuScreen({navigation, route}) {
                   style={styles.signButton}>
                   <Image style={styles.sign} source={require('../../../assets/images/minusGreen.png')}/>
                 </TouchableOpacity>
-                {test && <Text style={styles.amountText}>{countAmountInCart(item)}</Text>}
+                <Text style={styles.amountText}>{countAmountInCart(item)}</Text>
                 <TouchableOpacity onPress={() => {handleCartChoice(item, true)}}
                   style={styles.signButton}>
                     <Image style={styles.sign} source={require('../../../assets/images/plusGreen.png')}/>
@@ -260,38 +264,38 @@ export default function RestaurantMenuScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}} >
         <View style={styles.topMenu}>
-        {searchIconVisibility && (
-            <View style={{width: wp(11.8)}}>
-                <TouchableOpacity onPress={() => setSearchIconVisibility(false)}>
-                    <Image source={require('../../../assets/images/searchButton.png')} style={styles.search}/>
-                </TouchableOpacity>
-            </View>
-        )}
-        {!searchIconVisibility && (
+            {searchIconVisibility && (
+                <View style={{width: wp(11.8)}}>
+                    <TouchableOpacity onPress={() => setSearchIconVisibility(false)}>
+                        <Image source={require('../../../assets/images/searchButton.png')} style={styles.search}/>
+                    </TouchableOpacity>
+                </View>
+            )}
+            {!searchIconVisibility && (
                 <View style={{height: hp(7.82)}}>
                     <View style={styles.searchBarBox}>
                         <TextInput value={search} style={styles.searchInput}
                         placeholder='Поиск' placeholderTextColor={colors.grey2}
                         onChangeText={(s) => setSearch(s)}
-                        onEndEditing={() => searchForDishesByNameSectionRestaurant()} />
+                        onEndEditing={() => searchForDishesByNameSection()} />
                         <TouchableOpacity style={[styles.searchButton]} onPress={() => setSearchIconVisibility(true)}>
                             <Image source={require('../../../assets/images/search.png')} style={styles.searchImage} />
                         </TouchableOpacity>
                     </View>
                 </View>
             )}
-        {searchIconVisibility && (
+            {searchIconVisibility && (
             <View style={{width: wp(88.2)}}>
                 <FlatList data={dishesIntro} 
                     renderItem={({ item }) => <ItemRender name={item.name} id={item.id} />} keyExtractor={item => item.id}
                     horizontal={true} />
-            </View> 
-        )}  
+            </View>
+            )}   
         </View>
         <FlatList numColumns={2} data={dishes} 
             renderItem={RenderItem}
             keyExtractor={item => item.id} />
-            <AppearingDishDescriptionModal activeItem={activeItem}  
+            <AppearingDeliveryDishModal activeItem={activeItem}  
                     mealId={route.params.mealId} chooseMessage={chooseMessage} visibility={visibility} />
     </SafeAreaView>
   )
@@ -477,7 +481,7 @@ const styles = StyleSheet.create({
       height: hp(5),
       justifyContent: 'center',
     },
-    
+
     searchBarBox: {
         height: hp(4.74),
         width: wp(91.8),

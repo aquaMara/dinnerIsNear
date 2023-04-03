@@ -20,9 +20,10 @@ import RestaurantScreen from '../../screens/main/RestaurantScreen';
 import Restaurants from '../../screens/main/restaurant-part/Restaurants';
 import RestaurantMenuScreen from '../../screens/main/restaurant-part/RestaurantMenuScreen';
 
-import firebase from 'firebase/compat';
 import RecommendationMenuScreen from '../../screens/main/home-part/RecommendationMenuScreen';
 import DeliveryCartScreen from '../../screens/main/home-part/DeliveryCartScreen';
+
+import { useAuth } from '../../auth/AuthProvoder';
 
 const { height } = Dimensions.get('screen');
 
@@ -31,7 +32,8 @@ const Stack = createNativeStackNavigator();
 export default function MainTabNavigation() {
 
   const navigation = useNavigation();
-  const [address, setAddress] = useState('проспект Толстова, 237');
+  //const [address, setAddress] = useState('проспект Толстова, 237');
+  const { address, setAddress } = useAuth();
 
   const [fontsLoaded] = useFonts({
     'SF-Pro-Regular': require('../../assets/fonts/SFPro400.otf'),
@@ -54,16 +56,18 @@ export default function MainTabNavigation() {
             trackColor={{ false: 'rgba(120, 120, 128, 0.16)', true: colors.green }}
             style={{marginRight: wp(4.1), marginLeft: 'auto', marginBottom: hp(0.65)}}
             thumbColor={colors.white} />
-            <View style={styles.writtenAddress}>
+            <TouchableOpacity style={styles.writtenAddress} onPress={() => navigation.navigate('MapMe')}>
                 <View style={{height: hp(4.27), display: 'flex', flexDirection: 'column'}}>
                 <View style={{display: 'flex', flexDirection: 'row',}} >
                     <Text style={styles.title}>Адрес доставки</Text>
                     <Image source={require('../../assets/images/chevronLight.png')}
                         style={{height: hp(1.3), width: wp(1.28), marginLeft: wp(1.03), alignSelf: 'center'}} />
                 </View>
-                <Text style={styles.value}>{address.substring(0, 19)}...</Text>
+                {address == null
+                ? (<Text style={styles.value}>Название не определено</Text>)
+                : (<Text style={styles.value}>{address.substring(0, 19)}...</Text>)}
                 </View>
-            </View>
+            </TouchableOpacity>
         </View>),
         headerRight: () => 
         ( <View style={styles.buttonsBox}>

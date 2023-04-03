@@ -34,7 +34,7 @@ export default function Screen({ navigation, route }) {
         <Text style={[styles.intakeInfo, {color: '#6D6D72'} ]}>
         Мы рассчитали вашу норму макро- и микро-элементов и готовы приступить к работе.</Text>        
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('Tab')}
+      <TouchableOpacity onPress={() => navigation.navigate('MapMe')}
         style={[globalStyles.mainButton, {marginTop: hp(28.9)} ]}>
         <Text style={styles.buttonText}>Войти</Text>
       </TouchableOpacity>

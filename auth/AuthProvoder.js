@@ -27,21 +27,12 @@ export const AuthProvider = ( { children } ) => {
     const [carbohydratesCount, setCarbohydratesCount] = useState([]);
     const [mealsNumber, setMealsNumber] = useState(null);
 
-    const [loading, setLoading] = useState(true);
-
     // For Cart
     const [currentUserMeals, setCurrentUserMeals] = useState([]);
 
-    /*
-    useEffect(() => {
-        firebase.auth().onAuthStateChanged(user => {
-            setCurrentUser(user);
-            setLoading(false);
-            // get all data from firebases
-            console.log('Auth Provider, user : ', currentUser)
-        });
-    }, []);
-    */
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
+    const [address, setAddress] = useState(null);
 
     return (
         <AuthContext.Provider value={{
@@ -59,11 +50,15 @@ export const AuthProvider = ( { children } ) => {
             fatsCount, setFatsCount,
             carbohydratesCount, setCarbohydratesCount,
             mealsNumber, setMealsNumber,
-            currentUserMeals, setCurrentUserMeals
+            currentUserMeals, setCurrentUserMeals,
+
+            latitude, setLatitude,
+            longitude, setLongitude,
+            address, setAddress
 
         }}>
             {children}
-
+            {console.log('AUTH', latitude, longitude, address)}
             
         </AuthContext.Provider>
     )

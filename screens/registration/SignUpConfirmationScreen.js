@@ -61,7 +61,8 @@ export default function SignUpConfirmationScreen({ route, navigation }) {
         await getData();
         await cleanEatenMealsByDate();
         await cleanWeekTagsByDate();
-        navigation.navigate('Tab');
+        //navigation.navigate('Tab');
+        navigation.navigate('MapMe');
       } else {
         await saveData();
         navigation.navigate('LittleMore');

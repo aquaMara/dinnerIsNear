@@ -6,11 +6,13 @@ import { useState, useEffect } from 'react';
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import restsIntroduction from '../../../data/restsIntroduction';
+import markersList from '../../../data/markersList';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-
 import * as SecureStore from 'expo-secure-store';
+import { getDistance } from 'geolib';
+import { useAuth } from '../../../auth/AuthProvoder';
 
 const { height } = Dimensions.get('screen');
 
@@ -19,6 +21,7 @@ export default function Restaurants({route}) {
   const navigation = useNavigation();
   const [search, setSearch] = useState('');
   const [restaurants, setRestaurants] = useState([]);
+  const {latitude, setLatitude, longitude, setLongitude} = useAuth();
 
   const moveToRestaurant = async  (id, name, mealId) => {
     let trueTags = await getTags();
@@ -31,6 +34,9 @@ export default function Restaurants({route}) {
 
   const getTags = async () => {
     let trueTagsData = await SecureStore.getItemAsync('trueTags');
+    if (trueTags == null) {
+      return [];
+    }
     let trueTags = JSON.parse(trueTagsData)
     return trueTags;
   }
@@ -38,29 +44,91 @@ export default function Restaurants({route}) {
   const getProTags = async () => {
     let trueTagsData = await SecureStore.getItemAsync('trueProTags');
     let trueProTags = JSON.parse(trueTagsData);
+    if (trueProTags == null) {
+      return [];
+    }
     return trueProTags;
   }
 
   const getWeekTags = async () => {
     let weekTagsData = await SecureStore.getItemAsync('weekTags');
     let weekTags = JSON.parse(weekTagsData);
+    if (weekTags == null) {
+      return [];
+    }
     return weekTags;
   }
 
   const searchForRestraunt = () => {
     console.log(search, 'search', search.trim());
+    let withDistance = addDistance(markersList);
+    sortByDistance(withDistance);
     if (search.trim().length > 0) {
-      let searchedRestaurants = restsIntroduction.filter(obj => {
+      let searchedRestaurants = withDistance.filter(obj => {
         return obj.name.toLowerCase().includes(search.trim().toLowerCase());
       })
       setRestaurants(searchedRestaurants);
     } else {
-      setRestaurants(restsIntroduction);
+      setRestaurants(withDistance);
     }
+  }
+  /*
+  const searchForRestraunt = () => {
+    console.log(search, 'search', search.trim());
+    if (search.trim().length > 0) {
+      let searchedRestaurants = markersList.filter(obj => {
+        return obj.name.toLowerCase().includes(search.trim().toLowerCase());
+      })
+      
+      setRestaurants(searchedRestaurants);
+    } else {
+      setRestaurants(markersList);
+    }
+  }
+  */
+
+  const handleDistanceCount = (item) => {
+    var distanceBetweenPointsObject = getDistance(
+      {latitude: latitude, longitude: longitude},
+      {latitude: parseFloat(item.latitude), longitude: parseFloat(item.longitude)},
+      );
+    let distanceBetweenPoints = {distanceBetweenPointsObject}
+    let distanceKM = distanceBetweenPoints.distanceBetweenPointsObject / 1000;
+
+    return distanceKM;
+  }
+
+  const addDistance = (rests) => {
+    let withDistance = rests.map(function(item){
+      var distanceBetweenPointsObject = getDistance(
+        {latitude: latitude, longitude: longitude},
+        {latitude: parseFloat(item.latitude), longitude: parseFloat(item.longitude)},
+        );
+      let distanceBetweenPoints = {distanceBetweenPointsObject}
+      let distanceKM = parseInt(distanceBetweenPoints.distanceBetweenPointsObject / 1000, 10);
+      return {...item, distanceKM: distanceKM};
+    })
+    return withDistance;
+  }
+
+  const sortByDistance = (rests) => {
+     rests.sort((a, b) => {
+      if (a.distanceKM < b.distanceKM)
+        return -1;
+      if (a.distanceKM > b.distanceKM)
+        return 1;
+      return 0;
+    });
+
+    /*
+    for (let i = 0; i < rests.length; i++) {
+      console.log(rests[i].distanceKM)
+    }
+    */
   }
 
   const renderRestaurant = ({item}) => (
-    <TouchableOpacity style={styles.restaurantBlock}
+    item.distanceKM != null && (<TouchableOpacity style={styles.restaurantBlock}
       onPress={() => moveToRestaurant(item.id, item.name, route.params.mealId)}>
       <View style={styles.topBlock}>
         <ImageBackground source={{uri: item.image}} style={styles.restaurantImage} imageStyle={{borderRadius: hp(2.37)}} >
@@ -70,7 +138,7 @@ export default function Restaurants({route}) {
             style={styles.restaurantImage} />
         </ImageBackground>
         <View style={{marginRight: wp(2.31), marginLeft: 'auto', marginBottom: hp(1.07), marginTop: 'auto'}}>
-          <Text style={styles.restrauntDestinationText}>~ в 1 км от меня</Text>
+          <Text style={styles.restrauntDestinationText}>~ в {item.distanceKM} км от меня</Text>
         </View>
       </View>
       <View style={styles.bottomBlock}>
@@ -78,11 +146,13 @@ export default function Restaurants({route}) {
           <Text style={styles.restaurantTitleText}>{item.name}</Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </TouchableOpacity>)
   );
 
   useEffect(() => {
-    setRestaurants(restsIntroduction);
+    let withDistance = addDistance(markersList);
+    sortByDistance(withDistance);
+    setRestaurants(withDistance);
   }, []);
 
   const [fontsLoaded] = useFonts({

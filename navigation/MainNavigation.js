@@ -16,6 +16,7 @@ import TabNavigation from './TabNavigation';
 import CalorieCountScreen from '../screens/registration/CalorieCountScreen';
 import { MapScreen } from '../screens/main/MapScreen';
 import RegistrationDiagnosisScreen from '../screens/registration/RegistrationDiagnosisScreen';
+import MapMeScreen from '../screens/registration/MapMeScreen';
 
 const { height } = Dimensions.get('screen');
 
@@ -80,6 +81,7 @@ export default function MainNavigation() {
             headerBackTitle: 'Назад',
         }} />
         <Stack.Screen name="CalorieCount" component={CalorieCountScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="MapMe" component={MapMeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Tab" component={TabNavigation} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

@@ -2,16 +2,16 @@ import { StyleSheet, Text, View, Alert, TouchableOpacity, Image, Dimensions } fr
 import { useEffect, useState } from 'react';
 import React from 'react';
 import MapView, { Marker, Callout } from 'react-native-maps';
-
 import { RFValue } from 'react-native-responsive-fontsize'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useFonts } from 'expo-font';
-
 import { colors } from '../../styles/colors';
 import markersList from '../../data/markersList';
-
+import AppearingRestrauntDescriptionModal from './AppearingRestrauntDescriptionModal';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
+
+//import geolib from 'geolib';
+import {getDistance, getPreciseDistance} from 'geolib';
 
 const { height } = Dimensions.get('screen');
 
@@ -21,6 +21,21 @@ export default function FirstMapScreen() {
   const [fs, setFs] = useState(null);
   const [currentLatitude, setCurrentLatitude] = useState(0);
   const [currentLongitude, setCurrentLongitude] = useState(0);
+
+  const [activeRestaurant, setActiveRestaurant] = useState(null);
+  const [visibility, setVisibility] = useState(false);
+  const chooseMessage = (marker, message) => {
+	const { id, name, image, latitude, longitude, address, workingTime, averageBill } = marker;
+	var distanceBetweenPointsObject = getDistance(
+		{latitude: currentLatitude, longitude: currentLongitude},
+		{latitude: parseFloat(latitude), longitude: parseFloat(longitude)},
+	  );
+	let distanceBetweenPoints = {distanceBetweenPointsObject}
+	let distanceKM = parseInt(distanceBetweenPoints.distanceBetweenPointsObject / 1000, 10);
+	let activeMarker = {id, name, image, latitude, longitude, address, workingTime, averageBill, distanceKM: distanceKM};
+	setActiveRestaurant(activeMarker);
+	setVisibility(message);
+  };
 
   const LOCATION_TASK_NAME = 'background-location-task';
   
@@ -35,8 +50,7 @@ export default function FirstMapScreen() {
     }
   });
 
-  useEffect(()=> {
-    
+  useEffect(()=> {    
     (async () => {
       const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
       if (foregroundStatus === 'granted') {
@@ -63,30 +77,35 @@ export default function FirstMapScreen() {
 			showsMyLocationButton={true}
 			showsCompass={true}
 			style={styles.map} userInterfaceStyle='light'
-      showsPointsOfInterest={true}
+      		showsPointsOfInterest={true}
 			initialRegion={{latitude: 55.753247529963446, longitude: 37.6020154928286,
                       latitudeDelta: 0.0843, longitudeDelta: 0.0834}}
 			loadingEnabled={false}>
 			{markers.map((marker, id) => (
 			<Marker key={id} pinColor={colors.white}
 				coordinate={{ latitude: marker.latitude, longitude: marker.longitude}}
-				title={marker.name} description={marker.description}>
+				title={marker.name}>
 				<Image source={require('../../assets/images/whitePin.png')} style={styles.greenPin} />
-				<Callout style={[styles.restrauntSquare]}>
-					<Image source={{uri: marker.path}} style={styles.restrauntPicture} />
+				<Callout style={[styles.restrauntSquare]} onPress={() => chooseMessage(marker, true)}>
+					<Image source={{uri: marker.image}} style={styles.restrauntPicture} />
 						<View style={styles.restrauntTextBlock}>
 						<Text style={styles.restrauntText}>{marker.name}</Text>
 					</View>
 				</Callout>
 			</Marker>
 			))}
-      {currentLatitude > 0 && 
-      <Marker pinColor={colors.green} style={styles.greenPin}
-        coordinate={{ latitude: currentLatitude, longitude: currentLongitude}} >
-        <Image source={require('../../assets/images/greenPin2.png')} style={styles.greenPin} />
-      </Marker>
-      }
+		{currentLatitude > 0 && 
+		<Marker pinColor={colors.green} style={styles.greenPin}
+			coordinate={{ latitude: currentLatitude, longitude: currentLongitude}} >
+			<Image source={require('../../assets/images/greenPin2.png')} style={styles.greenPin} />
+		</Marker>
+		}
 		</MapView>
+		{visibility && (
+		<AppearingRestrauntDescriptionModal
+			chooseMessage={chooseMessage}
+			visibility={visibility}
+			activeRestaurant={activeRestaurant} />)}
 	  </View>
   )
 }
